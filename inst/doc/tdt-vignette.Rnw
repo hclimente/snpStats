@@ -1,0 +1,128 @@
+%\documentclass[a4paper,12pt]{article}
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+% \usepackage{times}
+%\usepackage{mathptmx}
+%\renewcommand{\ttdefault}{cmtt}
+\usepackage{graphicx}
+
+\usepackage[pdftex,
+bookmarks,
+bookmarksopen,
+pdfauthor={David Clayton},
+pdftitle={TDT and snpAssoc Vignette}]
+{hyperref}
+
+\title{TDT vignette\\Use of snpAssoc in family--based studies}
+\author{David Clayton}
+\date{\today}
+
+\usepackage{Sweave}
+\SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE}
+
+\begin{document}
+\setkeys{Gin}{width=1.0\textwidth}
+
+%\VignetteIndexEntry{TDT tests}
+%\VignettePackage{snpAssoc}
+
+\maketitle
+
+
+\section*{Pedigree data}
+
+The {\tt snpAssoc} package contains some tools for analysis of
+family-based studies. These assume that a subject support file
+provides the information necessary to reconstruct pedigrees in the
+well-known format used in the {\it LINKAGE} package. Each line of the
+support file  must contain an identifier of the {\em pedigree} to which
+the individual belongs, together with an identifier of subject within pedigree,
+and the within-pedigree identifiers for the subject's father and
+mother. Usually this information, together with phenotype data, will
+be contained in a dataframe with rownames which link to the rownames
+of the {\tt SnpMatrix} containing the genotype data. The following
+commands read some illustrative data on 3,017 subjects and 43
+(autosomal) SNPs\footnote{These data are on a much smaller scale than
+  would arise in genome-wide studies, but serve to illustrate the
+  available tools. Note, however, that execution speeds are quite adequate for
+  genome-wide data.}. The data consist of a dataframe containing the
+subject and pedigree information ({\tt pedData}) and a {\tt
+  SnpMatrix} containing the genotype data ({\tt genotypes}):
+<<family-data>>=
+require(snpAssoc)
+data(families)
+genotypes
+head(pedData)
+@ 
+The first family comprises four individuals: two parents and two
+sibling offspring. The parents are ``founders'' in the pedigree, {\it
+  i.e.}  there is no data for their parents, so that their {\tt father}
+and {\tt mother} identifiers are set to {\tt NA}. This differs from
+the convention in the {\it LINKAGE} package, which would code these as
+zero. Otherwise coding is as in {\it LINKAGE}: {\tt sex} is coded 1 for
+  male and 2 for female, and disease status ({\tt affected}) is coded
+  1 for unaffected and 2 for affected.
+  
+\section*{Checking for mis-inheritances}
+
+The function {\tt misinherits} counts non-Mendelian inheritances in
+the data. It returns a logical matrix with one row for each subject
+who has any mis-inheritances and one column for each SNP which was ever
+mis-inherited. 
+<<mis-inheritances>>=
+mis <- misinherits(data=pedData, snp.data=genotypes)
+dim(mis)
+@ 
+Thus, 114 of the subjects and 37 of the SNPs had at least one
+mis-inheritance. The following commands count mis-inheritances per
+subject and plot its frequency distribution, and similarly,
+for mis-inheritances per SNP:
+
+<<per-subj-snp,fig=TRUE>>=
+per.subj <- apply(mis, 1, sum, na.rm=TRUE)
+per.snp <- apply(mis, 2, sum, na.rm=TRUE)
+par(mfrow = c(1, 2))
+hist(per.subj,main='Histogram per Subject', xlab='Subject')
+hist(per.snp,main='Histogram per SNP', xlab='SNP')
+@ 
+
+Note that mis-inheritances must be ascribed to offspring, although the
+error may lie with the parent data. The following commands first
+extract the pedigree identifiers for mis-inheriting subjects and go on
+to chart the numbers of mis-inheritances per family:
+<<per-family,fig=TRUE>>=
+fam <- pedData[rownames(mis), "familyid"]
+per.fam <- tapply(per.subj, fam, sum)
+par(mfrow = c(1, 1))
+hist(per.fam, main='Histogram per Family', xlab='Family')
+@ 
+None of the above analyses suggest serious problems with the data,
+although there are clearly a few genotyping errors.
+
+\section*{TDT tests}
+
+At present, the package only allows testing of
+discrete disease phenotypes in case--parent trios --- basically the
+Transmission/Disequilibrium Test (TDT). This is carried out by the
+function {\tt tdt.snp}, which returns the same class of object as that
+returned by {\tt single.snp.tests}; allelic (1 df) and genotypic
+(2~df) tests are computed. The following commands compute the tests,
+display the $p$-values, and plot quantile--quantile plots of the 1~df tests
+chi-squared statistics:
+<<tdt-tests,fig=TRUE,keep.source=TRUE>>=
+tests <- tdt.snp(data = pedData, snp.data = genotypes)
+cbind(p.values.1df = p.value(tests, 1),
+      p.values.2df = p.value(tests, 2))
+qq.chisq(chi.squared(tests, 1), df = 1)
+@ 
+Since these SNPs were all in a region of known association, the
+overdispersion of test statistics is not surprising. Note that,
+because each family had two affected offspring, there were twice as
+many parent-offspring trios as families. In the above tests, the
+contribution of the two trios in each family to the test statistic
+have been assumed to be independent. When there is {\em linkage}
+between the genetic locus and disease trait, this assumption is
+incorrect and an alternative variance estimate can be used by
+specifying {\tt robust=TRUE} in the call. However, in practice,
+linkage is very rarely strong enough to require this correction.
+\end{document}

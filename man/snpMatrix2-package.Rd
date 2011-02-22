@@ -1,0 +1,118 @@
+\name{snpAssoc-package}
+\alias{snpAssoc-package}
+\alias{snpAssoc}
+\docType{package}
+\title{
+Enhanced SnpMatrix and XSnpMatrix classes
+}
+\description{
+Enhanced classes and methods for large SNP association studies, allowing for uncertain genotype assignments
+}
+\details{
+This package extends the \code{snpMatrix} package, allowing uncertainty
+in genotype assignments, for example as  consequence of imputation.
+It provides most of the functionality of \code{snpMatrix}, although
+it currently lacks some of the functions. It is intended that the most 
+important of these will be provided in the near future. For more
+details, see the "differences" vignette.
+
+Further development of the snpMatrix project by this developer will
+take place entirely within \code{snpAssoc}.
+
+\tabular{ll}{
+Package: \tab snpAssoc\cr
+Version: \tab 1.1.8\cr
+Date: \tab 2011-02-15\cr
+Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
+Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
+Suggests: \tab hexbin\cr
+License: \tab GPL-3\cr
+URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
+Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.R misc.R ld.R mvtests.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
+LazyLoad: \tab yes\cr
+biocViews: \tab Microarray, SNP, GeneticVariability\cr
+Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
+Built: \tab R 2.12.1; x86_64-pc-linux-gnu; 2011-02-15 15:29:21 UTC; unix\cr
+}
+
+Index:
+\preformatted{
+Fst                     Calculate fixation indices
+GlmEstimates-class      Class "GlmEstimates"
+GlmTests-class          Classes "GlmTests" and "GlmTestsScore"
+ImputationRules-class   Class "ImputationRules"
+SingleSnpTests-class    Classes "SingleSnpTests" and
+                        "SingleSnpTestsScore"
+SnpMatrix-class         Class "SnpMatrix"
+XSnpMatrix-class        Class "XSnpMatrix"
+chi.squared             Extract test statistics and p-values
+convert.snpMatrix       Convert 'snpMatrix' objects to 'snpAssoc'
+                        objects
+example-new             An example of intensity data for SNP genotyping
+families                Test data for family association tests
+filter.rules            Filter a set of imputation rules
+for.exercise            Data for exercise in use of the snpAssoc
+                        package
+genotype-class          snpAssoc-internal
+glm.test.control        Set up control object for GLM tests
+imputation.maf          Extract statistics from imputation rules
+impute.snps             Impute snps
+ld                      Pairwise linkage disequilibrium measures
+misinherits             Find non-Mendelian inheritances in family data
+mvtests                 Multivariate SNP tests
+plotUncertainty         Plot posterior probabilities of genotype
+                        assignment
+pool                    Pool test results from several studies or
+                        sub-studies
+pool2                   Pool results of tests from two independent
+                        datasets
+qq.chisq                Quantile-quantile plot for chi-squared tests
+read.beagle             Read genotypes imputed by the BEAGLE program
+read.impute             Read genotypes imputed by the IMPUTE2 program
+read.mach               Read genotypes imputed by the MACH program
+read.plink              Read a PLINK binary data file as a SnpMatrix
+read.snps.long          Read SNP data in long format
+row.summary             Summarize rows or columns of a snp matrix
+single.snp.tests        1-df and 2-df tests for genetic associations
+                        with SNPs (or imputed SNPs)
+snp.cbind               Bind together two or more SnpMatrix objects
+snp.cor                 Correlations with columns of a SnpMatrix
+snp.imputation          Calculate imputation rules
+snp.lhs.estimates       Logistic regression with SNP genotypes as
+                        dependent variable
+snp.lhs.tests           Score tests with SNP genotypes as dependent
+                        variable
+snp.pre.multiply        Pre- or post-multiply a SnpMatrix object by a
+                        general matrix
+snp.rhs.estimates       Fit GLMs with SNP genotypes as independent
+                        variable(s)
+snp.rhs.tests           Score tests with SNP genotypes as independent
+                        variable
+snpAssoc-package        Enhanced SnpMatrix and XSnpMatrix classes
+switch.alleles          Switch alleles in columns of a SnpMatrix or in
+                        test results
+tdt.snp                 1-df and 2-df tests for genetic associations
+                        with SNPs (or imputed SNPs) in family data
+test.allele.switch      Test for switch of alleles between two
+                        collections
+testdata                Test data for the snpAssoc package
+write.SnpMatrix         Write a SnpMatrix object as a text file
+write.plink             Write files for analysis in the PLINK toolset
+xxt                     X.X-transpose for a standardized SnpMatrix
+}
+
+Further information is available in the following vignettes:
+\tabular{ll}{
+\code{differences} \tab snpMatrix-differences (source, pdf)\cr
+\code{imputation-vignette} \tab Imputation and meta-analysis (source, pdf)\cr
+\code{pca-vignette} \tab Principal components analysis (source, pdf)\cr
+\code{snpAssoc-vignette} \tab snpAssoc introduction (source, pdf)\cr
+\code{tdt-vignette} \tab TDT tests (source, pdf)\cr
+}
+}
+\author{
+David Clayton \email{david.clayton@cimr.cam.ac.uk}
+
+Maintainer: David Clayton \email{david.clayton@cimr.cam.ac.uk}
+}
+\keyword{ package }

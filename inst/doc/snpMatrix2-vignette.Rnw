@@ -1,0 +1,532 @@
+%\documentclass[a4paper,12pt]{article}
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+% \usepackage{times}
+%\usepackage{mathptmx}
+%\renewcommand{\ttdefault}{cmtt}
+\usepackage{graphicx}
+
+\usepackage[pdftex,
+bookmarks,
+bookmarksopen,
+pdfauthor={David Clayton and Chris Wallace},
+pdftitle={snpAssoc Vignette}]
+{hyperref}
+
+\title{snpAssoc vignette\\Example of genome-wide association testing}
+\author{David Clayton and Chris Wallace}
+\date{\today}
+
+\usepackage{Sweave}
+\SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE}
+
+\begin{document}
+\setkeys{Gin}{width=1.0\textwidth}
+
+%\VignetteIndexEntry{snpAssoc introduction}
+%\VignettePackage{snpAssoc}
+
+\maketitle
+
+\section*{The {\tt snpMatrix} and {\tt snpAssoc} packages}
+The package ``{\tt snpMatrix}'' was written to provide data classes
+and methods to
+facilitate the analysis of whole genome association studies in R.
+In the data classes it implements,
+each genotype call is stored as a single byte and, at this density,
+data for single chromosomes derived from large studies and new
+high-throughput gene chip platforms can be handled in memory by modern
+PCs and workstations.
+The object--oriented programming model introduced with version 4 of
+the S-plus package, usually termed ``S4 methods'' was used to
+implement these classes.
+
+{\tt snpAssoc} arose out of the need to store, and analyse, SNP 
+genotype data in which subjects cannot be assigned to the three
+possible genotypes with certainty. This necessitated a change in the
+way in which data are stored internally, although {\tt snpAssoc} can
+still handle conventionally called 
+genotype data stored in the original {\tt snpMatrix} storage
+mode. {\tt snpAssoc} currently lacks some facilities which were
+present in {\tt snpMatrix} (although, hopefully, the important  gaps will 
+soon be filled) but it also includes several important new
+facilities. This vignette currently exploits none of the new
+facilities; these are mainly used in the vignette which deals with
+imputation and meta-analysis. 
+
+For population-based studies, both quantitative
+and qualitative phenotypes may be analysed but, at present, rather
+more limited facilities are available for family--based studies. 
+Flexible functions are provided which can carry out single SNP tests
+which control for potential confounding by quantitative and
+qualitative covariates. Tests involving several SNPs taken together
+as ``tags'' are also supported. 
+The original {\tt snpMatrix} package was described by Clayton and Leung 
+(2007) {\it Human Heredity}, {\bf 64}: 45--51. Since this publication many new
+facilities have been introduced; some of 
+these are explored in further vignettes.
+
+
+\section*{Getting started}
+We shall start by loading  the 
+the packages and the data to be used in the first part of this
+exercise, which concerns a population--based case--control study:
+
+<<init>>=
+require(snpAssoc)
+require(hexbin)
+data(for.exercise)
+@ 
+
+In addition to the {\tt snpAssoc} package, we have also loaded the
+{\tt hexbin} package which reduces file sizes and legibility of plots
+with very many data points.
+
+The data have been created artificially from publicly available
+datasets. The SNPs have been selected from those genotyped by the
+International HapMap Project\footnote{\tt http://www.hapmap.org} to represent
+the typical density found on a whole genome association chip, (the Affymetrix
+500K platform\footnote{\tt
+  http://www.affymetrix.com/support/technical/sample\_data/500k\_hapmap\_genotype\_data.affx})
+for a moderately sized chromosome (chromosome 10). A (rather too)
+small study of 500 cases and
+500 controls has been simulated allowing for recombination using beta
+software from Su and Marchini.  Re-sampling of cases was weighted in such a
+way as to simulate three ``causal'' locus on this chromosome, with
+multiplicative effects of 1.3, 1.4 and 1.5 for each copy of the risk allele at
+each locus. It should be noted that this is a somewhat optimistic
+scenario!
+
+You have loaded three objects:
+\begin{enumerate}
+\item {\tt snps.10}, an object of class ``{\tt SnpMatrix}''
+  containing a matrix of SNP genotype calls. Rows of the matrix
+  correspond to subjects and columns correspond to SNPs:
+<<>>=
+show(snps.10)
+@ 
+
+\item {\tt snp.support}, a conventional R
+data frame containing information about the
+SNPs typed. To see its contents:
+<<>>=
+summary(snp.support)
+@
+
+Row names of this data frame correspond with column names of {\tt
+  snps.10} and comprise the (unique) SNP identifiers.
+\item {\tt subject.support}, another conventional R data frame
+  containing further
+  information about the subjects. The row names coincide with the row
+  names of {\tt snps.10} and
+  comprise the (unique) subject identifiers. In this simulated study
+  there are only two variables:
+<<>>=
+summary(subject.support)
+@
+
+The variable {\tt cc} identifies cases ({\tt cc=1}) and controls
+({\tt cc=0}) while {\tt stratum}, coded 1 or 2, identifies a
+stratification of the study population --- more on this later.
+\end{enumerate}
+In general, analysis of a whole--genome association study will require
+a subject support data frame, a SNP support data frame for each
+chromosome, and a SNP data file for each chromosome\footnote{
+Support files are usually read in with general tools such as {\tt
+  read.table}. The {\tt snpAssoc} package contains a number of tools
+for reading SNP genotype data into an object of class ``{\tt
+  SnpMatrix}''.}.
+
+A short summary of the contents of {\tt snps.10} is provided by the
+{\tt summary} function. This operation actually produces two ``summaries of
+summaries''. First, summary 
+statistics are calculated for each row (sample), and their results
+summarised. Then summary statistics are calculated for each column
+(SNP) and their results summarised.
+<<>>=
+summary(snps.10)
+@ 
+The row-wise and column-wise summaries are
+calculated with the functions {\tt row.summary} and {\tt col.summary}.
+For example, to calculate summary statistics for each SNP (column):
+<<>>=
+snpsum <- col.summary(snps.10)
+summary(snpsum)
+@
+The second command duplicates the latter part of the result of {\tt
+  summary(snps.10)}, and the contents of {\tt snpsum} are fairly
+self-explanatory. 
+We could look at a couple of summary statistics in more detail:
+<<plot-snpsum,fig=TRUE>>=
+par(mfrow = c(1, 2))
+hist(snpsum$MAF)
+hist(snpsum$z.HWE)
+@
+
+The latter should represent a $z$-statistic. {\it i.e.} a statistic
+normally distributed with mean zero and unit standard deviation under
+the hypothesis of Hardy--Weinberg equilibrium (HWE). Quite clearly there is
+extreme deviation from HWE, but this can be accounted for by the
+manner in which this synthetic dataset was created.
+
+The function {\tt row.summary} is useful for detecting samples that
+have genotyped poorly. This calculates call rate and mean heterozygosity
+across all SNPs for each subject in turn:
+<<sample-qc>>=
+sample.qc <- row.summary(snps.10)
+summary(sample.qc)
+@
+(note that the last command yields the same as the first part of 
+{\tt summary(snps.10)}).
+The plot of heterozygosity against call rate is useful in detecting
+poor quality samples:
+<<plot-outliners-qc,fig=TRUE>>=
+par(mfrow = c(1, 1))
+plot(sample.qc)
+@ 
+There is one clear outlier.
+
+\section*{The analysis}
+We'll start by removing the `outlying' sample above (the sample with 
+Heterozygosity near zero):
+<<outliers>>=
+use <- sample.qc$Heterozygosity>0
+snps.10 <- snps.10[use, ]
+subject.support <- subject.support[use, ]
+@
+
+Then we'll see if there is any difference between call rates
+for cases and controls. First generate logical arrays for selecting
+out cases or controls:\footnote{
+These commands assume that the subject support frame has the same
+number of rows as the SNP matrix and that they are in the same
+order. Otherwise a slightly more complicated derivation is necessary.}
+<<if-case-control>>=
+if.case <- subject.support$cc == 1
+if.control <- subject.support$cc == 0
+@
+Now we recompute the genotype column summaries separately for cases and
+controls:
+<<sum-case-control>>=
+sum.cases <- col.summary(snps.10[if.case, ])
+sum.controls <- col.summary(snps.10[if.control, ])
+@
+and plot the call rates, using hexagonal binning and 
+superimposing a line of slope 1 through the origin:
+<<plot-summaries,fig=TRUE>>=
+hb <- hexbin(sum.controls$Call.rate, sum.cases$Call.rate, xbin=50)
+sp <- plot(hb)
+hexVP.abline(sp$plot.vp, 0, 1, col="black")
+@
+There is no obvious difference in call rates. This is not a surprise,
+since  no such difference was built into the simulation. In the same
+way we could look for differences between
+allele frequencies, superimposing a line of slope 1 through the origin:
+<<plot-freqs,fig=TRUE>>=
+sp <- plot(hexbin(sum.controls$MAF, sum.cases$MAF, xbin=50))
+hexVP.abline(sp$plot.vp, 0, 1, col="white")
+@
+
+This is not a very effective way to look for associations, but if
+the SNP calling algorithm has been run separately for cases and
+controls this plot can be a useful diagnostic for things going
+wrong ({\it e.g.} different labelling of clusters).
+
+It should be stressed that, for real data, the plots described above
+would usually have many more outliers. Our simulation did not model
+the various
+biases and genotype failures that affect real studies.
+
+The fastest tool for carrying out simple tests for association taking
+the SNP one at a time is {\tt single.snp.tests}. The output from this
+function is a data frame with one line of data for each SNP. Running
+this in our data and summarising the results:
+<<tests>>=
+tests <- single.snp.tests(cc, data = subject.support, snp.data = snps.10)
+@
+Some words of explanation are required. In the call, the {\tt
+  snp.data=} argument is mandatory and provides the name of the matrix
+providing the genotype data. The {\tt data=} argument gives the name
+of the data frame that contains the remaining arguments --- usually the
+subject support data frame\footnote{This is not mandatory --- we could
+have made {\tt cc} available in the global environment. However we
+would then have to be careful that the values are in the right order;
+by specifying the data frame, order is forced to be correct by
+checking the order of the row names for the {\tt data} and {\tt
+  snp.data} arguments.}.
+
+Let us now see what has been calculated:
+<<sum-tests>>=
+summary(tests)
+@
+
+We have, for each SNP,
+ chi-squared tests on 1 and 2 degrees of freedom (df), together
+with $N$, the number of subjects for whom data were available. The
+ 1 df test is the familiar Cochran-Armitage test for codominant effect
+ while the 2 df test is the conventional Pearsonian test for the
+ $3\times 2$ contingency table. The large number of {\tt NA} values
+ for the latter test reflects the fact that, for these SNPs, the minor
+ allele frequency was such that one homozygous genotype did not occur
+ in the data.
+
+We will probably wish to restrict our attention to SNPs that pass
+certain criteria. For example
+<<use>>=
+use <- snpsum$MAF > 0.01 & snpsum$z.HWE^2 < 200
+@
+(The Hardy-Weinberg filter is ridiculous and reflects the strange
+characteristics of these simulated data. In real life you might want
+to use something like 16, equivalent to a 4SE cut-off). To see how
+many SNPs pass this filter
+<<sum-use>>=
+sum(use)
+@
+We will now throw way the discarded test results and save the positions
+of the remaining SNPs
+<<subset-tests>>=
+tests <- tests[use]
+position <- snp.support[use, "position"]
+@
+
+We now calculate $p$-values  for the
+Cochran-Armitage tests and plot minus logs (base 10) of the $p$-values
+against position
+<<plot-tests,fig=TRUE>>=
+p1 <- p.value(tests, df=1)
+plot(hexbin(position, -log10(p1), xbin=50))
+@
+
+Clearly there are far too many ``significant'' results, an impression
+which is made even clearer by the quantile-quantile (QQ) plot:
+<<qqplot,fig=TRUE>>=
+chi2 <- chi.squared(tests, df=1)
+qq.chisq(chi2,  df = 1)
+@
+
+
+The three numbers returned by this command are the number of tests considered,
+the number of outliers falling beyond the plot boundary, and the slope of a
+line fitted to the smallest 90\% of values ({\it i.e.} the multiple by
+which the chi-squared test statistics are over-dispersed).  
+The ``concentration band'' for the
+plot is shown in grey. This region is defined by upper and lower probability
+bounds for each order statistic.  The default is to use the 2.5\% and 95.7\%
+bounds\footnote{Note that this is not a simultaneous confidence region; the
+probability that the plot will stray outside the band at some point exceeds
+95\%.}.
+
+This over-dispersion of chi-squared values was built into our
+simulation. The data were constructed by re-sampling individuals from
+{\em two} groups of HapMap subjects, the CEU sample (of European
+origin) and the JPT$+$CHB sample (of Asian origin). The 55\% of the
+cases were of European ancestry as compared with  only 45\% of the
+controls. We can deal with this by stratification of the tests,
+achieved by adding the {\tt stratum} argument to the call to {\tt
+  single.snp.tests} (the remaining commands are as before)
+<<more-tests,fig=TRUE>>=
+tests <- single.snp.tests(cc, stratum, data = subject.support,
+     snp.data = snps.10)
+tests <- tests[use]
+p1 <- p.value(tests, df = 1)
+plot(hexbin(position, -log10(p1), xbin=50))
+@
+<<more-tests-qq,fig=TRUE>>=
+chi2 <- chi.squared(tests, df=1)
+qq.chisq(chi2, df = 1)
+@
+
+
+Most of the over-dispersion of test statistics has been removed (the
+residual is probably due to ``cryptic relatedness'' owing to the way
+in which the data were simulated).
+
+Now let us find the names and positions of the most significant 10
+SNPs. The first step is to compute an array which gives the positions
+in which the first, second, third etc. can be found
+<<ord>>=
+ord <- order(p1)
+top10 <- ord[1:10]
+top10
+@
+
+
+We now list the 1~df $p$-values, the corresponding SNP names and their
+positions on the chromosome:
+<<top-10>>=
+names <- tests@snp.names
+p1[top10]
+names[top10]
+position[top10]
+@
+
+
+The most associated SNPs lie within two small regions of the genome. To
+concentrate on the rightmost region (the most associated region on the left
+contains just one SNP), we'll first sort the names of the SNPs into position
+order along the chromosome and select those lying in the region approximately
+one mega-base either side of the second most associated SNP:
+<<top10-local>>=
+posord <- order(position)
+position <- position[posord]
+names <- names[posord]
+local <- names[position > 9.6e+07 & position < 9.8e+07]
+@
+The variable {\tt posord} now contains the permutation necessary to sort
+SNPs into position order and {\tt names} and {\tt position} have now
+been reordered in this manner. The variable {\tt local} contains the
+names of the SNPs in the selected 2 mega-base region.
+
+Next we shall estimate the size of the effect at the most associated SNPs for
+each region (rs870041, rs10882596). In the following commands, we
+extract each SNP from the matrix as a numerical variable (coded 0, 1, or 2)
+and then, using the {\tt glm} function, carry out a logistic regression of
+case--control status on this numerical coding of the SNP and upon stratum. The
+variable {\tt stratum} must be included in the regression in order to allow
+for the different population structure of cases and controls.  We
+first make copies of the {\tt cc} and {\tt stratum}
+variables in {\tt subject.support} in the current working environment
+(where the other variables reside):
+<<top1>>=
+cc <- subject.support$cc
+stratum <- subject.support$stratum
+top <- as(snps.10[, "rs870041"], "numeric")
+glm(cc ~ top + stratum, family = "binomial")
+@
+The coefficient of {\tt top} in this regression is estimated as 0.5100,
+equivalent to a relative risk of $\exp(.5100) =1.665$.  
+For the other top SNP we have:
+<<top2>>=
+top2 <- as(snps.10[, "rs10882596"], "numeric")
+fit <- glm(cc ~ top2 + stratum, family = "binomial")
+summary(fit)
+@
+This relative risk is $\exp(0.4575)=1.580$. Both estimates are
+close to the values used to simulate the data.
+
+You might like to repeat the analysis above using the 2 df
+tests. The conclusion would have been much the same. A word of caution
+however; with real data the 2 df test is less robust against
+artifacts due to genotyping error. On the other hand, it is much more
+powerful against recessive or near-recessive variants.
+
+The {\tt snpAssoc} package includes its own functions to fit generalized
+linear models. These are much faster than {\tt glm}, although not yet
+as flexible. They allow for a each of series of SNPs to be entered
+into a GLM, either on the left hand side ({\it i.e.} as the dependent
+variable) or on the right-hand side (as a predictor variable). In the
+latter case seveal SNPs can be entered in each model fit. 
+For example, to fit the same GLM as before, in which each SNP is
+entered in turn on the right-hand side of a logistic regression
+equation,  for each of the SNPs in the 2 megabase ``local'' region:
+<<estimates>>=
+localest <- snp.rhs.estimates(cc~stratum, family="binomial", sets=local,
+                              data=subject.support, snp.data=snps.10)
+@ 
+This function call has computed \Sexpr{length(local)} GLM fits! 
+The parameter estimates for the
+first five, and for the second best SNP analyzed above (rs10882596)
+are shown by
+<<list-estimates>>=
+localest[1:5]
+localest["rs10882596"]
+@ 
+The parameter estimate for rs1088259 and its standard error agree closely 
+with the values obtained earlier, using the {\tt glm} function. 
+
+The GLM code within {\tt snpAssoc} allows a
+further speed-up which is not available in the standard {\tt glm}
+function. If a variable is to be included in the model as a ``factor''
+taking many levels then a more efficient algorithm can be invoked 
+by using the
+{\tt strata} function in the model formula. For example, the following
+command fits the same model for all the \Sexpr{sum(use)} 
+SNPs we have decided to use in these analyses:
+<<fast-estimates>>=
+allest <- snp.rhs.estimates(cc~strata(stratum), family="binomial", sets=use,
+                              data=subject.support, snp.data=snps.10)
+length(allest)
+@ 
+As expected, the parameter estimates and standard errors 
+are unchanged, for example:
+<<check-estimates>>=
+allest["rs10882596"]
+@ 
+Note that {\tt strata()} can only be used once in a model formula.
+\section*{Multi-locus tests}
+There are two other functions  for carrying out association
+tests ({\tt snp.lhs.tests} and {\tt snp.rhs.tests}) in the
+package. These are somewhat slower, but much more flexible. For
+example, the former function allows one to test for  differences in allele
+frequencies between more than two groups. An important use of the
+latter function is to carry out tests using
+{\em groups} of SNPs rather than single SNPs. We shall explore this use
+in the final part of the exercise.
+
+A prerequisite to multi-locus analyses is to
+decide on how SNPs should be grouped in order to ``tag'' the genome
+rather more completely than by use of single markers. Hopefully, the {\tt
+  snpMatrix} package will eventually contain tools to compute such
+groups, for example, by using HapMap data. The function {\tt
+  ld.snp}, which we encountered earlier, will be an essential tool in
+this process. However this work is not complete and, for now, we
+demonstrate the testing tool by grouping the  \Sexpr{sum(use)} SNPs we have
+decided to use into 20kB blocks. The following commands compute such a
+grouping, tabulate the block size, and remove empty blocks:
+<<blocks>>=
+blocks <- split(posord, cut(position, seq(100000, 135300000, 20000)))
+bsize <- sapply(blocks, length)
+table(bsize)
+blocks <- blocks[bsize>0]  
+@
+You can check that this has worked by listing the column positions 
+of the first 20 SNPs together with the those contained in the
+first five blocks
+<<twentyfive>>=
+posord[1:20]
+blocks[1:5]
+@
+
+
+Note that these positions refer to the reduced set of SNPs after
+application of the filter on MAF and HWE. Therefore, before proceeding
+further we create a new matrix of SNP genotypes containing only these
+27,828:
+<<blocks-use>>=
+snps.use <- snps.10[, use]
+remove(snps.10)
+@
+
+The command to carry out the tests on these groups, controlling for
+the known population structure differences is
+<<mtests,keep.source=TRUE>>=
+mtests <- snp.rhs.tests(cc ~ stratum, family = "binomial", 
+     data = subject.support, snp.data = snps.use, tests = blocks)
+summary(mtests)
+@
+
+
+The first argument, together with the second,
+specifies  the model which corresponds to the null
+hypothesis. In this case we have allowed for the variation in ethnic
+origin ({\tt stratum}) between cases and controls.
+We complete the analysis by extracting 
+the $p$--values and plotting minus their logs (base 10):
+<<plot-mtests,fig=TRUE>>=
+pm <- p.value(mtests)
+plot(hexbin(-log10(pm), xbin=50))
+@
+
+The same associated region is picked out, albeit with a rather larger
+$p$-value; in this case the multiple df test cannot be powerful as the 1 df
+test since the simulation ensured that the ``causal'' locus was
+actually one of the SNPs typed on the Affymetrix platform.
+QQ plots are somewhat more difficult since the tests are on differing
+degrees of freedom. This difficulty is neatly circumvented by noting
+that, under the null hypothesis,  $-2\log p$ is distributed as
+chi-squared on 2~df:
+<<qqplot-mtests,fig=TRUE>>=
+qq.chisq(-2 * log(pm), df = 2)
+@
+\end{document}
+

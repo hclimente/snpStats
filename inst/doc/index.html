@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: snpAssoc vignettes</title>
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<h2>snpAssoc: Overview </h2>
+This package extends the <tt>snpMatrix</tt> package, allowing uncertainty
+in genotype assignments, for example as  consequence of imputation.
+It provides most of the functionality of <tt>snpMatrix</tt>, although
+it lacks some of the functions for importing genotype data from text
+files in various formats. It is intended that the most important of
+these will be provided in the near future but, in the meantime, such
+data can be read using <tt>snpMatrix</tt>, saved as R objects and then
+converted into the equivalent <tt>snpAssoc</tt> objects. In addition, the
+functions in <tt>snpMatrix</tt> for calculating linkage disequilibrium
+statistics are no longer available in <tt>snpAssoc</tt> although,
+again, it is intended that replacements will be available in the near future.
+Note that imputation rules objects in
+<tt>snpMatrix</tt> are not compatible with those used and must be regenerated.
+For more details, see the "differences" vignette.
+
+Further development of the <tt>snpMatrix</tt> project by this developer will
+take place entirely within <tt>snpAssoc</tt>.
+
+<h2>Vignettes</h2>
+<dl>
+<dt><a href="differences.pdf">
+Differences between the  <tt>snpMatrix</tt> and  <tt>snpAssoc</tt> 
+packages</a>: 
+<dd> Equivalent classes and differences in behaviour
+<dt><a href="snpAssoc-vignette.pdf">
+Example of genome-wide association testing</a>:
+<dd> Introduction to snpAssoc for analysis of GWA studies
+<dt><a href="imputation-vignette.pdf">
+Imputed SNP analyses and meta-analysis with snpAssoc</a>:
+<dd> Imputation and meta-analysis with snpAssoc
+<dt><a href="pca-vignette.pdf">PCA vignette</a>:
+<dd> Principal components analysis with snpAssoc
+<dt><a href="tdt-vignette.pdf">TDT vignette</a>:
+<dd> Use of snpAssoc in family--based association studies
+</dl>
+</body></html>

@@ -1,0 +1,16 @@
+Package: snpAssoc
+Title: Enhanced SnpMatrix and XSnpMatrix classes
+Version: 1.1.9
+Date: 2011-02-15
+Author: David Clayton <david.clayton@cimr.cam.ac.uk> 
+Description: Enhanced classes and methods for large SNP association studies, allowing for uncertain genotype assignments 
+Maintainer: David Clayton <david.clayton@cimr.cam.ac.uk>
+Depends: R(>= 2.3.0), survival, methods, Matrix
+Imports: graphics, grDevices, methods, stats, survival, utils, Matrix
+Suggests: hexbin
+License: GPL-3
+URL: http://www-gene.cimr.cam.ac.uk/clayton
+Collate: ss.R contingency.table.R convert.R glm-test.R imputation.R indata.R misc.R ld.R mvtests.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R
+LazyLoad: yes
+biocViews: Microarray, SNP, GeneticVariability
+Packaged: 2011-02-14 16:59:36 UTC; david
