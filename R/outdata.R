@@ -11,7 +11,7 @@ function(x, file, as.alleles=FALSE, append=FALSE, quote=TRUE, sep=" ", eol="\n",
      rownames(x), colnames(x), as.logical(as.alleles), as.logical(append),
      as.logical(quote), as.character(sep), as.character(eol),
      as.character(na), as.logical(row.names), as.logical(col.names),
-     logical(1), PACKAGE="snpAssoc")
+     logical(1), PACKAGE="snpStats")
   error <- res[[15]]
   if (error==1)
     stop("Couldn't open output file")

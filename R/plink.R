@@ -11,13 +11,13 @@ read.plink <- function(bed, bim, fam) {
     bim <- paste(stub, ".bim", sep="")
   if (missing(fam))
     fam <- paste(stub, ".fam", sep="")
-  df.bim <- read.table(bim)
+  df.bim <- read.table(bim, comment.char="")
   snps <- as.character(df.bim[,2])
   cat("Number of SNPs: ", length(snps), "\n")
   if (any(duplicated(snps)))
     stop("Duplicated SNP name(s)")
   cat(head(snps), " ...\n")
-  df.fam <- read.table(fam)
+  df.fam <- read.table(fam, comment.char="")
   ped <- as.character(df.fam[,1])
   id <- as.character(df.fam[,2])
   cat("Number of samples: ", length(id), "\n")
@@ -28,7 +28,7 @@ read.plink <- function(bed, bim, fam) {
       stop("Sample IDs are still not unique")
   }
   cat(head(id), "...\n")
-  .Call("readbed", bed, id, snps, PACKAGE="snpAssoc") 
+  .Call("readbed", bed, id, snps, PACKAGE="snpStats") 
 }
 
 write.plink <- function(file.base, snp.major=TRUE, snps,
@@ -293,7 +293,7 @@ write.plink <- function(file.base, snp.major=TRUE, snps,
     cat("SNP-major mode)\n")
   else
     cat("Subject-major mode)\n")
-  .Call("writebed", snps, bedfn, snp.major, PACKAGE="snpAssoc")
+  .Call("writebed", snps, bedfn, snp.major, PACKAGE="snpStats")
 }
 
   

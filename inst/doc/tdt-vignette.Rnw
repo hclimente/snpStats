@@ -10,10 +10,10 @@
 bookmarks,
 bookmarksopen,
 pdfauthor={David Clayton},
-pdftitle={TDT and snpAssoc Vignette}]
+pdftitle={TDT and snpStats Vignette}]
 {hyperref}
 
-\title{TDT vignette\\Use of snpAssoc in family--based studies}
+\title{TDT vignette\\Use of snpStats in family--based studies}
 \author{David Clayton}
 \date{\today}
 
@@ -24,14 +24,14 @@ pdftitle={TDT and snpAssoc Vignette}]
 \setkeys{Gin}{width=1.0\textwidth}
 
 %\VignetteIndexEntry{TDT tests}
-%\VignettePackage{snpAssoc}
+%\VignettePackage{snpStats}
 
 \maketitle
 
 
 \section*{Pedigree data}
 
-The {\tt snpAssoc} package contains some tools for analysis of
+The {\tt snpStats} package contains some tools for analysis of
 family-based studies. These assume that a subject support file
 provides the information necessary to reconstruct pedigrees in the
 well-known format used in the {\it LINKAGE} package. Each line of the
@@ -49,7 +49,7 @@ commands read some illustrative data on 3,017 subjects and 43
 subject and pedigree information ({\tt pedData}) and a {\tt
   SnpMatrix} containing the genotype data ({\tt genotypes}):
 <<family-data>>=
-require(snpAssoc)
+require(snpStats)
 data(families)
 genotypes
 head(pedData)

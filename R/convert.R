@@ -1,7 +1,7 @@
 convert.snpMatrix <- function(object) {
   cl <- class(object)
   pkg <- attr(cl, "package")
-  newpkg<- "snpAssoc"
+  newpkg<- "snpStats"
   old.classes <- c("snp.matrix", "X.snp.matrix", "single.snp.tests",
                    "single.snp.tests.score", "snp.tests.glm",
                    "snp.tests.glm.score", "snp.estimates.glm",

@@ -16,6 +16,6 @@ test.allele.switch <- function(snps, snps2=NULL, split=NULL, prior.df=1) {
     if (ncol(snps)!=ncol(snps2))
       stop("two SnpMatrix objects have different numbers of columns")
   }
-  .Call("test_switch", snps, snps2, split, prior.df, PACKAGE="snpAssoc")
+  .Call("test_switch", snps, snps2, split, prior.df, PACKAGE="snpStats")
 }
 

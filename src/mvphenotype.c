@@ -583,7 +583,7 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
   PROTECT(Class = allocVector(STRSXP, 1));
   SET_STRING_ELT(Class, 0, mkChar(score?  "GlmtestsScore": "GlmTests"));
   PROTECT(Package = allocVector(STRSXP, 1));
-  SET_STRING_ELT(Package, 0, mkChar("snpAssoc"));
+  SET_STRING_ELT(Package, 0, mkChar("snpStats"));
   setAttrib(Class, install("package"), Package);
   classgets(Result, Class);
 

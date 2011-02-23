@@ -1,28 +1,28 @@
-\name{snpAssoc-package}
-\alias{snpAssoc-package}
-\alias{snpAssoc}
+\name{snpStats-package}
+\alias{snpStats-package}
+\alias{snpStats}
 \docType{package}
 \title{
-Enhanced SnpMatrix and XSnpMatrix classes
+SnpMatrix and XSnpMatrix classes and methods
 }
 \description{
-Enhanced classes and methods for large SNP association studies, allowing for uncertain genotype assignments
+Classes and statistical methods for large SNP association studies, extending the snpMatrix package
 }
 \details{
-This package extends the \code{snpMatrix} package, allowing uncertainty
-in genotype assignments, for example as  consequence of imputation.
-It provides most of the functionality of \code{snpMatrix}, although
-it currently lacks some of the functions. It is intended that the most 
-important of these will be provided in the near future. For more
-details, see the "differences" vignette.
+This package extends the \code{snpMatrix} package allowing for uncertainty
+in genotype assignments, for example, as  consequence of
+imputation. It provides most of the functionality of \code{snpMatrix}, although
+it currently lacks a few of the functions. It is intended that the most 
+important of these will be provided in the near future. It also
+includes some novel commands. For more details, see the "differences" vignette.
 
 Further development of the snpMatrix project by this developer will
-take place entirely within \code{snpAssoc}.
+take place entirely within \code{snpStats}.
 
 \tabular{ll}{
-Package: \tab snpAssoc\cr
-Version: \tab 1.1.8\cr
-Date: \tab 2011-02-15\cr
+Package: \tab snpStats\cr
+Version: \tab 1.1.10\cr
+Date: \tab 2011-02-23\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
@@ -32,7 +32,7 @@ Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
 Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
-Built: \tab R 2.12.1; x86_64-pc-linux-gnu; 2011-02-15 15:29:21 UTC; unix\cr
+Built: \tab R 2.12.1; x86_64-pc-linux-gnu; 2011-02-23 12:09:58 UTC; unix\cr
 }
 
 Index:
@@ -46,14 +46,14 @@ SingleSnpTests-class    Classes "SingleSnpTests" and
 SnpMatrix-class         Class "SnpMatrix"
 XSnpMatrix-class        Class "XSnpMatrix"
 chi.squared             Extract test statistics and p-values
-convert.snpMatrix       Convert 'snpMatrix' objects to 'snpAssoc'
+convert.snpMatrix       Convert 'snpMatrix' objects to 'snpStats'
                         objects
 example-new             An example of intensity data for SNP genotyping
 families                Test data for family association tests
 filter.rules            Filter a set of imputation rules
-for.exercise            Data for exercise in use of the snpAssoc
+for.exercise            Data for exercise in use of the snpStats
                         package
-genotype-class          snpAssoc-internal
+genotype-class          snpStats-internal
 glm.test.control        Set up control object for GLM tests
 imputation.maf          Extract statistics from imputation rules
 impute.snps             Impute snps
@@ -88,14 +88,14 @@ snp.rhs.estimates       Fit GLMs with SNP genotypes as independent
                         variable(s)
 snp.rhs.tests           Score tests with SNP genotypes as independent
                         variable
-snpAssoc-package        Enhanced SnpMatrix and XSnpMatrix classes
+snpStats-package        Enhanced SnpMatrix and XSnpMatrix classes
 switch.alleles          Switch alleles in columns of a SnpMatrix or in
                         test results
 tdt.snp                 1-df and 2-df tests for genetic associations
                         with SNPs (or imputed SNPs) in family data
 test.allele.switch      Test for switch of alleles between two
                         collections
-testdata                Test data for the snpAssoc package
+testdata                Test data for the snpStats package
 write.SnpMatrix         Write a SnpMatrix object as a text file
 write.plink             Write files for analysis in the PLINK toolset
 xxt                     X.X-transpose for a standardized SnpMatrix
@@ -103,11 +103,11 @@ xxt                     X.X-transpose for a standardized SnpMatrix
 
 Further information is available in the following vignettes:
 \tabular{ll}{
-\code{differences} \tab snpMatrix-differences (source, pdf)\cr
-\code{imputation-vignette} \tab Imputation and meta-analysis (source, pdf)\cr
-\code{pca-vignette} \tab Principal components analysis (source, pdf)\cr
-\code{snpAssoc-vignette} \tab snpAssoc introduction (source, pdf)\cr
-\code{tdt-vignette} \tab TDT tests (source, pdf)\cr
+\code{differences} \tab snpMatrix-differences (source)\cr
+\code{imputation-vignette} \tab Imputation and meta-analysis (source)\cr
+\code{pca-vignette} \tab Principal components analysis (source)\cr
+\code{snpStats-vignette} \tab snpStats introduction (source)\cr
+\code{tdt-vignette} \tab TDT tests (source)\cr
 }
 }
 \author{

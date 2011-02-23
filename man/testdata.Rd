@@ -6,7 +6,7 @@
 \alias{Asnps}
 \alias{Xsnps}
 \alias{subject.data}
-\title{Test data for the snpAssoc package}
+\title{Test data for the snpStats package}
 \description{
   This dataset comprises several data frames from a fictional (and
   unrealistically small) study. The

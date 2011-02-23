@@ -119,8 +119,8 @@ tdt.snp <- function(ped, id, father, mother, affected,
 
   scores <- .Call("score_tdt", pd.snps[cord], fr.snps[cord], mr.snps[cord],
                   clust[cord], snp.data, rules, snp.subset,
-                  check.inheritance, robust, uncertain, PACKAGE="snpAssoc")
-  chisq <- .Call("chisq_single", scores, PACKAGE="snpAssoc")
+                  check.inheritance, robust, uncertain, PACKAGE="snpStats")
+  chisq <- .Call("chisq_single", scores, PACKAGE="snpStats")
   if (is.null(rules)) {
     if (is.null(snp.subset))
       tested <- colnames(snp.data)

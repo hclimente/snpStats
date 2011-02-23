@@ -9,7 +9,7 @@ pdfauthor={David Clayton},
 pdftitle={snpMatrix-differences Vignette}]
 {hyperref}
 
-\title{Differences between snpAssoc and snpMatrix}
+\title{Differences between snpStats and snpMatrix}
 \author{David Clayton}
 \date{\today}
 
@@ -20,11 +20,11 @@ pdftitle={snpMatrix-differences Vignette}]
 \setkeys{Gin}{width=1.0\textwidth}
 
 %\VignetteIndexEntry{snpMatrix-differences}
-%\VignettePackage{snpAssoc}
+%\VignettePackage{snpStats}
 
 \maketitle
 
-\section*{The {\tt snpMatrix} and {\tt snpAssoc} packages}
+\section*{The {\tt snpMatrix} and {\tt snpStats} packages}
 The package ``{\tt snpMatrix}'' was written to provide data classes
 and methods to
 facilitate the analysis of whole genome association studies in R.
@@ -37,13 +37,13 @@ The object--oriented programming model introduced with version 4 of
 the S-plus package, usually termed ``S4 methods'' was used to
 implement these classes.
 
-{\tt snpAssoc} arose out of the need to store, and analyse, SNP 
+{\tt snpStats} initially arose out of the need to store, and analyse, SNP 
 genotype data in which subjects cannot be assigned to the three
 possible genotypes with certainty. This necessitated a change in the
-way in which data are stored internally, although {\tt snpAssoc} can
+way in which data are stored internally, although {\tt snpStats} can
 still handle conventionally called 
 genotype data stored in the original {\tt snpMatrix} storage
-mode. {\tt snpAssoc} currently lacks some facilities which were
+mode. {\tt snpStats} currently lacks some facilities which were
 present in {\tt snpMatrix} (although, hopefully, the important  gaps will 
 soon be filled) but it also includes several important new
 facilities. This vignette simply describes important differences for
@@ -58,10 +58,10 @@ troublesome and, in versions 1.1.4 and later,
 the class names have been changed (see
 Table). Two functions have been provided to help users
 convert objects of a {\tt snpMatrix} class to the corresponding {\tt
-  snpMatrix2} class. These are:
+  snpStats} class. These are:
 \begin{itemize}
 \item {\tt convert.snpMatrix}:  Converts a {\tt snpMatrix} object to
-  the corresponding {\tt snpMatrix2} class
+  the corresponding {\tt snpStats} class
 \item {\tt convert.snpMatrix.dir}: Converts all saved {\tt snpMatrix}
   objects in a given directory
 \end{itemize}
@@ -69,7 +69,7 @@ convert objects of a {\tt snpMatrix} class to the corresponding {\tt
   \centering
   \begin{tabular}{ll}
     \hline
-    {\tt snpMatrix} class & {\tt snpMatrix2} class\\
+    {\tt snpMatrix} class & {\tt snpStats} class\\
     \hline
     {\tt snp.matrix} & {\tt SnpMatrix}\\
     {\tt X.snp.matrix} & {\tt XSnpMatrix}\\
@@ -92,7 +92,7 @@ classes. These were originally devised to support a loss of dimension
 of a {\tt snp.matrix} or {\tt X.snp.matrix} due to selection of a
 single row or column with {\tt drop=TRUE} in force in the selection
 operator {\tt[]}. However these classes were never fully satisfactory
-and were seldom used. In {\tt snpMatrix2} the {\tt drop=} option is no
+and were seldom used. In {\tt snpStats} the {\tt drop=} option is no
 longer allowed during row and column selection; dimensions are never dropped. 
 A word or warning, however: in the event that {\tt drop=}
 does occur in the selection operator, this will force the object to be
@@ -110,8 +110,7 @@ of the introduction of the new storage convention for uncertain genotypes.
 In the new coding,
 uncertainty of calls is represented by (grouped) posterior
 probabilities of assignment to the three genotypes. This change was
-necessary because, in {\tt snpMatrix},
-one of the methods of imputation in {\tt snpMatrix} 
+necessary because one of the imputation methods of in {\tt snpMatrix} 
 only produced a posterior expectation of the genotype (when coded 0, 1 or 2) 
 and this could not be accomodated unambiguously in the extended coding. 
 

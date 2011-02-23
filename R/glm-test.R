@@ -145,7 +145,7 @@ function(snp.data, base.formula, add.formula, subset, snp.subset,
   }
   .Call("snp_lhs_score",
         snp.data, X, strats, Z, snp.subset, robust, clust, uncertain,
-        control, as.logical(score), PACKAGE="snpAssoc")
+        control, as.logical(score), PACKAGE="snpStats")
 }
 
 # GLM tests with SNPs on RHS
@@ -347,7 +347,7 @@ function(formula, family="binomial", link, weights, subset,
   .Call("snp_rhs_score", Y, fam, lnk, X, strats, snp.data, rules,
         weights, tests, robust, clust, uncertain, control, allow.missing,
         as.logical(score),
-        PACKAGE="snpAssoc")
+        PACKAGE="snpStats")
 }  
 
 # Private utility function to 
@@ -520,7 +520,7 @@ function(snp.data, base.formula, add.formula, subset, snp.subset,
   }
   .Call("snp_lhs_estimate",
         snp.data, cbind(X, Z), strats, snp.subset, ncol(Z), robust, clust,
-        control, PACKAGE="snpAssoc")
+        control, PACKAGE="snpStats")
 }
   
 ## SNP on RHS of equation
@@ -710,6 +710,6 @@ function(formula, family="binomial", link, weights, subset,
   }
   attr(Y, "label") <- Yname
   .Call("snp_rhs_estimate", Y, fam, lnk, X, strats, snp.data,
-        weights, sets, robust, clust, control, PACKAGE="snpAssoc")
+        weights, sets, robust, clust, control, PACKAGE="snpStats")
 }  
 

@@ -118,8 +118,8 @@ single.snp.tests <- function(phenotype, stratum, data=sys.parent(), snp.data,
       stop("illegal type for snp.subset")
   }
   scores <- .Call("score_single", phenotype, stratum, snp.data, rules, subset,
-                  snp.subset, uncertain, PACKAGE="snpAssoc")
-  chisq <- .Call("chisq_single", scores, PACKAGE="snpAssoc")
+                  snp.subset, uncertain, PACKAGE="snpStats")
+  chisq <- .Call("chisq_single", scores, PACKAGE="snpStats")
   if (is.null(rules)) {
     if (is.null(snp.subset))
       tested <- colnames(snp.data)

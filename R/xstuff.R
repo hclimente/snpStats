@@ -24,5 +24,5 @@
 }
 
 .forceHom <- function(xsnps, female) {
-  .Call("force_hom", xsnps, female, PACKAGE="snpAssoc")
+  .Call("force_hom", xsnps, female, PACKAGE="snpStats")
 }

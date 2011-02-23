@@ -10,10 +10,10 @@
 bookmarks,
 bookmarksopen,
 pdfauthor={David Clayton and Chris Wallace},
-pdftitle={snpAssoc Vignette}]
+pdftitle={snpStats Vignette}]
 {hyperref}
 
-\title{snpAssoc vignette\\Example of genome-wide association testing}
+\title{snpStats vignette\\Example of genome-wide association testing}
 \author{David Clayton and Chris Wallace}
 \date{\today}
 
@@ -23,12 +23,12 @@ pdftitle={snpAssoc Vignette}]
 \begin{document}
 \setkeys{Gin}{width=1.0\textwidth}
 
-%\VignetteIndexEntry{snpAssoc introduction}
-%\VignettePackage{snpAssoc}
+%\VignetteIndexEntry{snpStats introduction}
+%\VignettePackage{snpStats}
 
 \maketitle
 
-\section*{The {\tt snpMatrix} and {\tt snpAssoc} packages}
+\section*{The {\tt snpMatrix} and {\tt snpStats} packages}
 The package ``{\tt snpMatrix}'' was written to provide data classes
 and methods to
 facilitate the analysis of whole genome association studies in R.
@@ -41,13 +41,13 @@ The object--oriented programming model introduced with version 4 of
 the S-plus package, usually termed ``S4 methods'' was used to
 implement these classes.
 
-{\tt snpAssoc} arose out of the need to store, and analyse, SNP 
+{\tt snpStats} arose out of the need to store, and analyse, SNP 
 genotype data in which subjects cannot be assigned to the three
 possible genotypes with certainty. This necessitated a change in the
-way in which data are stored internally, although {\tt snpAssoc} can
+way in which data are stored internally, although {\tt snpStats} can
 still handle conventionally called 
 genotype data stored in the original {\tt snpMatrix} storage
-mode. {\tt snpAssoc} currently lacks some facilities which were
+mode. {\tt snpStats} currently lacks some facilities which were
 present in {\tt snpMatrix} (although, hopefully, the important  gaps will 
 soon be filled) but it also includes several important new
 facilities. This vignette currently exploits none of the new
@@ -73,12 +73,12 @@ the packages and the data to be used in the first part of this
 exercise, which concerns a population--based case--control study:
 
 <<init>>=
-require(snpAssoc)
+require(snpStats)
 require(hexbin)
 data(for.exercise)
 @ 
 
-In addition to the {\tt snpAssoc} package, we have also loaded the
+In addition to the {\tt snpStats} package, we have also loaded the
 {\tt hexbin} package which reduces file sizes and legibility of plots
 with very many data points.
 
@@ -133,7 +133,7 @@ In general, analysis of a whole--genome association study will require
 a subject support data frame, a SNP support data frame for each
 chromosome, and a SNP data file for each chromosome\footnote{
 Support files are usually read in with general tools such as {\tt
-  read.table}. The {\tt snpAssoc} package contains a number of tools
+  read.table}. The {\tt snpStats} package contains a number of tools
 for reading SNP genotype data into an object of class ``{\tt
   SnpMatrix}''.}.
 
@@ -410,7 +410,7 @@ however; with real data the 2 df test is less robust against
 artifacts due to genotyping error. On the other hand, it is much more
 powerful against recessive or near-recessive variants.
 
-The {\tt snpAssoc} package includes its own functions to fit generalized
+The {\tt snpStats} package includes its own functions to fit generalized
 linear models. These are much faster than {\tt glm}, although not yet
 as flexible. They allow for a each of series of SNPs to be entered
 into a GLM, either on the left hand side ({\it i.e.} as the dependent
@@ -434,7 +434,7 @@ localest["rs10882596"]
 The parameter estimate for rs1088259 and its standard error agree closely 
 with the values obtained earlier, using the {\tt glm} function. 
 
-The GLM code within {\tt snpAssoc} allows a
+The GLM code within {\tt snpStats} allows a
 further speed-up which is not available in the standard {\tt glm}
 function. If a variable is to be included in the model as a ``factor''
 taking many levels then a more efficient algorithm can be invoked 

@@ -1,9 +1,9 @@
 Package: snpStats
-Title: Enhanced SnpMatrix and XSnpMatrix classes
-Version: 1.1.9
-Date: 2011-02-15
+Title: SnpMatrix and XSnpMatrix classes and methods 
+Version: 1.1.10
+Date: 2011-02-23
 Author: David Clayton <david.clayton@cimr.cam.ac.uk> 
-Description: Enhanced classes and methods for large SNP association studies, allowing for uncertain genotype assignments 
+Description: Classes and statistical methods for large SNP association studies, extending the snpMatrix package
 Maintainer: David Clayton <david.clayton@cimr.cam.ac.uk>
 Depends: R(>= 2.3.0), survival, methods, Matrix
 Imports: graphics, grDevices, methods, stats, survival, utils, Matrix

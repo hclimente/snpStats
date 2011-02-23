@@ -9,10 +9,10 @@
 bookmarks,
 bookmarksopen,
 pdfauthor={David Clayton},
-pdftitle={PCA-snpAssoc Vignette}]
+pdftitle={PCA-snpStats Vignette}]
 {hyperref}
 
-\title{PCA vignette\\Principal components analysis with snpAssoc}
+\title{PCA vignette\\Principal components analysis with snpStats}
 \author{David Clayton}
 \date{\today}
 
@@ -25,7 +25,7 @@ pdftitle={PCA-snpAssoc Vignette}]
 \setkeys{Gin}{width=1.0\textwidth}
 
 %\VignetteIndexEntry{Principal components analysis}
-%\VignettePackage{snpAssoc}
+%\VignettePackage{snpStats}
 
 \maketitle
 
@@ -91,7 +91,7 @@ for thinning.
 We shall use the data introduced in the main vignette. We shall first
 load the data and extract the controls. 
 <<get-data>>=
-require(snpAssoc)
+require(snpStats)
 data(for.exercise)
 controls <- rownames(subject.support)[subject.support$cc==0]
 use <- seq(1, ncol(snps.10), 10)

@@ -2,14 +2,14 @@
 \alias{convert.snpMatrix}
 \alias{convert.snpMatrix.dir}
 \title{
-Convert \code{snpMatrix} objects to \code{snpAssoc} objects
+Convert \code{snpMatrix} objects to \code{snpStats} objects
 }
 \description{
-These functions convert \code{snpMatrix} objects to \code{snpAssoc}
+These functions convert \code{snpMatrix} objects to \code{snpStats}
 objects. \code{convert.snpMatrix} converts a single object, while
 \code{convert.snpMatrix.dir} converts all stored elements in a specified
 directory. They really only change the class names since most of the
-classes in \code{snpAssoc} are backwards-compatible with 
+classes in \code{snpStats} are backwards-compatible with 
 \code{snpMatrix}. The exception is the \code{ImputationRules} class; 
 \code{imputation.rules} objects will need to be regenerated.
 }

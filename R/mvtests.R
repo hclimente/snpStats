@@ -76,7 +76,7 @@ mvtests <- function(phenotype, sets, stratum, data=sys.parent(), snp.data,
     stop("illegal sets argument")
   }
   .Call("mvphen", phenotype, snp.data, rules, stratum, as.integer(sorder),
-        sets, complete, uncertain, score, PACKAGE="snpAssoc")
+        sets, complete, uncertain, score, PACKAGE="snpStats")
 
 }
 

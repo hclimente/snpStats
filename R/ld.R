@@ -13,5 +13,5 @@ ld <- function(x, y=NULL, depth=NULL, stats) {
       warning("depth too large; it has been reset to", dmax)
     }
   }
-  .Call("ld", x, y, as.integer(depth), cstats, PACKAGE="snpAssoc");
+  .Call("ld", x, y, as.integer(depth), cstats, PACKAGE="snpStats");
 }

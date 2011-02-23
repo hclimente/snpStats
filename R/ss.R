@@ -75,7 +75,7 @@ setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="missing"),
                 x <- x@.Data[i,j,drop=FALSE]
             }
             cl <- "SnpMatrix"
-            attr(cl, "package") <- "snpAssoc"
+            attr(cl, "package") <- "snpStats"
             class(x) <- cl
             # setting an S4 class doesn't not automatically
             # set the object's internal tag; do it manually
@@ -129,7 +129,7 @@ setMethod("[<-", signature(x="XSnpMatrix",i="ANY",j="ANY",value="XSnpMatrix"),
 
 setAs("SnpMatrix", "numeric",
       function(from) {
-        .Call("asnum", from, PACKAGE="snpAssoc")
+        .Call("asnum", from, PACKAGE="snpStats")
       })
 
 setAs("SnpMatrix", "character",
@@ -207,7 +207,7 @@ setClass("ImputationRules", contains="list")
 
 setMethod("summary", "ImputationRules",
    function(object) {
-     info <- .Call("r2_impute", object, PACKAGE="snpAssoc")
+     info <- .Call("r2_impute", object, PACKAGE="snpStats")
      i2 <- info[,2]
      levs <- sort(unique(i2))
      labs <- paste(levs, "tags")
@@ -308,16 +308,16 @@ setMethod("show", "SnpMatrix",
 setMethod("is.na", "SnpMatrix", function(x){ x==0})
 
 .rbind2 <- function(x,y){
-  .External("snp_rbind",x, y, PACKAGE="snpAssoc")
+  .External("snp_rbind",x, y, PACKAGE="snpStats")
 }
 snp.rbind <- function(...){
-  .External("snp_rbind", ..., PACKAGE="snpAssoc")
+  .External("snp_rbind", ..., PACKAGE="snpStats")
 }
 .cbind2 <- function(x,y){
-  .External("snp_cbind",x, y, PACKAGE="snpAssoc")
+  .External("snp_cbind",x, y, PACKAGE="snpStats")
 }
 snp.cbind <- function(...){
-  .External("snp_cbind", ..., PACKAGE="snpAssoc")
+  .External("snp_cbind", ..., PACKAGE="snpStats")
 }
 
 setMethod("rbind2", signature(x="SnpMatrix", y="SnpMatrix"), .rbind2)
@@ -671,7 +671,7 @@ setMethod("pool2",
               N <- c(N, y@N[ysel])
             }
             chisq <- .Call("chisq_single", list(U=U, V=V, N=N),
-                           PACKAGE="snpAssoc")
+                           PACKAGE="snpStats")
             if (score)
               res <- new("SingleSnpTestsScore",
                          snp.names=c(can.pool, x.only, y.only),
@@ -701,7 +701,7 @@ setMethod("pool2",
               res <- .Call("pool2_glm",
                            x[to.pool],
                            y[to.pool], score, 
-                           PACKAGE="snpAssoc")
+                           PACKAGE="snpStats")
  
             }
             else {
@@ -764,7 +764,7 @@ setMethod("switch.alleles", signature(x="SnpMatrix", snps="ANY"),
               stop("snp selection must be character, logical or integer")
             if (any(is.na(snps) | snps>ncol(x) | snps<1))
               stop("illegal snp selection")
-            .Call("smat_switch", x, snps, PACKAGE="snpAssoc")
+            .Call("smat_switch", x, snps, PACKAGE="snpStats")
           })
 
 setMethod("switch.alleles", signature(x="SingleSnpTestsScore", snps="ANY"),

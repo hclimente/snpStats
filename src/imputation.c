@@ -381,7 +381,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
   PROTECT(IrClass = allocVector(STRSXP, 1));
   SET_STRING_ELT(IrClass, 0, mkChar("ImputationRules"));
   PROTECT(Package = allocVector(STRSXP, 1));
-  SET_STRING_ELT(Package, 0, mkChar("snpAssoc"));
+  SET_STRING_ELT(Package, 0, mkChar("snpStats"));
   setAttrib(IrClass, install("package"), Package);
   classgets(Result, IrClass);
   SEXP Maxpred;
@@ -742,7 +742,7 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
       SET_STRING_ELT(Class, 0, mkChar("SnpMatrix"));
     }
     PROTECT(Package = allocVector(STRSXP, 1));
-    SET_STRING_ELT(Package, 0, mkChar("snpAssoc"));
+    SET_STRING_ELT(Package, 0, mkChar("snpStats"));
     setAttrib(Class, install("package"), Package);
     classgets(Result, Class);
     SET_S4_OBJECT(Result);

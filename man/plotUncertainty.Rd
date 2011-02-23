@@ -4,7 +4,7 @@
 Plot posterior probabilities of genotype assignment
 }
 \description{
-The snpAssoc package allows for storage of uncertain genotype
+The snpStats package allows for storage of uncertain genotype
 assignments in a one byte "raw" variable. The probabilities of
 assignment form a three-vector, subject to the linear constraint that
 they sum to 1.0; their possible values are grouped into 253 different

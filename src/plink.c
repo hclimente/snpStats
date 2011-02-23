@@ -40,7 +40,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps) {
   PROTECT(Class = allocVector(STRSXP, 1));
   SET_STRING_ELT(Class, 0, mkChar("SnpMatrix"));
   PROTECT(Package = allocVector(STRSXP, 1));
-  SET_STRING_ELT(Package, 0, mkChar("snpMatrix"));
+  SET_STRING_ELT(Package, 0, mkChar("snpStats"));
   setAttrib(Class, install("package"), Package);
   classgets(Result, Class);
   SET_S4_OBJECT(Result);

@@ -4,7 +4,7 @@
 \alias{snps.10}
 \alias{snp.support}
 \alias{subject.support}
-\title{Data for exercise in use of the snpAssoc package}
+\title{Data for exercise in use of the snpStats package}
 \description{
 These data have been created artificially from publicly available
 datasets. The SNPs have been selected from those genotyped by the
