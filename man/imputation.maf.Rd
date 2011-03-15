@@ -1,4 +1,5 @@
 \name{imputation.maf}
+\alias{can.impute}
 \alias{imputation.maf}
 \alias{imputation.r2}
 \alias{imputation.nsnp}
@@ -11,6 +12,7 @@ allele frequencies of the imputed SNPs and \code{imputation.r2} extracts
 the prediction \eqn{R^2}.
 }
 \usage{
+can.impute(rules)
 imputation.maf(rules)
 imputation.r2(rules)
 imputation.nsnp(rules)
@@ -19,12 +21,14 @@ imputation.nsnp(rules)
 \arguments{
   \item{rules}{An object of class \code{"ImputationRules"}}
 }
-\details{\code{imputation.maf} and \code{imputation.r2} extract the
+\details{\code{can.impute} returns a logical vector identifying which
+  rules allow a valid imputation.
+  \code{imputation.maf} and \code{imputation.r2} extract the
   minor allele frequencies of the imputed SNPs and the \eqn{R^2} for
   prediction achieved when building each rule. \code{imputation.nsnp}
   returns the numbers of SNPs used in each imputation}
 \value{
-  A numeric vector containing the extracted values
+  Either a logical vector, or a numeric vector containing the extracted values
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
 \seealso{\code{\link{ImputationRules-class}},

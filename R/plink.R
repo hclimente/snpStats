@@ -1,4 +1,5 @@
-read.plink <- function(bed, bim, fam) {
+read.plink <- function(bed, bim, fam, na.strings=c("0", "-9"), sep=".",
+                       select.subjects=NULL, select.snps=NULL) {
   lb <- nchar(bed);
   ext <- substr(bed, lb-3, lb);
   if (ext==".bed") {
@@ -11,24 +12,64 @@ read.plink <- function(bed, bim, fam) {
     bim <- paste(stub, ".bim", sep="")
   if (missing(fam))
     fam <- paste(stub, ".fam", sep="")
-  df.bim <- read.table(bim, comment.char="")
+  df.bim <- read.table(bim, comment.char="", as.is=TRUE, na.strings=na.strings)
   snps <- as.character(df.bim[,2])
-  cat("Number of SNPs: ", length(snps), "\n")
-  if (any(duplicated(snps)))
-    stop("Duplicated SNP name(s)")
-  cat(head(snps), " ...\n")
-  df.fam <- read.table(fam, comment.char="")
-  ped <- as.character(df.fam[,1])
-  id <- as.character(df.fam[,2])
-  cat("Number of samples: ", length(id), "\n")
-  if (any(duplicated(id))) {
-    cat("Subject IDs not unique - concatenating with pedigree IDs\n")
-    id <- paste(ped, id, sep=":")
-    if (any(duplicated(id)))
-      stop("Sample IDs are still not unique")
+  if (!is.null(select.snps)) {
+    if (is.character(select.snps)) {
+      select.snps <- match(select.snps, snps)
+      if (any(is.na(select.snps)))
+        stop("unrecognised snp selected")
+    }
+    else if (is.numeric(select.snps)) {
+      if (min(select.snps)<1 || max(select.snps)>nrow(df.bim))
+        stop("selected snp subscript out of range")
+      select.snps <- as.integer(select.snps)
+    }
+    else
+      stop("unrecognised snp selection")
+    df.bim <- df.bim[select.snps,]
+    snps <- snps[select.snps]
+  }     
+  if (ncol(df.bim)==6) {
+    names(df.bim) <- c("chromosome", "snp.name", "cM", "position",
+                       "allele.1", "allele.2")
   }
-  cat(head(id), "...\n")
-  .Call("readbed", bed, id, snps, PACKAGE="snpStats") 
+  else {
+    warning("non-standard .bim file")
+  }
+  rownames(df.bim) <- snps
+  if (any(duplicated(snps)))
+    stop("duplicated snp name(s)")
+  df.fam <- read.table(fam, comment.char="", as.is=TRUE, na.strings=na.strings)
+  if (!is.null(select.subjects)) {
+    if (is.numeric(select.subjects)) {
+      if (min(select.snps)<1 || max(select.snps)>nrow(df.fam))
+        stop("selected subject subscript out of range")
+      select.subjects <- as.integer(select.subjects)
+    }
+    else
+      stop("unrecognised subject selection")
+    df.fam <- df.bim[select.subjects,]
+  }     
+  ped <- as.character(df.fam[,1])
+  mem <- as.character(df.fam[,2])
+  if (any(duplicated(ped))) {
+    if (any(duplicated(mem))) {
+      id <- paste(ped, mem, sep=sep)
+      if (any(duplicated(id)))
+        stop("couldn't create unique subject identifiers")
+    }
+    else
+      id <- mem
+  }
+  else
+    id <- ped
+  names(df.fam) <-  c("pedigree", "member", "father", "mother", "sex",
+                      "affected")
+  rownames(df.fam) <- id
+  gt <- .Call("readbed", bed, id, snps, select.subjects, select.snps,
+              PACKAGE="snpStats")
+  list(genotypes=gt, fam=df.fam, map=df.bim)
 }
 
 write.plink <- function(file.base, snp.major=TRUE, snps,
@@ -85,18 +126,13 @@ write.plink <- function(file.base, snp.major=TRUE, snps,
     
     if (missing(sex)) {
       if (X)
-        sex <- ifelse(snps@Female, 2, 1)
+        sex <- ifelse(snps@diploid, 2, 1)
       else
         sex <- rep(na.code, nr.snps)
     }
     else {
       sex <- as.numeric(sex)
       sex[is.na(sex)] = as.numeric(na.code)
-      if (X) {
-        seX <- ifelse(snps@Female, 2, 1)
-        if (any(sex!=seX))
-          warning("Conflict between sex coding in XSnpMatrix with sex= argument. The former is used")
-      }
     }
 
     if (missing(phenotype))

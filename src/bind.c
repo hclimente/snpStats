@@ -64,7 +64,7 @@ SEXP snp_rbind(SEXP args) {
 
   /* Result matrix */
 
-  SEXP Result, Rnames, Dnames, Female = R_NilValue;
+  SEXP Result, Rnames, Dnames, Diploid = R_NilValue;
   PROTECT(Result = allocMatrix(RAWSXP, nr, nc));
   classgets(Result, duplicate(Class));
   SET_S4_OBJECT(Result);
@@ -73,12 +73,12 @@ SEXP snp_rbind(SEXP args) {
   SET_VECTOR_ELT(Dnames, 0, Rnames);
   SET_VECTOR_ELT(Dnames, 1, duplicate(Cnames));
   setAttrib(Result, R_DimNamesSymbol, Dnames);
-  int *female = NULL;
+  int *diploid = NULL;
   int X = (strcmp(class, "XSnpMatrix") == 0);
   if (X) {
-    PROTECT(Female = allocVector(LGLSXP, nr));
-    R_do_slot_assign(Result, mkString("Female"), Female);
-    female = LOGICAL(Female);
+    PROTECT(Diploid = allocVector(LGLSXP, nr));
+    R_do_slot_assign(Result, mkString("diploid"), Diploid);
+    diploid = LOGICAL(Diploid);
   }
   unsigned char *result = RAW(Result);
 
@@ -115,20 +115,20 @@ SEXP snp_rbind(SEXP args) {
 	}
       }
     }
-    /* Copy female sex indicators */
+    /* Copy diploid indicators */
     if (X) {
-      SEXP Fi = R_do_slot(This, mkString("Female"));
-      int *fi = LOGICAL(Fi);
+      SEXP Di = R_do_slot(This, mkString("diploid"));
+      int *di = LOGICAL(Di);
       for (k=0, nk=rows_done; k<nri; k++, nk++)
-	female[nk] = fi[k];
+	diploid[nk] = di[k];
     }
   }
   if (X) {
-    /* copying row names to Female slot names;
+    /* copying row names to diploid slot names;
        the input row names should agree with the input slot names,
        so the worst case is that output slots have names which 
        input slots don't have */
-    setAttrib(Female, R_NamesSymbol, duplicate(Rnames));
+    setAttrib(Diploid, R_NamesSymbol, duplicate(Rnames));
   }
   index_destroy(row_index);
   UNPROTECT(X? 4:3);
@@ -139,8 +139,8 @@ SEXP snp_cbind(SEXP args) {
   int X = FALSE, nb = length(args) - 1;
   SEXP argsin = args;
   const char *class = NULL;
-  SEXP Female = R_NilValue;
-  int *female = NULL; 
+  SEXP Diploid = R_NilValue;
+  int *diploid = NULL; 
   SEXP Rnames = R_NilValue, Class = R_NilValue;
   int nr = 0, nc=0;
   int i=0, j=0, ij=0;
@@ -155,12 +155,12 @@ SEXP snp_cbind(SEXP args) {
     if(!IS_S4_OBJECT(This)) {
       warning("cbinding SnpMatrix object without S4 object bit");
     }
-    SEXP Fi = R_NilValue;
-    int *fi = NULL;
+    SEXP Di = R_NilValue;
+    int *di = NULL;
     X = (strcmp(cli, "XSnpMatrix")==0);
     if (X) {
-      Fi = R_do_slot(This, mkString("Female"));
-      fi = LOGICAL(Fi);
+      Di = R_do_slot(This, mkString("diploid"));
+      di = LOGICAL(Di);
     }
     int nri = nrows(This);
     nc += ncols(This);
@@ -181,8 +181,8 @@ SEXP snp_cbind(SEXP args) {
       Rnames = rni;
       nr = nri;
       if (X) {
-	Female = Fi;
-	female = fi;
+	Diploid = Di;
+	diploid = di;
       }
     }
     else {
@@ -195,8 +195,8 @@ SEXP snp_cbind(SEXP args) {
 	const char *other = CHAR(STRING_ELT(rni, j));
 	if (strcmp(one, other) != 0)
 	  error("row names do not match");
-	if (X && (female[j]!=fi[j]))
-	  error("inconsistent sex in row %d", j+1);
+	if (X && (diploid[j]!=di[j]))
+	  error("inconsistent ploidy in row %d", j+1);
       }
     }
   }
@@ -213,7 +213,7 @@ SEXP snp_cbind(SEXP args) {
   SET_VECTOR_ELT(Dnames, 0, duplicate(Rnames));
   SET_VECTOR_ELT(Dnames, 1, Cnames);
   if (X) 
-    R_do_slot_assign(Result, mkString("Female"), duplicate(Female));
+    R_do_slot_assign(Result, mkString("diploid"), duplicate(Diploid));
   unsigned char *result;
   result = RAW(Result);
 
@@ -249,8 +249,8 @@ SEXP snp_cbind(SEXP args) {
     }
   }
   index_destroy(col_index);
-  /* in cbind we never create a new Female slot, but only copy 
-     from the first one so unike rbind() we don't need to decide 
+  /* in cbind we never create a new diploid slot, but only copy 
+     from the first one so unlike rbind() we don't need to decide 
      unprotect level */ 
   UNPROTECT(3); 
   return(Result);

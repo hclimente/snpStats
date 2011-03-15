@@ -1,0 +1,273 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{graphicx}
+
+\usepackage[pdftex,
+bookmarks,
+bookmarksopen,
+pdfauthor={David Clayton},
+pdftitle={Data input}]
+{hyperref}
+
+\title{Data input vignette\\Reading genotype data in {\tt snpStats}}
+\author{David Clayton}
+\date{\today}
+
+\usepackage{Sweave}
+\SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE}
+
+\begin{document}
+\setkeys{Gin}{width=1.0\textwidth}
+
+%\VignetteIndexEntry{TDT tests}
+%\VignettePackage{snpStats}
+
+\maketitle
+
+<<lib,echo=FALSE>>=
+require(snpStats)
+@ 
+\section*{Memory limitations}
+Before we start it is important to emphasise that the {\tt SnpMatrix}
+objects that hold genotype data in {\tt snpStats} 
+are resident in memory, and limitations
+of the computer and of the R language impose limits on the maximum
+size of datasets that can be held at any one time. Each genotype
+reading uses only a single byte of memory so that large datasets can
+be read given the large memory capacity of modern computers. However
+R imposes a limit of  $2^{31}-1 \sim 2\times 10^9$ elements in a single
+array\footnote{This limit applies in both the 32-bit and 64-bit versions
+  of R; these versions differ only in the {\em total} memory that can
+  be used}. For example, this would correspond to one million loci for two
+thousand subjects and would occupy two gigabytes of machine memory.
+\section*{Reading pedfiles}
+A commonly encountered format for storing genotype data is the
+``pedfile'' format, which originated some years ago  in the LINKAGE
+package. Pedfiles are text files containing one line per genotyped
+sample, with fields separated by ``white space'' ( TAB
+characters or SPACEs). The first six fields contain:
+\begin{enumerate}
+\item a pedigree or family identifier, unique to the family of which
+  this subject is a member,
+\item a further identifier, unique (within the family) to each family member,
+\item the member identifier of the father of the subject if the father
+  is also present in the data, otherwise an arbitrary code (usually
+  {\tt 0}),
+\item similarly, an identifier for the mother of the subject,
+\item the sex of the subject ({\tt 1 =} Male, {\tt 2 =} Female), and
+\item a binary trait indicator ({\tt 1 =} Absent, {\tt 2 =} Present).
+\end{enumerate}
+Missing values in the last two fiels are usually coded as zero. 
+
+The first few rows and columns of a sample file is shown below:
+\begin{verbatim}
+IBD054	430	0	0	1	0	1  3	3  1	4  1	4  2
+IBD054	412	430	431	2	2	1  3	1  3	4  1	4  2
+IBD054	431	0	0	2	0	3  3	3  3	1  1	2  2
+IBD058	438	0	0	1	0	3  3	3  3	1  1	2  2
+IBD058	470	438	444	2	2	3  3	3  3	1  1	2  2
+\end{verbatim}
+Thus, the subject of line~2 has a father whose data appears on line~1
+and a mother whose data is on line~3. The grandparents do not appear
+on the file. This subject is affected by the trait, but the trait
+status of her parents is not known. The genotypes of this subject 
+at the first four loci are {\tt 1/3}, {\tt 1/3}, {\tt 4/1} and {\tt 4/2}.
+Note that {\tt snpStats} will only deal with diallelic data and,
+although alleles are coded 1 to 4 in this file, only two of these
+occur with in any one locus. In fact these data are from the sample
+dataset distributed with the HAPLOVIEW program (Barrett et al., 2005)
+which uses the numbers 1--4 to denote the four nucleotides:  {\tt 1 =}
+A, {\tt 2 =} C, {\tt 3 = } G, {\tt 4 =} . The pedfile contains data for
+20 loci on 120 subjects, and is accompanied by
+a second file which describes the loci, the first four lines being:
+\begin{verbatim}
+IGR1118a_1	274044
+IGR1119a_1	274541
+IGR1143a_1	286593
+IGR1144a_1	287261
+\end{verbatim}
+(this file is rather simple, containing just the locus name and its
+position on a chromosome). 
+
+The (gzipped) pedfile and the locus information file are stored in the 
+{\tt data} sub-directory of the {\tt snpStats} package as, respectively,
+{\tt sample.ped.gz} and {\tt sample.info}. Since the precise location
+of these files may vary between installations, we first obtain full paths 
+to these files  using the {\tt system.file} function
+<<sysfile>>=
+pedfile <- system.file("data/sample.ped.gz", package="snpStats")
+pedfile
+infofile <- system.file("data/sample.info", package="snpStats")
+@ 
+The data can then be read in using the {\tt read.pedfile} function
+<<redpedfile>>=
+sample <- read.pedfile(pedfile, snps=infofile)
+@ 
+The result, {\tt sample}, is a list with three elements. The first is an
+object of class {\tt SnpMatrix} containing the genotype data. We shall
+show summaries for the first few loci
+<<sample1>>=
+sample$genotypes
+head(col.summary(sample$genotypes))
+@ 
+The second list element is a dataframe containing the first six fields of the
+pedfile. We'll just display the start of this:
+<<sample2>>=
+head(sample$fam)
+@ 
+Note that the zero values in the pedfile have been read as
+{\tt NA}; this is optional, but default, behaviour of the
+function. Here the pedigree-member identifiers have been used as
+subject identifiers, since these are not duplicated while pedigree
+identifiers (the first choice) were duplicated (if both sets of
+identifiers are duplicated, they are combined).
+Finally, the third list element is a dataframe containing the
+information read from the {\tt sample.info} file, to which have been
+added the two alleles found at each locus:
+<<sample3>>=
+head(sample$map)
+@ 
+Here we have used the default settings of {\tt read.pedfile}. In
+particular, it is not mandatory to supply a locus description file and
+there
+are further arguments which allow additional flexibility. These
+options are described in the on-line help page.
+\section*{PLINK files}
+Binary PED (BED) files written by the PLINK toolset (Purcell et al., 2007) 
+may also be
+read as {\tt SnpMatrix} objects. Files of type {\tt .bed} are written
+by the {\tt plink --make-bed} command and are accompanied by two text
+files: a {\tt .fam} file containing the first six fields of a standard
+pedfile as described above, and a {\tt .bim} file which describes the
+loci. The package data directory also 
+contains {\tt .bed}, {\tt .fam}
+and {\tt .bim} files for the sample dataset of the last section; the
+following commands recover the full file paths for these files and 
+read the files:
+<<plink>>=
+fam <- system.file("data/sample.fam", package="snpStats")
+bim <- system.file("data/sample.bim", package="snpStats")
+bed <- system.file("data/sample.bed", package="snpStats")
+sample <- read.plink(bed, bim, fam)
+@ 
+The output object is similar to that produced by {\tt read.pedfile}, a
+list with three elements:
+<<plinkout>>=
+sample$genotypes
+head(sample$fam)
+head(sample$map)
+@ 
+Usually the three input files have the same filename stub with
+{\tt .bed}, {\tt .fam} and {\tt .bim} extensions added. In this case
+it is sufficient to just supply the filename stub to {\tt read.plink}.
+
+A useful feature of {\tt read.plink} is the ability to select a
+subset of data from a very large PLINK dataset. This is demonstrated
+in our small example below
+<<plinkselect>>=
+subset <- read.plink(bed, bim, fam, select.snps=6:10)
+subset$genotypes
+subset$map
+@ 
+Note that, in order to select certain SNPs, the input PLINK
+file must be in SNP-major order {\it i.e.\,} all individuals for the
+first SNP, all individuals for the second SNP, and so on. This is the
+default mode in PLINK. However, to select certain individuals, the
+input PLINK file must be in individual-major order.
+\section*{Long format data}
+The least compact, but perhaps most flexible, input format is the
+``long'' format in which each genotype call takes up a single
+line. Such data can be read using the function {\tt read.snps.long}.
+A simple example is provided by the small gzipped data file {\tt
+  sample-long.gz} provided with the package:
+<<longfile>>=
+longfile <- system.file("data/sample-long.gz", package="snpStats")
+longfile
+@ 
+The first few lines of the file are given below
+\begin{verbatim}
+snp1    subject1        1       1.000
+snp1    subject2        2       1.000
+snp1    subject3        1       1.000
+snp1    subject4        1       1.000
+snp1    subject5        2       1.000
+...
+\end{verbatim}
+The first field gives the SNP identifier ({\tt snp1} to {\tt snp18}),
+the second gives the sample, or subject, identifier  ({\tt subject1} to 
+{\tt subject100}), the third field gives the genotype call ({\tt
+  1=A/A}, {\tt 2=A/B}, {\tt 3=B/B}), and the last field gives a
+confidence measure for the call (here always {\tt 1.000}). We first
+generate the subject and SNP identifiers 
+<<ssid>>=
+samples <- paste("subject", 1:100, sep="")
+snps <- paste("snp", 1:18, sep="")
+@ 
+(more usually these would be read in from accompanying support
+files). To read the long format file in and inspect the data:
+<<readlong>>=
+gdata <- read.snps.long(longfile, sample.id=samples, snp.id=snps,
+   fields=c(snp=1, sample=2, genotype=3, confidence=4),
+   codes=c("1", "2", "3"), sep="\t",
+   threshold=0.95)
+gdata
+summary(gdata)
+@ 
+A few remarks:
+\begin{enumerate}
+\item We need to know the names of the subjects and SNPs before
+  calling the function. But the input file could contain much more
+  data than will be extracted by the function call.
+\item Here, the order of subjects and SNPs in the file is the same as
+  specified in the arguments {\tt sample.id} and {\tt
+    snp.id}. Optionally this can be relaxed, although this will result
+  in slower operation.
+\item Any calls for which the call confidence is less than {\tt
+    threshold} is set to {\tt NA} (this did not affect any calls in
+  this simple example).
+\item Here, calls were represented by a single genotype code. It is
+  also possible to read calls as pairs of alleles.
+\item the {\tt sep="$\backslash$t"} argument indicates a TAB-delimited file.
+\end{enumerate}
+This function has many options and the online help page needs to be
+read carefully.
+\section*{Other formats}
+\subsection*{Imputation}
+A further source of input data is programs which can {\em impute}
+genotype data for a set of study individuals, using genome-wide
+SNP-chip data for the study subjects plus HapMap or 1,000 genomes
+project datasets. {\tt snpStats} provides the functions {\tt
+  read.beagle}, {\tt read.impute}, and {\tt read.mach} to read in
+files produced by the leading imputation programs. For more details of
+such data, see the imputation and meta-analysis vignette.
+\subsection*{VCF format}
+The 1,000 genomes data are released in the VCF format. {\tt snpStats}
+does not yet include a function to read data files in this format, 
+but the {\tt GGtools}
+package does contain such a function ({\tt vcf2sm}).
+\subsection*{X, Y and mitocondrial SNPs}
+The {\tt SnpMatrix} class is designed for diploid SNP
+genotypes. SNPs which can be haploid are stored in objects of the {\tt
+  XSnpMatrix} class, which has an addition slot, named {\tt diploid}. Since,
+for the X chromosome, ploidy depends on sex and may vary from row to
+row, this (logical) vector has the same number of elements as the
+number of rows in the SNP data matrix. Most input routines do not
+allow for reading an {\tt XSnpMatrix} and simply read into a {\tt
+  SnpMatrix}, coding haploid calls as (homozygous) diploid. Such
+objects may then be coerced into the {\tt XSnpMatrix} class using {\tt
+  as(\ldots, "XSnpMatrix")} or {\tt new("XSnpMatrix, \ldots,
+  diploid=\ldots)}. If {\tt as} is used, ploidy is inferred from
+homozygosity while, if {\tt new} is used, it must be supplied (if all
+rows have the same ploidy, this argument can be a scalar). In either
+case, calls presumed to be haploid but coded as heterozygous will be set
+to {\tt NA}.
+\section*{Reference}
+Barrett JC, Fry B, Maller J, Daly MJ.(2005)  Haploview: analysis
+and visualization of LD and haplotype maps. {\it Bioinformatics}, 2005 Jan 15,
+[PubMed ID: 15297300]\\[2mm]
+Purcell S, Neale B, Todd-Brown K, Thomas L, Ferreira MAR, 
+Bender D, Maller J, Sklar P, de Bakker PIW, Daly MJ and Sham PC (2007) 
+PLINK: a toolset for whole-genome association and population-based 
+linkage analysis. {\it American Journal of Human Genetics}, {\bf 81}
+\end{document}
+

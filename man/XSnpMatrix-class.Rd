@@ -11,21 +11,22 @@
 
 \title{Class "XSnpMatrix"}
 \description{This class extends the  \code{\link{SnpMatrix-class}} to
-    deal with SNPs on the X chromosome.}
+    deal with SNPs on the X and Y chromosomes and mitocondrial SNPs.}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("XSnpMatrix", x,
-  Female)}.
+  diploid)}.
 Such objects have an additional \code{slot} to objects of class
 \code{"SnpMatrix"}
 consisting of  a logical array of the same length as the number of
-rows. This array indicates whether the sample corresponding to that row
-came from a female (\code{TRUE}) or a male (\code{FALSE}). 
+rows. This array indicates whether genotypes in that row are diploid
+(\code{TRUE}) or haploid (\code{FALSE} as, for example,  SNPs on the X
+chromosome for males).
 }
 \section{Slots}{
 	 \describe{
     \item{\code{.Data}:}{Object of class \code{"matrix"} and storage mode
       \code{"raw"}} 
-    \item{\code{Female}:}{Object of class \code{"logical"} indicating
+    \item{\code{diploid}:}{Object of class \code{"logical"} indicating
       sex of samples}
   }
 }
@@ -47,14 +48,14 @@ Class \code{"vector"}, by class "SnpMatrix", with explicit coerce.
 	"character")}:  map to codes 0, 1, 2, or NA}
     \item{coerce}{\code{signature(from = "SnpMatrix", to =
 	"XSnpMatrix")}:
-      maps a SnpMatrix to an XSnpMatrix. Sex is inferred from the
-      genotype data since males should not be heterozygous at any locus.
-      After inferring sex, heterozygous calls for males are set to
-      \code{NA}}
-     \item{show}{\code{signature(object = "XSnpMatrix")}: map to codes
-      "A/A", "A/B", "B/B", "A/Y", "B/Y" or ""}
+      maps a SnpMatrix to an XSnpMatrix. Ploidy is inferred from the
+      genotype data since haploid genotypes should always be coded as
+      homozygous. After inferring ploidy, heterozygous calls for haploid
+      genotpes are set to \code{NA}}
+    \item{show}{\code{signature(object = "XSnpMatrix")}: map to codes
+      "A/A", "A/B", "B/B", "A", "B" or ""}
     \item{summary}{\code{signature(object = "XSnpMatrix")}: returns
-      the sex distribution, together with
+      the distribution of ploidy, together with
       summaries of the data frames returned by
       \code{\link{row.summary}} and \code{\link{col.summary}}}
   }

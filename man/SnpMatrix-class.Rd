@@ -1,4 +1,3 @@
-
 \name{SnpMatrix-class}
 \docType{class}
 \alias{SnpMatrix-class}
@@ -55,7 +54,7 @@ Class \code{"vector"}, by class "matrix", with explicit coerce.
       S4 generic function to provide cbind() for two or
       more matrices together by column. Row names must match and column
       names must not coincide. If the matrices are of the derived class
-      \code{\link{XSnpMatrix-class}}, the \code{Female} slot values must also
+      \code{\link{XSnpMatrix-class}}, the \code{diploid} slot values must also
       agree}
     \item{coerce}{\code{signature(from = "SnpMatrix", to = "numeric")}:
       map to numeric values 0, 1, 2 or, for uncertain assignments, to
@@ -66,10 +65,11 @@ Class \code{"vector"}, by class "matrix", with explicit coerce.
       maps numeric matrix (coded 0, 1, 2 or NA) to a SnpMatrix}
     \item{coerce}{\code{signature(from = "SnpMatrix", to =
 	"XSnpMatrix")}:
-      maps a SnpMatrix to an XSnpMatrix. Sex is inferred from the
-      genotype data since males should not be heterozygous at any locus.
-      After inferring sex, heterozygous calls for males are set to
-      \code{NA}}
+      maps a SnpMatrix to an XSnpMatrix. Ploidy is inferred from the
+      genotype data since haploid genotypes should always be coded as
+      homozygous.  
+      After inferring ploidy, heterozygous calls for haploid genotypes
+      are set to \code{NA}}
     \item{is.na}{\code{signature(x = "SnpMatrix")}: returns a logical
       matrix indicating whether each element is \code{NA}}
     \item{rbind2}{\code{signature(x = "SnpMatrix", y = "snp.matrix")}:

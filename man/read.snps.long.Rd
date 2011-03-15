@@ -11,7 +11,7 @@
   output object of class \code{"SnpMatrix"}. 
 }
 \usage{
-read.snps.long(files, sample.id = NULL, snp.id = NULL, female = NULL,
+read.snps.long(files, sample.id = NULL, snp.id = NULL, diploid = NULL,
               fields = c(sample = 1, snp = 2, genotype = 3, confidence = 4),
               codes = c("0", "1", "2"), threshold = 0.9, lower = TRUE,
               sep = " ", comment = "#", skip = 0, simplify = c(FALSE,FALSE),
@@ -23,10 +23,11 @@ read.snps.long(files, sample.id = NULL, snp.id = NULL, female = NULL,
   \item{sample.id}{A character vector giving the identifiers of the
     samples to be read}
   \item{snp.id}{A character vector giving the names of the SNPs to be read}
-  \item{female}{If the SNPs are on the X chromosome and the data are to
-    be read as such, this logical vector (of the same length as
-    \code{sample.id} should specify whether each sample was from a
-    female subject}
+  \item{diploid}{A logical array of the same length as
+    \code{sample.id}, required if reading data into an \code{XSnpMatrix}
+    rather than a \code{SnpMatrix}. This vector gives the expected
+    ploidy for each row. If the same value suffices for all rows, then a
+    scalar may be supplied}
   \item{fields}{A integer vector with named elements specifying the
     positions of the required fields in the input record. The fields are
     identified by the names \code{sample} and \code{snp} for the sample
@@ -80,14 +81,14 @@ read.snps.long(files, sample.id = NULL, snp.id = NULL, female = NULL,
   the nominal genotypes AA, AB and BB will refer to A/A,
   A/T and T/T.
   
-  Although the function allows for reading of data for the X chromosome
-  directly into an object of class \code{"XSnpMatrix"},
-  it will often be preferable to read such data as a \code{"SnpMatrix"}
+  Although the function allows for reading into an object of class
+  \code{XSnpMatrix} directly,
+  it is usually preferable to read such data as a \code{"SnpMatrix"}
   (i.e. as autosomal) and to coerce it to an object of type
   \code{"XSnpMatrix"} later using \code{as(..., "X.SnpMatrix")} or
-  \code{new("XSnpMatrix", ..., female=...)}. If sex is coded \code{NA}
-  for any subject the latter course \emph{must} be followed, since
-  \code{NA}s are not accepted in the \code{female} argument.
+  \code{new("XSnpMatrix", ..., diploid=...)}. If \code{diploid}
+  is coded \code{NA} for any subject the latter course \emph{must} be
+  followed, since \code{NA}s are not accepted in the \code{diploid} argument.
 
   If the \code{in.order} argument is set \code{TRUE}, then
   the vectors \code{sample.id} and \code{snp.id} must be in the same

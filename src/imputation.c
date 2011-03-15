@@ -20,10 +20,10 @@ int nearest_N(const double *sorted, const int len, const double value,
 	      const int N);
 double covariances(int i, int j, va_list ap);
 double snpcov(const unsigned char *x, const unsigned char *y, 
-	      const int *female, const int N, const int phase, 
+	      const int *diploid, const int N, const int phase, 
 	      const double minA);
 double snpmean(const unsigned char *x, 
-	       const int *female, const int N);
+	       const int *diploid, const int N);
 void utinv(double *, const int);
 
 
@@ -60,7 +60,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
   int maxit_em = REAL(EMcontr)[0];  /* Max EM iterations */
   double tol_em = REAL(EMcontr)[1]; /* EM convergence tolerance */
   int maxit_ipf = REAL(EMcontr)[2]; /* Max iterations for initial IPF */
-  int tol_ipf = REAL(EMcontr)[2]; /* Max iterations for initial IPF */
+  int tol_ipf = REAL(EMcontr)[3]; /* Convergence tolerance for initial IPF */
 
 
   const double *xpos = REAL(Xpos);  /* Sorted list of X positions */
@@ -73,14 +73,14 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
   unsigned char *x = RAW(X);
   unsigned char *y = RAW(Y);
   SEXP Xsnpnames = VECTOR_ELT(getAttrib(X, R_DimNamesSymbol), 1); 
-  int *female = NULL;
+  int *diploid = NULL;
   SEXP cl = GET_CLASS(X);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(X, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(X, mkString("Female"));
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(X, mkString("diploid"));
+    diploid = LOGICAL(Diploid);
   }
 
   /* Work arrays */
@@ -100,7 +100,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
   int *tcell = (int *)Calloc(nsubject, int); /* addresses in table */
   int *contin = (int *)Calloc(tmax, int); 
   int *hcontin=NULL;
-  if (female) 
+  if (diploid) 
     hcontin = (int *)Calloc(tmax, int);
   double *phap = (double *)Calloc(hmax, double);
   double *phap2 = (double *)Calloc(hmax, double);
@@ -136,15 +136,15 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
       double maf = (double) (na - ng)/ (double) (2*ng);
       if (maf>0.5)
 	maf = 1.0 - maf;
-      double yy = snpcov(yi, yi, female, nsubject, phase, minA);
+      double yy = snpcov(yi, yi, diploid, nsubject, phase, minA);
       if (!ISNA(yy)) {
 	int start = nearest_N(xpos, nx, ypos[i], try);
 	for (int j=0; j<try; j++) { 
 	  int jx = nsubject*(xord[start+j]-1);
-	  xy[j] = snpcov(x+jx, yi, female, nsubject, phase, minA);
+	  xy[j] = snpcov(x+jx, yi, diploid, nsubject, phase, minA);
 	}
 	move_window(cache, start);
-	get_diag(cache, xxd, covariances, x, nsubject, xord, female, phase, 
+	get_diag(cache, xxd, covariances, x, nsubject, xord, diploid, phase, 
 		 minA);
 	double resid = yy;
 	double rsq = 0.0;
@@ -176,7 +176,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 	    break;
 	  double *xxin = xxi + try*nregr;
 	  get_row(cache, start+best, xxin, 
-		  covariances, x, nsubject, xord, female, phase, minA);
+		  covariances, x, nsubject, xord, diploid, phase, minA);
 	  double *xxik = xxi;
 	  int reject = 0;
 	  for (int k=0; k<nregr; k++, xxik+=try) {
@@ -250,7 +250,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 	  if (hcontin)
 	    memset(hcontin, 0x00, tsize*sizeof(int));
 	  for (int j=0; j<nsubject; j++) {
-	    if (female && !female[j])
+	    if (diploid && !diploid[j])
 	      hcontin[tcell[j]]++;
 	    else
 	      contin[tcell[j]]++;
@@ -418,33 +418,33 @@ double covariances(int i, int j, va_list ap) {
   unsigned char *snps = va_arg(ap, unsigned char *);
   int N = va_arg(ap, int);
   int *cols = va_arg(ap, int *);
-  int *female = va_arg(ap, int *);
+  int *diploid = va_arg(ap, int *);
   int phase = va_arg(ap, int); 
   double minA = va_arg(ap, double);
   int ik = N*(cols[i]-1), jk = N*(cols[j]-1);
-  return snpcov(snps+ik, snps+jk, female, N, phase, minA);
+  return snpcov(snps+ik, snps+jk, diploid, N, phase, minA);
 }
 
 
 double snpcov(const unsigned char *x, const unsigned char *y, 
-	  const int *female, const int N, const int phase, const double minA) {
+	  const int *diploid, const int N, const int phase, const double minA) {
   int n1=0, n2=0, nt=0, sx=0, sy=0, sxy=0;
   double cov, n11;
   if (phase) {
-    if (female)
+    if (diploid)
       error("phase=TRUE not yet implemented for the X chromosome");
     error("phase=TRUE not yet implemented");
     return NA_REAL;
   }
   else {
-    if (female) {
+    if (diploid) {
       for (int k=0; k<N; k++) {
 	int xk = (int) *(x++);
 	int yk = (int) *(y++);
 	if (xk && (xk<4) && yk && (yk<4)) { 
 	  xk--;
 	  yk--;
-	  if (female[k]) {
+	  if (diploid[k]) {
 	    n2++;
 	  }
 	  else {
@@ -519,11 +519,11 @@ SEXP snpcov_test(const SEXP X, const SEXP i, const SEXP j, const SEXP minA) {
   return Result;
 }
  
-double snpmean(const unsigned char *x, const int *female, const int N) {
+double snpmean(const unsigned char *x, const int *diploid, const int N) {
   int sum=0, sumx=0;
-  if (female) {
+  if (diploid) {
     for (int i=0; i<N; i++) {
-      int wt = female[i]? 2: 1;
+      int wt = diploid[i]? 2: 1;
       int w = (int) *(x++);
       if (w && (w<4)) {
 	sum += wt;
@@ -624,7 +624,7 @@ index_db create_name_index(const SEXP names) {
 /* Do an imputation (on selected rows) */
 
 void do_impute(const SEXP Obs_snps, const int nrow, 
-	       const int *female,
+	       const int *diploid,
 	       const int *rows, int nuse, 
 	       index_db snp_names,
 	       SEXP Rule, GTYPE **gt2ht, 
@@ -642,9 +642,9 @@ void do_impute(const SEXP Obs_snps, const int nrow,
     error("Old imputation rule; not supported by this version");
   else { /* Imputation from phased haplotypes */
     int *gt = (int *)Calloc(nuse, int);
-    int *fem = NULL;
-    if (female)
-      fem = (int *)Calloc(nuse, int);
+    int *dip = NULL;
+    if (diploid)
+      dip = (int *)Calloc(nuse, int);
     memset(gt, 0x00, nuse*sizeof(int));
     /* Calculate predictor genotypes */
     for (int j=0, sh=0; j<nsnp; j++, sh+=2) {
@@ -655,8 +655,8 @@ void do_impute(const SEXP Obs_snps, const int nrow,
 	int i = rows? rows[r]-1: r;
 	int sij = (int)snps[ist+i];
 	gt[r] = gt[r] | (sij << sh);
-	if (fem)
-	  fem[r] = female[i];
+	if (dip)
+	  dip[r] = diploid[i];
       }
     }
     /* 
@@ -669,7 +669,7 @@ void do_impute(const SEXP Obs_snps, const int nrow,
       double posterior[3];
       int gti = gt[i];
       if (gti) {
-	int mX = fem? (!fem[i]): 0; /* X and male? */
+	int mX = dip? (!dip[i]): 0; /* X and haploid? */
 	predict_gt(nsnp, gti, mX, coefs, gtab, posterior);
 	int ispna = ISNA(posterior[0]);
 	value_a[i] = ispna? NA_REAL: posterior[1]+2.0*posterior[2];
@@ -683,21 +683,21 @@ void do_impute(const SEXP Obs_snps, const int nrow,
       }
     }
     Free(gt);
-    if (fem)
-      Free(fem);
+    if (dip)
+      Free(dip);
   }
 }
   
 SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset, 
 		 const SEXP As_numeric) { 
-  int *female_in=NULL, *female=NULL;
+  int *diploid_in=NULL, *diploid=NULL;
   SEXP cl = GET_CLASS(Snps);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(Snps, mkString("Female"));
-    female_in = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Snps, mkString("diploid"));
+    diploid_in = LOGICAL(Diploid);
   }
 
   SEXP names = getAttrib(Snps, R_DimNamesSymbol);
@@ -719,7 +719,7 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
 
   double *w1 = (double *)Calloc(nsubj, double);
   double *w2 = (double *)Calloc(nsubj, double);
-  SEXP Result, Female, Dimnames, Class, Package;
+  SEXP Result, Diploid, Dimnames, Class, Package;
   double *dresult = NULL;
   unsigned char *rresult = NULL;
 
@@ -732,11 +732,11 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
     PROTECT(Result = allocMatrix(RAWSXP, nsubj, M));
     rresult = RAW(Result);
     PROTECT(Class = allocVector(STRSXP, 1));
-    if (female_in) {
-      PROTECT(Female = allocVector(REALSXP, nsubj));
-      R_do_slot_assign(Result, mkString("Female"), Female);
+    if (diploid_in) {
+      PROTECT(Diploid = allocVector(REALSXP, nsubj));
+      R_do_slot_assign(Result, mkString("diploid"), Diploid);
       SET_STRING_ELT(Class, 0, mkChar("XSnpMatrix"));
-      female = LOGICAL(Female);
+      diploid = LOGICAL(Diploid);
     }
     else {
       SET_STRING_ELT(Class, 0, mkChar("SnpMatrix"));
@@ -768,7 +768,7 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
       }
     }
     else {
-      do_impute(Snps, N, female_in, subset, nsubj, name_index, Rule, gt2ht, 
+      do_impute(Snps, N, diploid_in, subset, nsubj, name_index, Rule, gt2ht, 
 		w1, w2); 
       if (as_numeric) {
 	for (int i=0; i<nsubj; i++, ji++){
@@ -781,10 +781,10 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
 	  double w2i = w2[i];
 	  rresult[ji] = ISNA(w1i)? 0: post2g(w1i-2.0*w2i, w2i);
 	}
-	if (female) {
+	if (diploid) {
 	  for (int i=0; i<nsubj; i++) {
 	    int ii = subset? subset[i]-1: i;
-	    female[i] = female_in[ii];
+	    diploid[i] = diploid_in[ii];
 	  }
 	}
       }
@@ -798,7 +798,7 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
   if (as_numeric)
     UNPROTECT(2);
   else {
-    if (female_in)
+    if (diploid_in)
       UNPROTECT(5);
     else 
       UNPROTECT(4);

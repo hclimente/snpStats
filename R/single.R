@@ -82,10 +82,10 @@ single.snp.tests <- function(phenotype, stratum, data=sys.parent(), snp.data,
       complt <- complt & inss
     }
   }
-  if (class(snp.data)=="XSnpMatrix" && any(is.na(snp.data@Female))) {
-    warning("There are ", sum(is.na(snp.data@Female)),
-            " subjects with NA for sex. These were ignored")
-    complt <- complt & !is.na(snp.data@Female)
+  if (class(snp.data)=="XSnpMatrix" && any(is.na(snp.data@diploid))) {
+    warning("There are ", sum(is.na(snp.data@diploid)),
+            " subjects with NA in the diploid slot. These were ignored")
+    complt <- complt & !is.na(snp.data@diploid)
   }
   subset <- (1:nr.snps)[complt]
 

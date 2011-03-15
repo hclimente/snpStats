@@ -73,7 +73,8 @@ snp.imputation(X, Y, pos.X, pos.Y, phase=FALSE, try=50, stopping=c(0.95, 4, 0.05
   is much faster when the second  method only is considered. 
   The current default ensures that this second method is used,
   but the other possibility might be considered if imputing
-  from very small samples.
+  from very small samples; however this code is not extensively tested
+  and should be regarded as experimental.
 
   The argument \code{em.cntrl} controls convergence
   testing for the EM algorithm for fitting haplotype frequencies and the

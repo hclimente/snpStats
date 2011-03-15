@@ -43,10 +43,10 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
 
   const char *classX = NULL;
   classX = CHAR(STRING_ELT(GET_CLASS(X), 0));
-  int *female = NULL; /* default Not X */
+  int *diploid = NULL; /* default Not X */
   if (!strcmp(classX, "XSnpMatrix")) {
-    SEXP Female = GET_SLOT(X, mkString("Female"));
-    female = LOGICAL(Female);
+    SEXP Diploid = GET_SLOT(X, mkString("diploid"));
+    diploid = LOGICAL(Diploid);
   }
   else if (strcmp(classX, "SnpMatrix")) {
     error("Argument error - class(Snps)");
@@ -63,11 +63,11 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
     const char *classY = NULL;
     classY = CHAR(STRING_ELT(getAttrib(Y, R_ClassSymbol), 0));
     if (!strcmp(classY, "SnpMatrix")) {
-      if (female)
+      if (diploid)
 	error("X and Y are incompatible types");
     }
     else if (!strcmp(classY, "XSnpMatrix")) {
-      if (!female)
+      if (!diploid)
 	error("X and Y are incompatible types");
     }
     else {
@@ -170,7 +170,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
     for (int j=0, ij=0; j<MY; j++, yj+=N) {
       unsigned char *xi = x;
       for (int i=0; i<MX; i++, xi+=N, ij++) {
-	int pr = phase(N, xi, yj, female, hapfreqs, margins, &LLR);
+	int pr = phase(N, xi, yj, diploid, hapfreqs, margins, &LLR);
 	if (pr) {
 	  for (int i=0; i<7; i++)
 	    if (stats[i]) (arrays[i])[ij] = NA_REAL;
@@ -187,7 +187,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
       int ifr = j<depth? 0: j - depth;
       unsigned char *xi = x+N*ifr; 
       for (int i=ifr; i<j; i++, xi+=N, ij++) {
-	int pr = phase(N, xi, xj, female, hapfreqs, margins, &LLR);
+	int pr = phase(N, xi, xj, diploid, hapfreqs, margins, &LLR);
 	if (pr) {
 	  for (int i=0; i<7; i++)
 	    if (stats[i]) (arrays[i])[ij] = NA_REAL;
@@ -208,7 +208,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
 /* Function to calculate phased haplotype frequencies of two SNPs */
  
 int phase(const int N, const unsigned char *x, const unsigned char *y, 
-	  const int *female, double *hapfreq, double *margins, double *LLR) {
+	  const int *diploid, double *hapfreq, double *margins, double *LLR) {
   int T[4]={0, 0, 0, 0}, G[9]={0, 0, 0, 0, 0, 0, 0, 0, 0};
   /* Defaults (monomorphic SNP) */
   for (int i=0; i<N; i++) {
@@ -216,7 +216,7 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
     if (!xi || !yi || xi>3 || yi>3)
       continue;
     int xyi = (xi-1)*3 + yi-1;
-    if (!female || female[i]) 
+    if (!diploid || diploid[i]) 
       G[xyi]++;
     else 
       switch (xyi) {
@@ -224,7 +224,7 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
       case 2: T[1]++; break;
       case 6: T[2]++; break;
       case 8: T[3]++; break;
-      default: return 2; /* Heterozygous male on X */
+      default: return 2; /* Heterozygous haploid genotype on X */
       }
   }
   T[0]+= 2*G[0]+G[1]+G[3];

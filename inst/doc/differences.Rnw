@@ -45,8 +45,8 @@ still handle conventionally called
 genotype data stored in the original {\tt snpMatrix} storage
 mode. {\tt snpStats} currently lacks some facilities which were
 present in {\tt snpMatrix} (although, hopefully, the important  gaps will 
-soon be filled) but it also includes several important new
-facilities. This vignette simply describes important differences for
+soon be filled) but it also includes several  new
+facilities. This vignette simply describes differences for
 users converting from the old {\tt snpMatrix} package.
 
 \section*{Classes}
@@ -56,15 +56,7 @@ Initially it was hoped also to maintain the old class names since the
 classes were (mostly) backwards-compatible. But this proved
 troublesome and, in versions 1.1.4 and later,
 the class names have been changed (see
-Table). Two functions have been provided to help users
-convert objects of a {\tt snpMatrix} class to the corresponding {\tt
-  snpStats} class. These are:
-\begin{itemize}
-\item {\tt convert.snpMatrix}:  Converts a {\tt snpMatrix} object to
-  the corresponding {\tt snpStats} class
-\item {\tt convert.snpMatrix.dir}: Converts all saved {\tt snpMatrix}
-  objects in a given directory
-\end{itemize}
+Table). 
 \begin{table}[h]
   \centering
   \begin{tabular}{ll}
@@ -83,6 +75,15 @@ convert objects of a {\tt snpMatrix} class to the corresponding {\tt
   \end{tabular}
   \caption{Changes in class names}
 \end{table}
+Two functions have been provided to help users
+convert objects of a {\tt snpMatrix} class to the corresponding {\tt
+  snpStats} class:
+\begin{itemize}
+\item {\tt convert.snpMatrix}:  Converts a {\tt snpMatrix} object to
+  the corresponding {\tt snpStats} class
+\item {\tt convert.snpMatrix.dir}: Converts all saved {\tt snpMatrix}
+  objects in a given directory
+\end{itemize}
 \section*{Differences}
 
 A major difference is that the basic class, now {\tt SnpMatrix}, 
@@ -99,11 +100,23 @@ does occur in the selection operator, this will force the object to be
 regarded as a simple matrix of type {\tt raw}; this is the class
 that {\tt SnpMatrix} extends and this class does allow {\tt drop=}. 
 
+There has been a cosmetic, but important, change in the {\tt
+  XSnpMatrix} class as compared with its forerunner. The {\tt Female}
+slot has been renamed as {\tt diploid} to emphasize that this class is
+not only used for SNPs on the X chromosome, but for any SNP genotypes
+which may be haploid; this includes SNPs on the Y chromosome and
+mitocondrial SNPs. 
+
 The functions for computing pairwise linkage disequilibrium statistics
 have been replaced by a rewritten single function, {\tt ld}. The
 large band matrix which this function generates in one usage is stored
 using the {\tt dsCMatrix} class defined in the {\tt Matrix} package,
 (which is now required).
+
+The function {\tt read.pedfile} has been rewritten, this time entirely
+in R. It has different arguments from the function of the same name in
+{\tt snpMatrix} and may be somewhat slower, but is somewhat more
+flexible. 
 
 The {\tt ImputationRules} class has changed  as a result
 of the introduction of the new storage convention for uncertain genotypes. 
@@ -115,7 +128,7 @@ only produced a posterior expectation of the genotype (when coded 0, 1 or 2)
 and this could not be accomodated unambiguously in the extended coding. 
 
 The {\tt GlmTests} and {\tt GlmTestsScore} classes (formerly {\tt
-  snp.tests.glm"} and {\tt snp.tests.glm.score}) have changed
+  snp.tests.glm} and {\tt snp.tests.glm.score}) have changed
 slightly in order to accomodate ongoing work on methods for
 multinomial and multivariate phenotypes. The {\tt test.names} slot has 
 been renamed as {\tt

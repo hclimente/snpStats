@@ -32,7 +32,7 @@ index_db create_name_index(const SEXP names);
 /* Main C function */
 
 SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
-	       const SEXP Female, const SEXP Fields,  
+	       const SEXP Diploid, const SEXP Fields,  
 	       const SEXP Codes, const SEXP Threshold, const SEXP Lower, 
 	       const SEXP Sep, const SEXP Comment, const SEXP Skip, 
 	       const SEXP Simplify, const SEXP Verbose, 
@@ -99,14 +99,14 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
       snp_index = create_name_index(Snp_id);
   }
 
-  int *female=NULL;
-  if (TYPEOF(Female)==LGLSXP) {
-    if (length(Female)!=Nsample)
-      error("Argument length error: female-sex argument");
-    female = LOGICAL(Female);
+  int *diploid=NULL;
+  if (TYPEOF(Diploid)==LGLSXP) {
+    if (length(Diploid)!=Nsample)
+      error("Argument length error: diploid argument");
+    diploid = LOGICAL(Diploid);
   }
-  else if (TYPEOF(Female)!=NILSXP)
-    error("Argument type error: female-sex argument");
+  else if (TYPEOF(Diploid)!=NILSXP)
+    error("Argument type error: diploid argument");
   
   if (TYPEOF(Fields)!=INTSXP) 
     error("Argument type error: Fields");
@@ -199,10 +199,10 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
   else {
     int ncode = length(Codes);
     if (gcoding) {
-      if (female) {
+      if (diploid) {
 	if (ncode!=5) {
 	  if (ncode==3)
-	    warning("Genotype coding for X: males are assumed to be coded as homozygous");
+	    warning("Genotype coding for X: haploid genotypes are assumed to be coded as homozygous");
 	  else
 	    error("Genotype coding for X.snp: three or five genotype codes must be specified");
 	}
@@ -286,7 +286,7 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
   /* Create output object and initialise to zero */
 
   if (verbose) {
-    if (female)
+    if (diploid)
       Rprintf("Reading XSnpMatrix with %d rows and %d columns\n", 
 	      Nsample, Nsnp);
     else
@@ -317,8 +317,8 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
   /* Class */
 
   PROTECT(Class = allocVector(STRSXP, 1));
-  if (female) {
-    R_do_slot_assign(Result, mkString("Female"), Female);
+  if (diploid) {
+    R_do_slot_assign(Result, mkString("diploid"), Diploid);
     SET_STRING_ELT(Class, 0, mkChar("XSnpMatrix"));
   }
   else {
@@ -632,7 +632,7 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
 	    genotype = 0;
 	}
 	if (genotype) {
-	  if (female && !female[i_this] && (genotype==2))
+	  if (diploid && !diploid[i_this] && (genotype==2))
 	    Nxerror++;
 	  else {
 	    Naccept++;
@@ -677,7 +677,7 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
   if (in_order && !finished) 
     warning("End of data reached before search completed");
   if (Nxerror) 
-    warning("%d males were coded as heterozygous; set to NA", Nxerror);
+    warning("%d haploid genotypes were coded as heterozygous; set to NA", Nxerror);
   if (Nskipped)
     warning("%d lines of input file(s) were skipped", Nskipped);
 

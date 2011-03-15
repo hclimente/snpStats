@@ -65,7 +65,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   int ncol = nrules==0? M: nrules;
 
   SEXP Result, Calls, Call_rate, Certain_call_rate, MAF, 
-    P_AA, P_AB, P_BB, P_AY, P_BY, Z_HWE, Calls_female;
+    P_AA, P_AB, P_BB, P_A, P_B, Z_HWE, Calls_female;
   PROTECT(Result = allocVector(VECSXP, 11));
   PROTECT(Calls = allocVector(INTSXP, ncol));
   SET_VECTOR_ELT(Result, 0, Calls);
@@ -81,10 +81,10 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   SET_VECTOR_ELT(Result, 5, P_AB);
   PROTECT(P_BB = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 6, P_BB);
-  PROTECT(P_AY = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 7, P_AY);
-  PROTECT(P_BY = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 8, P_BY);
+  PROTECT(P_A = allocVector(REALSXP, ncol));
+  SET_VECTOR_ELT(Result, 7, P_A);
+  PROTECT(P_B = allocVector(REALSXP, ncol));
+  SET_VECTOR_ELT(Result, 8, P_B);
   PROTECT(Z_HWE = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 9, Z_HWE);
   PROTECT(Calls_female = allocVector(INTSXP, ncol));
@@ -98,10 +98,10 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   SET_STRING_ELT(Names, 4, mkChar("P.AA"));
   SET_STRING_ELT(Names, 5, mkChar("P.AB"));
   SET_STRING_ELT(Names, 6, mkChar("P.BB"));
-  SET_STRING_ELT(Names, 7, mkChar("P.AY"));
-  SET_STRING_ELT(Names, 8, mkChar("P.BY"));
+  SET_STRING_ELT(Names, 7, mkChar("P.A"));
+  SET_STRING_ELT(Names, 8, mkChar("P.B"));
   SET_STRING_ELT(Names, 9, mkChar("z.HWE"));
-  SET_STRING_ELT(Names, 10, mkChar("Calls.female"));
+  SET_STRING_ELT(Names, 10, mkChar("Calls.diploid"));
   int *calls = INTEGER(Calls);
   double *call_rate = REAL(Call_rate);
   double *certain = REAL(Certain_call_rate);
@@ -109,8 +109,8 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   double *p_aa = REAL(P_AA);
   double *p_ab = REAL(P_AB);
   double *p_bb = REAL(P_BB);
-  double *p_ay = REAL(P_AY);
-  double *p_by = REAL(P_BY);
+  double *p_ay = REAL(P_A);
+  double *p_by = REAL(P_B);
   double *z_hwe = REAL(Z_HWE);
   int *calls_female = INTEGER(Calls_female);
   setAttrib(Result, R_NamesSymbol, Names);

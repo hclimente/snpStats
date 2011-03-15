@@ -7,16 +7,15 @@
 This package extends the <tt>snpMatrix</tt> package, allowing uncertainty
 in genotype assignments, for example as  consequence of imputation.
 It provides most of the functionality of <tt>snpMatrix</tt>, although
-it lacks some of the functions for importing genotype data from text
-files in some formats (notably linkage pedfiles). It is intended that
-the most important of
-these will be provided in the very near future but, in the meantime, such
-data can be read using <tt>snpMatrix</tt>, saved as R objects and then
-converted into the equivalent <tt>snpStats</tt> objects. In addition, the
-functions in <tt>snpMatrix</tt> for calculating linkage disequilibrium
-statistics have been replaced by a single function in <tt>snpStats</tt>.
-Note that imputation rules objects in
-<tt>snpMatrix</tt> are not compatible with those used and must be regenerated.
+a few functions differ somewhat from their predecessors.  It also
+provides several new functions. 
+
+Classes have had to be renamed but are mostly compatible with those
+in  <tt>snpMatrix</tt>, and functions are included to convert these to
+their <tt>snpStats</tt> equivalents. However, the  imputation rules objects in
+<tt>snpMatrix</tt> are not compatible with those now used and must be 
+regenerated.
+
 For more details, see the "differences" vignette.
 
 Further development of the <tt>snpMatrix</tt> project by this developer will
@@ -31,6 +30,9 @@ packages</a>:
 <dt><a href="snpStats-vignette.pdf">
 Example of genome-wide association testing</a>:
 <dd> Introduction to snpStats for analysis of GWA studies
+<dt><a href="data-input-vignette.pdf">
+Data input in snpStats</a>:
+<dd> Reading genotype data from various text file formats
 <dt><a href="imputation-vignette.pdf">
 Imputed SNP analyses and meta-analysis with snpStats</a>:
 <dd> Imputation and meta-analysis with snpStats

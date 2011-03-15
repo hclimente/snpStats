@@ -14,25 +14,27 @@ in genotype assignments, for example, as  consequence of
 imputation. It provides most of the functionality of \code{snpMatrix}, although
 it currently lacks a few of the functions. It is intended that the most 
 important of these will be provided in the near future. It also
-includes some novel commands. For more details, see the "differences" vignette.
+includes some novel commands. Note that the \code{snpMatrix} classes
+have been renamed and, in two cases, changed slightly. For more
+details, see the "differences" vignette.
 
 Further development of the snpMatrix project by this developer will
 take place entirely within \code{snpStats}.
 
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.1.10\cr
-Date: \tab 2011-02-23\cr
+Version: \tab 1.1.11\cr
+Date: \tab 2011-03-14\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
 License: \tab GPL-3\cr
 URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
-Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.R misc.R ld.R mvtests.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
+Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
 Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
-Built: \tab R 2.12.1; x86_64-pc-linux-gnu; 2011-02-23 12:09:58 UTC; unix\cr
+Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-03-14 16:17:52 UTC; unix\cr
 }
 
 Index:
@@ -53,7 +55,6 @@ families                Test data for family association tests
 filter.rules            Filter a set of imputation rules
 for.exercise            Data for exercise in use of the snpStats
                         package
-genotype-class          snpStats-internal
 glm.test.control        Set up control object for GLM tests
 imputation.maf          Extract statistics from imputation rules
 impute.snps             Impute snps
@@ -70,9 +71,11 @@ qq.chisq                Quantile-quantile plot for chi-squared tests
 read.beagle             Read genotypes imputed by the BEAGLE program
 read.impute             Read genotypes imputed by the IMPUTE2 program
 read.mach               Read genotypes imputed by the MACH program
+read.pedfile            Read a pedfile as '"SnpMatrix"' object
 read.plink              Read a PLINK binary data file as a SnpMatrix
 read.snps.long          Read SNP data in long format
 row.summary             Summarize rows or columns of a snp matrix
+sample.info             Sample datasets to illustrate data input
 single.snp.tests        1-df and 2-df tests for genetic associations
                         with SNPs (or imputed SNPs)
 snp.cbind               Bind together two or more SnpMatrix objects
@@ -88,7 +91,7 @@ snp.rhs.estimates       Fit GLMs with SNP genotypes as independent
                         variable(s)
 snp.rhs.tests           Score tests with SNP genotypes as independent
                         variable
-snpStats-package        Enhanced SnpMatrix and XSnpMatrix classes
+snpStats-package        SnpMatrix and XSnpMatrix classes and methods
 switch.alleles          Switch alleles in columns of a SnpMatrix or in
                         test results
 tdt.snp                 1-df and 2-df tests for genetic associations
@@ -103,11 +106,12 @@ xxt                     X.X-transpose for a standardized SnpMatrix
 
 Further information is available in the following vignettes:
 \tabular{ll}{
-\code{differences} \tab snpMatrix-differences (source)\cr
-\code{imputation-vignette} \tab Imputation and meta-analysis (source)\cr
-\code{pca-vignette} \tab Principal components analysis (source)\cr
-\code{snpStats-vignette} \tab snpStats introduction (source)\cr
-\code{tdt-vignette} \tab TDT tests (source)\cr
+\code{data-input-vignette} \tab TDT tests (source, pdf)\cr
+\code{differences} \tab snpMatrix-differences (source, pdf)\cr
+\code{imputation-vignette} \tab Imputation and meta-analysis (source, pdf)\cr
+\code{pca-vignette} \tab Principal components analysis (source, pdf)\cr
+\code{snpStats-vignette} \tab snpStats introduction (source, pdf)\cr
+\code{tdt-vignette} \tab TDT tests (source, pdf)\cr
 }
 }
 \author{

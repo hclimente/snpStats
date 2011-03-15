@@ -53,10 +53,10 @@ mvtests <- function(phenotype, sets, stratum, data=sys.parent(), snp.data,
   }
   if (class(snp.data)=="XSnpMatrix") {
     stop("Not yet implemented for SNPs on X chromosome")
-    if(any(is.na(snp.data@Female))) {
-      warning("There are ", sum(is.na(snp.data@Female)),
-              " subjects with NA for sex. These were ignored")
-      sorder[is.na(snp.data@Female)] <- 0
+    if(any(is.na(snp.data@diploid))) {
+      warning("There are ", sum(is.na(snp.data@diploid)),
+              " subjects with NA in the diploid slot. These were ignored")
+      sorder[is.na(snp.data@diploid)] <- 0
     }
   }
     # Coerce sets argument to correct form #

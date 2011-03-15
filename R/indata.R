@@ -1,4 +1,4 @@
-read.snps.long <-function(files, sample.id=NULL, snp.id=NULL, female=NULL,
+read.snps.long <-function(files, sample.id=NULL, snp.id=NULL, diploid=NULL,
                          fields=c(sample=1, snp=2, genotype=3, confidence=4),
                          codes=c("0", "1", "2"), threshold=0.9, lower=TRUE,
                          sep=" ", comment="#",  skip=0,
@@ -10,11 +10,13 @@ read.snps.long <-function(files, sample.id=NULL, snp.id=NULL, female=NULL,
     stop("duplicated target sample identifier(s)")
   if (any(duplicated(snp.id)))
     stop("duplicated target SNP identifier(s)")
-  if (!is.null(female) && any(is.na(female)))
-    stop("female argument contains one or more NA's")
+  if (!is.null(diploid) && any(is.na(diploid)))
+    stop("diploid argument contains one or more NA's")
+  if (length(diploid)==1)
+    diploid <- rep(diploid, length(sample.id))
   if (!is.integer(fields))
     mode(fields) <- "integer"
-  .Call("insnp_new", files, sample.id, snp.id, female, fields,
+  .Call("insnp_new", files, sample.id, snp.id, diploid, fields,
         codes, threshold, lower, sep, comment, as.integer(skip),
         simplify, verbose, in.order, as.integer(every), PACKAGE="snpStats")
 }

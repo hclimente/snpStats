@@ -35,10 +35,10 @@ SEXP Fst(SEXP Snps, SEXP Group) {
   nsnp = ncols(Snps);
   
      
-  const int *female = NULL;
+  const int *diploid = NULL;
   if (ifX) {
-    SEXP Female = R_do_slot(Snps, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Snps, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
 
   /* Process Group argument */
@@ -73,7 +73,7 @@ SEXP Fst(SEXP Snps, SEXP Group) {
     if (gi != NA_INTEGER) {
       gi--;
       if (ifX) {
-	int fi = female[i];
+	int fi = diploid[i];
 	  na[gi] += fi? 2: 1;
       }
       else {
@@ -103,7 +103,7 @@ SEXP Fst(SEXP Snps, SEXP Group) {
       if (gi != NA_INTEGER && sij && (sij<4)) {
 	gi--;
 	if (ifX) {
-	  int fi = female[i];
+	  int fi = diploid[i];
 	  na[gi] += fi? 2: 1;
 	  na2[gi] += fi? (sij-1): (sij==3);
 	}

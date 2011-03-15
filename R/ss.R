@@ -3,7 +3,7 @@ setOldClass(c("haplotype", "genotype"), test=TRUE)
 #content should be raw - TODO: put restriction 
 setClass("SnpMatrix", contains="matrix")
 
-setClass("XSnpMatrix", representation("SnpMatrix", Female="logical"),
+setClass("XSnpMatrix", representation("SnpMatrix", diploid="logical"),
          contains="SnpMatrix")
 
 # constructor 
@@ -33,29 +33,33 @@ setMethod("initialize",
           "XSnpMatrix", 
           function(.Object, ...) {
             .Object <- callNextMethod()
-            if (length(.Object@Female)==0){
-              warning("Sex not supplied; it has been guessed from heterozygosity")
-              guess <- .guessSex(.Object)
-              .Object@Female <- guess$Female
+            if (length(.Object@diploid)==0){
+              warning("diploid slot not supplied; it has been estimated from heterozygosity")
+              guess <- .guessPloidy(.Object)
+              .Object@diploid <- guess$diploid
               het <- guess$Heterozygosity
             }
             else {
-              if (length(.Object@Female)!=nrow(.Object))
-                stop("female argument incorrect length")
-              if (any(is.na(.Object@Female))) {
-                warning("female argument contains NAs; these were replaced by guesses based on heterozygosity")
-                guess <- .guessSex(.Object, .Object@Female)
-                .Object@Female <- guess$Female
+              lend <- length(.Object@diploid)
+              if (lend==1)
+                .Object@diploid <- rep(.Object@diploid, nrow(.Object))
+              else if (lend!=nrow(.Object))
+                stop("diploid argument incorrect length")
+              dpna <- is.na(.Object@diploid)
+              if (any(dpna)) {
+                warning("diploid argument contains NAs; these have been replaced by guesses based on heterozygosity")
+                guess <- .guessPloidy(.Object, .Object@diploid)
+                .Object@diploid <- guess$diploid
                 het <- guess$Heterozygosity
               }
               else
                 het <- row.summary(.Object)$Heterozygosity               
             }
-            hetm <- !.Object@Female & (!is.na(het)&(het>0))
+            hetm <- !.Object@diploid & (!is.na(het)&(het>0))
             if (any(hetm)){
               warning(sum(hetm, na.rm=TRUE),
-                      "some heterozygous calls for males; these were set to NA")
-              .Object@.Data <- .forceHom(.Object@.Data, .Object@Female)
+                      " heterozygous calls for haploid genotypes; these were set to NA")
+              .Object@.Data <- .forceHom(.Object@.Data, .Object@diploid)
             }
             .Object
           })
@@ -86,7 +90,7 @@ setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="missing"),
 
 setMethod("[", signature(x="XSnpMatrix",i="ANY",j="ANY",drop="missing"),
           function(x, i, j) {
-            female <- x@Female
+            diploid <- x@diploid
             if (missing(i)) {
               if (missing(j))
                 return(x)
@@ -96,13 +100,13 @@ setMethod("[", signature(x="XSnpMatrix",i="ANY",j="ANY",drop="missing"),
             else {
               if (is.character(i))
                 i <- match(i, rownames(x))
-              female <- female[i]
+              diploid <- diploid[i]
               if (missing(j))
                 x <- x@.Data[i,,drop=FALSE]
               else 
                 x <- x@.Data[i,j,drop=FALSE]
             }
-            new("XSnpMatrix", x, Female=female)
+            new("XSnpMatrix", x, diploid=diploid)
           })
 
 # The sub-assignment methods
@@ -122,7 +126,7 @@ setMethod("[<-", signature(x="XSnpMatrix",i="ANY",j="ANY",value="XSnpMatrix"),
             # All we want to do is to shuffle the rows
             # if a row index is passed
             if(!missing(i)) {
-              slot(x, "Female")[i] <- slot(value, "Female")
+              slot(x, "diploid")[i] <- slot(value, "diploid")
             }
             x
           })
@@ -151,8 +155,8 @@ setAs("XSnpMatrix", "character",
       function(from) {
         df <- dim(from)
         ifr <- 1 + as.integer(from)
-        offset <-  4*rep(from@Female, ncol(from))
-        to <- ifelse(ifr<5, c("NA", "A/Y", "Error", "B/Y",
+        offset <-  4*rep(from@diploid, ncol(from))
+        to <- ifelse(ifr<5, c("NA", "A", "Error", "B",
                                "NA", "A/A", "A/B", "B/B")[ifr + offset],
                      "Uncertain")
         dim(to) <- df
@@ -194,8 +198,8 @@ setMethod("summary", "SnpMatrix",
 
 setMethod("summary", "XSnpMatrix",
    function(object) {
-     tab <- table(object@Female)
-     names(tab) <- ifelse(as.logical(names(tab)), "Female", "Male")
+     tab <- table(object@diploid)
+     names(tab) <- ifelse(as.logical(names(tab)), "diploid", "haploid")
      list(sex = tab,
           rows = summary(row.summary(object)),
           cols = summary(col.summary(object, uncertain=TRUE)))
@@ -273,10 +277,9 @@ setMethod("show", "XSnpMatrix",
    function(object) {
      nr <- nrow(object)
      nc <- ncol(object) 
-     cat("An XSnpMatrix with ", nr, "rows and ", nc,
-         "columns, \nholding data for ")
-     fem <- object@Female
-     cat(sum(!fem), " males and ", sum(fem), " females\n")
+     dip <- object@diploid
+     cat("An XSnpMatrix with ", nr, " rows (", sum(!dip), " haploid and ",
+         sum(dip), " diploid), and ", nc, " columns\n", sep="")
      if (nr>1)
        cat("Row names: ", rownames(object)[1],"...", rownames(object)[nr],"\n")
      else

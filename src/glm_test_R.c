@@ -67,15 +67,15 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
     error("Argument error - Snp.subset");
   
 
-  /* If X-chromosome, indicators of female sex */
+  /* If X-chromosome, indicators of diploid genotype */
 
-  const int *female;
+  const int *diploid;
   if (ifX) {
-    SEXP Female = R_do_slot(Y, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Y, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
   else
-    female = NULL;
+    diploid = NULL;
   
   /* X and its dimensions */
 
@@ -247,7 +247,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
 	  else 
 	    mono = 0;
 	}
-	prior[i] = (!female || female[i])? 2.0: 1.0;
+	prior[i] = (!diploid || diploid[i])? 2.0: 1.0;
 	yd[i] = g2mean(yij)/2.0;
       }
       else {
@@ -455,15 +455,15 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
     error("Dimension error - Z");
 
 
-  /* If X-chromosome, indicators of female sex */
+  /* If X-chromosome, indicators of diploid genotype */
 
-  int *female;
+  int *diploid;
   if (ifX) {
-    SEXP Female = R_do_slot(Z, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Z, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
   else
-    female = NULL;
+    diploid = NULL;
 
   /* If imputation involved, calculate snp name index and lookup tables */
 
@@ -718,7 +718,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 	  SET_STRING_ELT(Snames, j, Rule_namej);
 	SEXP Rule =  VECTOR_ELT(Rules, snpsj);
 	if (!isNull(Rule)){ /* Not monomorphic */
-	  do_impute(Z, N, female, NULL, N, name_index, Rule, gt2ht, zw+ij, 
+	  do_impute(Z, N, diploid, NULL, N, name_index, Rule, gt2ht, zw+ij, 
 		    NULL);
 	  for (int i=0; i<N; i++, ij++) {
 	    if (ISNA(zw[ij])) {
@@ -1031,15 +1031,15 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
     error("Argument error - Snp.subset");
   
 
-  /* If X-chromosome, indicators of female sex */
+  /* If X-chromosome, indicators of diploid genotype */
 
-  const int *female;
+  const int *diploid;
   if (ifX) {
-    SEXP Female = R_do_slot(Y, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Y, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
   else
-    female = NULL;
+    diploid = NULL;
   
   /* X and its dimensions */
 
@@ -1168,7 +1168,7 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
 	  yv = yij;
 	else if (mono) 
 	  mono = (yv == yij);
-	prior[i] = (!female || female[i])? 2.0: 1.0;
+	prior[i] = (!diploid || diploid[i])? 2.0: 1.0;
 	yd[i] = ((double) (yij - 1))/2.0;
       }
       else {
@@ -1357,15 +1357,15 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
     error("Dimension error - Z");
   SEXP Snp_names =  VECTOR_ELT(getAttrib(Z, R_DimNamesSymbol), 1);
 
-  /* If X-chromosome, indicators of female sex */
+  /* If X-chromosome, indicators of diploid genotype */
 
-  int *female;
+  int *diploid;
   if (ifX) {
-    SEXP Female = R_do_slot(Z, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Z, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
   else
-    female = NULL;
+    diploid = NULL;
   
   /* Prior weights */
 

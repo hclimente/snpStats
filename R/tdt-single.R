@@ -232,7 +232,7 @@ misinherits <- function(ped, id, father, mother, data=sys.parent(), snp.data){
 
   fr.raw <- as.raw(snp.data[fr.snps,])
   if (X)
-    fr.raw[!snp.data@Female[pd.snps]] <- as.raw(4)
+    fr.raw[!snp.data@diploid[pd.snps]] <- as.raw(4)
   mr.raw <- as.raw(snp.data[mr.snps,])
   pd.raw <- as.raw(snp.data[pd.snps,])
   ## Treat any uncertain genotypes as missing 
