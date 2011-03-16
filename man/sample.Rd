@@ -16,6 +16,10 @@
   vignette. The final file is a sample imputed genotype
   dataset distributed with the MACH imputation package, and used in the
   imputation vignette.
+
+  These files are stored in the \code{inst/extdata} relative to the
+  package base. Full file names can be obtained using the
+  \code{system.file} function.
 }
 \format{
   There are five files:

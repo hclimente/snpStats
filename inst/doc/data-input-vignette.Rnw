@@ -19,7 +19,7 @@ pdftitle={Data input}]
 \begin{document}
 \setkeys{Gin}{width=1.0\textwidth}
 
-%\VignetteIndexEntry{TDT tests}
+%\VignetteIndexEntry{Data input}
 %\VignettePackage{snpStats}
 
 \maketitle
@@ -90,14 +90,14 @@ IGR1144a_1	287261
 position on a chromosome). 
 
 The (gzipped) pedfile and the locus information file are stored in the 
-{\tt data} sub-directory of the {\tt snpStats} package as, respectively,
+{\tt extdata} sub-directory of the {\tt snpStats} package as, respectively,
 {\tt sample.ped.gz} and {\tt sample.info}. Since the precise location
 of these files may vary between installations, we first obtain full paths 
 to these files  using the {\tt system.file} function
 <<sysfile>>=
-pedfile <- system.file("data/sample.ped.gz", package="snpStats")
+pedfile <- system.file("extdata/sample.ped.gz", package="snpStats")
 pedfile
-infofile <- system.file("data/sample.info", package="snpStats")
+infofile <- system.file("extdata/sample.info", package="snpStats")
 @ 
 The data can then be read in using the {\tt read.pedfile} function
 <<redpedfile>>=
@@ -145,9 +145,9 @@ and {\tt .bim} files for the sample dataset of the last section; the
 following commands recover the full file paths for these files and 
 read the files:
 <<plink>>=
-fam <- system.file("data/sample.fam", package="snpStats")
-bim <- system.file("data/sample.bim", package="snpStats")
-bed <- system.file("data/sample.bed", package="snpStats")
+fam <- system.file("extdata/sample.fam", package="snpStats")
+bim <- system.file("extdata/sample.bim", package="snpStats")
+bed <- system.file("extdata/sample.bed", package="snpStats")
 sample <- read.plink(bed, bim, fam)
 @ 
 The output object is similar to that produced by {\tt read.pedfile}, a
@@ -181,7 +181,7 @@ line. Such data can be read using the function {\tt read.snps.long}.
 A simple example is provided by the small gzipped data file {\tt
   sample-long.gz} provided with the package:
 <<longfile>>=
-longfile <- system.file("data/sample-long.gz", package="snpStats")
+longfile <- system.file("extdata/sample-long.gz", package="snpStats")
 longfile
 @ 
 The first few lines of the file are given below

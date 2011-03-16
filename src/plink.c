@@ -75,7 +75,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
   }
 
   if (seek) {
-    if (fseek(in, seek[0], SEEK_SET))
+    if (fseek(in, (long) seek[0], SEEK_SET))
       error("unexpected end of file");
   }    
   int part=0, ij=0, i=0, j=0;
@@ -96,7 +96,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (i==nrow) {
 	i = part = 0;
 	j++;
-	if (seek && fseek(in, seek[j], SEEK_SET))
+	if (seek && fseek(in, (long) seek[j], SEEK_SET))
 	  error("Unexpected end of file reached");
 	if (j==ncol)
 	  break;
@@ -108,7 +108,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (j==ncol){
 	j = part = 0;
 	i++;
-	if (seek && fseek(in, seek[i], SEEK_SET))
+	if (seek && fseek(in, (long) seek[i], SEEK_SET))
 	  error("Unexpected end of file reached");
 	if (i==nrow)
 	  break;

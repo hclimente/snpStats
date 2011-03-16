@@ -23,8 +23,8 @@ take place entirely within \code{snpStats}.
 
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.1.11\cr
-Date: \tab 2011-03-14\cr
+Version: \tab 1.1.12\cr
+Date: \tab 2011-03-16\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
@@ -34,7 +34,7 @@ Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
 Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
-Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-03-14 16:17:52 UTC; unix\cr
+Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-03-16 10:04:11 UTC; unix\cr
 }
 
 Index:
@@ -106,7 +106,7 @@ xxt                     X.X-transpose for a standardized SnpMatrix
 
 Further information is available in the following vignettes:
 \tabular{ll}{
-\code{data-input-vignette} \tab TDT tests (source, pdf)\cr
+\code{data-input-vignette} \tab Data input (source, pdf)\cr
 \code{differences} \tab snpMatrix-differences (source, pdf)\cr
 \code{imputation-vignette} \tab Imputation and meta-analysis (source, pdf)\cr
 \code{pca-vignette} \tab Principal components analysis (source, pdf)\cr
