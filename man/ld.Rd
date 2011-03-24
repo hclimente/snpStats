@@ -12,7 +12,7 @@
   R-squared, and R.
 }
 \usage{
-ld(x, y = NULL, depth = NULL, stats)
+ld(x, y = NULL, depth = NULL, stats, symmetric = FALSE)
 }
 \arguments{
   \item{x}{
@@ -37,6 +37,11 @@ ld(x, y = NULL, depth = NULL, stats)
     \code{"OR"}, \code{"Q"}, \code{"Covar"}, \code{"D.prime"},
     \code{"R.squared"}, ad \code{"R"}
   }
+  \item{symmetric}{
+    When no \code{y} argument is supplied this argument controls the format of
+    the output band matrices. If \code{TRUE}, symmetric matrices are
+    returned and, otherwise, an upper triangular matrices are returned
+  }
 }
 \details{
 For each pair of SNPs, phased haplotype frequencies are first estimated
@@ -45,7 +50,8 @@ by maximum likelihood using the method described by Clayton and Leung
 returned, either as
 band matrices (when \code{y} is not supplied), or as conventional
 rectangular matrices (when \code{y} is supplied). Band matrices are
-stored in compressed form as objects of class \code{dsCMatrix} (which is
+stored in compressed form as objects of class \code{dsCMatrix}
+(symmetric) or \code{dgCMatrix} (upper triangular). These classes are
 defined in the \code{"\link[Matrix:Matrix-class]{Matrix}"} package)
 }
 \value{

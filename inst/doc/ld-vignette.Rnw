@@ -1,0 +1,307 @@
+%\documentclass[a4paper,12pt]{article}
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+% \usepackage{times}
+%\usepackage{mathptmx}
+%\renewcommand{\ttdefault}{cmtt}
+\usepackage{graphicx}
+
+\usepackage[pdftex,
+bookmarks,
+bookmarksopen,
+pdfauthor={David Clayton},
+pdftitle={TDT and snpStats Vignette}]
+{hyperref}
+
+\title{LD vignette\\Measures of linkage disequilibrium}
+\author{David Clayton}
+\date{\today}
+
+\usepackage{Sweave}
+
+\SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE}
+\newcommand{\grinc}[1]{\begin{center}\includegraphics[width=4in,height=4in]{#1}\end{center}}
+
+\begin{document}
+\setkeys{Gin}{width=1.0\textwidth}
+
+%\VignetteIndexEntry{LD statistics}
+%\VignettePackage{snpStats}
+
+<<lib,echo=FALSE>>=
+require(snpStats)
+require(hexbin)
+@ 
+
+\maketitle
+
+\section*{Calculating linkage disequilibrium statistics}
+We shall first load some illustrative data. 
+<<data>>=
+data(ld.example)
+@ 
+The data are drawn from the International HapMap Project and concern 603 SNPs 
+over a 1mb region of
+chromosome 22 in sample of Europeans ({\tt ceph.1mb}) and a sample of
+Africans ({\tt yri.1mb}):
+<<showgt>>=
+ceph.1mb
+yri.1mb
+@ 
+The details of these SNP are stored  in the dataframe {\tt support.ld}:
+<<showsp>>=
+head(support.ld)
+@ 
+The function for calculating measures of linkage disequilibrium (LD) in
+{\tt snpStats} is {\tt ld}. The following two commands call this
+function to calculate the D-prime and
+R-squared measures of LD between pairs of SNPs for the European and
+African samples:
+<<ldstats>>=
+ld.ceph <- ld(ceph.1mb, stats=c("D.prime", "R.squared"), depth=100)
+ld.yri <- ld(yri.1mb, stats=c("D.prime", "R.squared"), depth=100)
+@ 
+The argument {\tt depth} specifies the maximum separation between
+pairs of SNPs to be considered, so that {\tt depth=1} would have
+specified calculation of LD only between immediately adjacent SNPs.
+
+Both {\tt ld.ceph} and {\tt ld.yri} are lists with two elements each,
+named {\tt D.prime} and {\tt R.squared}. These elements are (upper
+triangular) band
+matrices, stored in a packed form defined in the {\tt Matrix}
+package. They are too large to be listed, but the {\tt Matrix} package
+provides an {\tt image} method, a convenient way to examine patterns
+in the matrices. You should look at these carefully and
+note any differences.
+<<image1,eval=FALSE>>=
+image(ld.ceph$D.prime) 
+@ 
+<<png1,echo=FALSE>>=
+png(file="image1.png", width=800, height=800)
+image(ld.ceph$D.prime)
+dev.off()
+@ 
+\grinc{image1.png}
+<<image2,eval=FALSE>>=
+image(ld.yri$D.prime)
+@ 
+<<png2,echo=FALSE>>=
+png(file="image2.png", width=800, height=800)
+image(ld.yri$D.prime)
+dev.off()
+@ 
+\grinc{image2.png}
+The important things to note are 
+\begin{enumerate}
+\item there are fairly well-defined ``blocks'' of LD, and
+\item LD is more pronounced in the Europeans than in the Africans.
+\end{enumerate}
+The second point is demonstrated by extracting the D-prime values from
+the matrices (they are to be found in a slot named {\tt x}) and
+calculating quartiles of their distribution:
+<<quartiles>>=
+quantile(ld.ceph$D.prime@x, na.rm=TRUE)
+quantile(ld.yri$D.prime@x, na.rm=TRUE)
+@
+
+If preferred, {\tt image} can produce colour plots. We first create a
+set of 10 colours ranging from yellow (for low values) to red (for high values) 
+<<colors>>=
+spectrum <- rainbow(10, start=0, end=1/6)[10:1]
+@ 
+and plot the image, with a colour key down its right hand side
+<<imagecol,eval=FALSE>>=
+image(ld.ceph$D.prime, cuts=9, col.regions=spectrum, colorkey=TRUE)
+@ 
+<<pngcol,echo=FALSE>>=
+png(file="imagecol.png", width=800, height=800)
+image(ld.ceph$D.prime, cuts=9, col.regions=spectrum, colorkey=TRUE)
+dev.off()
+@ 
+\grinc{imagecol.png}
+
+The R-squared matrices provide similar pictures, although they are rather less
+regular. To show this clearly, we focus on the 200 SNPs starting from
+the 75-th, using the European data
+<<use>>=
+use <- 75:274
+@ 
+<<image3,eval=FALSE>>=
+image(ld.ceph$D.prime[use,use])
+@ 
+<<png3,echo=FALSE>>=
+png(file="image3.png", width=800, height=800)
+image(ld.ceph$D.prime[use,use])
+dev.off()
+@ 
+\grinc{image3.png}
+<<image4,eval=FALSE>>=
+image(ld.ceph$R.squared[use,use])
+@ 
+<<png4,echo=FALSE>>=
+png(file="image4.png", width=800, height=800)
+image(ld.ceph$R.squared[use,use])
+dev.off()
+@ 
+\grinc{image4.png}
+The R-squared values are smaller and there are ``holes'' in the LD blocks; 
+SNPs within an LD block do not necessarily have large R-squared
+between them. This is further demonstrated in the next section.
+\section*{D-prime, R-squared, and distance}
+To examine the relationship between LD and physical distance, we first
+need to construct a similar matrix holding the physical
+distances. This is carried out, by first calculating each
+off-diagonal, and then combining them into a band matrix
+<<distance>>=
+pos <- support.ld$Position
+diags <- vector("list", 100)
+for (i in 1:100) diags[[i]] <- pos[(i+1):603] - pos[1:(603-i)]
+dist <- bandSparse(603, k=1:100, diagonals=diags)
+@ 
+The values in the body of the band matrix are contained in a slot
+named {\tt x}, so the following commands extract the physical
+distances and the corresponding LD statistics for the Europeans:
+<<values>>=
+distance <- dist@x
+D.prime <- ld.ceph$D.prime@x
+R.squared <- ld.ceph$R.squared@x
+@ 
+These are very long vectors so we use the {\tt hexbin} package to
+produce abreviated plots. We first demonstrate the relationship
+between D-prime and R-squared
+<<drplot,fig=TRUE>>=
+plot(hexbin(D.prime^2, R.squared))
+@ 
+We see that the square of D-prime provides an upper bound for
+R-squared; a high D-prime indicates the {\em potential} for two SNPs
+to be highly correlated, but they need not be. The following commands
+examine the relationship between the two LD measures and physical distance
+<<dpplot1,fig=TRUE>>=
+plot(hexbin(distance, D.prime, xbin=10))
+@ 
+<<dpplot2,fig=TRUE>>=
+plot(hexbin(distance, R.squared, xbin=10))
+@ 
+Although the data are very noisy, the first plot is consistent with an
+approximately exponential decline in mean D-prime with distance, as
+predicted by the Malecot model. 
+\section*{A view of the calculations}
+To understand the calculations let us consider the first and fifth
+SNPs in the Europeans. We shall first converting these to character
+data for legibility, and then tabulate the two-SNP genotypes, saving
+the $3\times 3$ table of genotype frequencies as {\tt tab33}:
+<<two>>=
+snp1 <- as(ceph.1mb[,1], "character")
+snp5 <- as(ceph.1mb[,5], "character")
+tab33 <- table(snp1, snp5)
+tab33
+@ 
+These two SNPs have a moderately high D-prime, but a very low R-squared:
+<<twoDR>>=
+ld.ceph$D.prime[1,5]
+ld.ceph$R.squared[1,5]
+@ 
+The LD measures cannot be directly calculated from the $3\times 3$
+table above, but from a $2\times 2$ table of {\em haplotype
+frequencies}. In only eight cells around the periphery of the table we can 
+unambiguously count haplotypes and these give us the following table
+of haplotype frequencies:
+\begin{center}
+  \begin{tabular}{crr}
+    & \multicolumn{2}{c}{\Sexpr{rownames(support.ld)[5]}}\\
+      \cline{2-3}
+      \Sexpr{rownames(support.ld)[1]} & A & B\\
+      \hline
+      A& 
+      \Sexpr{2*tab33[1,1] + tab33[1,2] + tab33[2,1]}&
+      \Sexpr{2*tab33[1,3] + tab33[1,2] + tab33[2,3]}\\
+      B&
+      \Sexpr{2*tab33[3,1] + tab33[2,1] + tab33[3,2]}&
+      \Sexpr{2*tab33[3,3] + tab33[3,2] + tab33[2,3]}
+      \\
+      \hline
+      
+  \end{tabular}
+\end{center}
+However, in the central cell of the $3\times 3$ table ({\it i.e.\,} 
+  {\tt tab33[2,2]}) we have
+\Sexpr{tab33[2,2]} doubly heterozygous subjects, whose genotype could
+correspond either to the pair of haplotypes {\tt A-A/B-B} or to the
+pair of haplotypes {\tt A-B/B-A}. These are said to have {\em unknown
+  phase}. The expected split between these
+possible phases is determined by a further measure of LD --- the
+odds ratio. If the odds ratio is $\theta$, we expect a proportion
+$\theta/(1+\theta)$ of the doubly heterozygous subjects to be {\tt
+  A-A/B-B}, and a proportion  $1/(1+\theta)$ to be  {\tt A-B/B-A}. 
+
+We next use {\tt ld} to obtain an estimate of this odds
+ratio\footnote{Here {\tt ld} is called with two arguments of class
+  {\tt snpMatrix} and, since only the odds ratio is to be calculated, it
+  returns the odds ratio rather than a list.}
+and, using this, we partition the doubly
+heterozygous individuals between the two possible phases: 
+<<digits,echo=FALSE>>=
+options(digits=4)
+@ 
+<<OR>>=
+OR <- ld(ceph.1mb[,1], ceph.1mb[,5], stats="OR")
+OR
+AABB <- tab33[2,2]*OR/(1+OR)
+ABBA <- tab33[2,2]*1/(1+OR)
+AABB
+ABBA
+@ 
+<<twoxtwo,echo=FALSE>>=
+a <- format(2*tab33[1,1] + tab33[1,2] + tab33[2,1] + AABB, digits=4)
+b <- format(2*tab33[1,3] + tab33[1,2] + tab33[2,3] + ABBA, digits=4)
+c <- format(2*tab33[3,1] + tab33[2,1] + tab33[3,2] + ABBA, digits=4)
+d <- format(2*tab33[3,3] + tab33[3,2] + tab33[2,3] + AABB, digits=4)
+@ 
+We are now able to construct the table of haplotype frequencies:
+\begin{center}
+  \begin{tabular}{crr}
+    & \multicolumn{2}{c}{\Sexpr{rownames(support.ld)[5]}}\\
+      \cline{2-3}
+      \Sexpr{rownames(support.ld)[1]} & A & B\\
+      \hline
+      A& \Sexpr{a}& \Sexpr{b}\\
+      B& \Sexpr{c}& \Sexpr{d}
+      \\
+      \hline
+  \end{tabular}
+\end{center}
+It is easy to confirm that the odds ratio in this table, 
+$(\Sexpr{a}\times\Sexpr{d})/(\Sexpr{b}\times\Sexpr{c})$, 
+corresponds closely with that given by the {\tt ld} function. 
+Having obtained the $2\times 2$ table of haplotype frequencies, 
+any LD statistic may be calculated. 
+
+Of course, there is a circularity here; we needed to know the odds
+ratio in order to be able to construct the $2\times 2$ table from
+which it is calculated! That is why these calculations are not
+simple. The usual method involves iterative solution using an EM
+algorithm:  an initial guess at the odds ratio is used, as in the
+calculations above, to compute a new estimate, and these calculations 
+are repeated
+until the estimate stabilizes. However, in {\tt snpStats} the estimate
+is calculated in one step, by solving a cubic equation.
+\section*{The extent of LD around a point}
+Often we wish to guage how far LD extends from a given point (for
+example, from a SNP which is associated with disease incidence). For
+illustrative purposes we shall consider the region surroung the 168-th
+SNP, rs2385786. We first calculate D-prime values for the 100 SNPs on
+either side of rs2385786, and their positions:
+<<extent>>=
+left <- ld(ceph.1mb[,168], ceph.1mb[,68:167], stats="D.prime")
+right <- ld(ceph.1mb[,168], ceph.1mb[,169:268], stats="D.prime")
+D.prime <- c(left, right)
+where <- pos[c(68:167, 169:268)]
+@ 
+We now plot D.prime against position, adding a simple smoother:
+<<eplot,fig=TRUE>>=
+plot(where, D.prime)
+lines(where, smooth(D.prime))
+@ 
+Although the data are somewhat noisy (the sample size is small), the
+region of LD is fairly clearly delineated.
+\end{document}

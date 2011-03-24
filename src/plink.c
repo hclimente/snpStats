@@ -13,6 +13,17 @@
 /* #include "Rmissing.h" */
 
 
+/* this may not be fast but seems reliable */
+
+void skip(FILE *in, int lines, int size) {
+  if (lines) {
+    long nb = lines*size;
+    for (long i=0; i<nb; i++)
+      if (fgetc(in)==EOF) error("unexpected end of file");
+  }    
+}
+
+
 SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
   const unsigned char recode[4] = {'\x01', '\x00', '\x02', '\x03'};
   const unsigned char mask = '\x03';
@@ -53,14 +64,13 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
 
   int *seek = NULL;
   int snp_major = start[2];
+  int nbyte = 0;
   if (snp_major) {
     if (!isNull(Rsel))
       error("can't select by rows when .bed file is in SNP-major order");
     if (!isNull(Csel)) {
       seek = INTEGER(Csel);
-      int nbyte = 1 + (nrow-1)/4; 
-      for (int i=0; i<ncol; i++)
-	seek[i] = 3+(seek[i]-1)*nbyte;
+      nbyte = 1 + (nrow-1)/4; 
     }
   }
   else {
@@ -68,21 +78,18 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       error("can't select by columns when .bed file is in individual-major order");
     if (!isNull(Rsel)) {
       seek = INTEGER(Rsel);
-      int nbyte = 1 + (ncol-1)/4;
-      for (int i=0; i<nrow; i++)
-	seek[i] = 3+(seek[i]-1)*nbyte;
+      nbyte = 1 + (ncol-1)/4;
     }
   }
 
-  if (seek) {
-    if (fseek(in, (long) seek[0], SEEK_SET))
-      error("unexpected end of file");
-  }    
+  if (seek) 
+    skip(in, seek[0]-1, nbyte);
   int part=0, ij=0, i=0, j=0;
   while (1) {
     unsigned char byte;
     if (!part) {
-      if (feof(in) || !fread(&byte, 1, 1, in)) 
+      byte = (unsigned char) fgetc(in);
+      if (feof(in))
 	error("Unexpected end of file reached");
       part = 4;
     }
@@ -96,8 +103,8 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (i==nrow) {
 	i = part = 0;
 	j++;
-	if (seek && fseek(in, (long) seek[j], SEEK_SET))
-	  error("Unexpected end of file reached");
+	if (seek)
+	  skip(in, seek[j]-seek[j-1]-1, nbyte);
 	if (j==ncol)
 	  break;
       }
@@ -108,8 +115,8 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (j==ncol){
 	j = part = 0;
 	i++;
-	if (seek && fseek(in, (long) seek[i], SEEK_SET))
-	  error("Unexpected end of file reached");
+	if (seek)
+	  skip(in, seek[i]-seek[i-1]-1, nbyte);
 	if (i==nrow)
 	  break;
 	ij = i;

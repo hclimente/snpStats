@@ -162,7 +162,7 @@ Usually the three input files have the same filename stub with
 it is sufficient to just supply the filename stub to {\tt read.plink}.
 
 A useful feature of {\tt read.plink} is the ability to select a
-subset of data from a very large PLINK dataset. This is demonstrated
+subset of data from a large PLINK dataset. This is demonstrated
 in our small example below
 <<plinkselect>>=
 subset <- read.plink(bed, bim, fam, select.snps=6:10)

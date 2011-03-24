@@ -24,7 +24,7 @@ void set_arrays(const double *, const double *, double,  double **, int);
   
 /* R interface */
  
-SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
+SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
   char *statnames[7] = {"LLR", "OR", "Q", "Covar", "D.prime", "R.squared", "R"};
   double *arrays[7];
 
@@ -78,6 +78,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
     MY = ncols(Y);
   }
    
+  int symmetric = *LOGICAL(Symmetric);
   SEXP Result, Snames;
   int NR = XY? MX*MY: (MX*(MX-1) - (MX-depth)*(MX-depth-1))/2;
   if (nstats>1) {
@@ -114,7 +115,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
   else {
     /* Make other arrays for band matrix slots */
     SEXP i_slot, p_slot, Dim_slot, Dimnames_slot, factors_slot, uplo_slot,
-      dsCMatrix_class;
+      mout_class;
     PROTECT(i_slot = allocVector(INTSXP, NR));
     int *iv = INTEGER(i_slot);
     PROTECT(p_slot = allocVector(INTSXP, MX+1));
@@ -134,20 +135,24 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats) {
     SET_VECTOR_ELT(Dimnames_slot, 1, Xnames);
     PROTECT(factors_slot = allocVector(VECSXP, 0));
     PROTECT(uplo_slot = mkString("U"));
-    PROTECT(dsCMatrix_class = MAKE_CLASS("dsCMatrix"));
+    if (symmetric)
+      PROTECT(mout_class = MAKE_CLASS("dsCMatrix"));
+    else
+      PROTECT(mout_class = MAKE_CLASS("dgCMatrix"));
     for (int i=0, is=0; i<7; i++) {
       if (stats[i]){
 	SEXP LDstat, x_slot;
 	PROTECT(x_slot = allocVector(REALSXP, NR));
 	arrays[i] = REAL(x_slot);
-	PROTECT(LDstat = NEW_OBJECT(dsCMatrix_class)); 
+	PROTECT(LDstat = NEW_OBJECT(mout_class)); 
 	SET_SLOT(LDstat, mkString("x"), x_slot);
 	SET_SLOT(LDstat, mkString("i"), i_slot);
 	SET_SLOT(LDstat, mkString("p"), p_slot);
 	SET_SLOT(LDstat, mkString("Dim"), Dim_slot);
 	SET_SLOT(LDstat, mkString("Dimnames"), Dimnames_slot);
 	SET_SLOT(LDstat, mkString("factors"), factors_slot);
-	SET_SLOT(LDstat, mkString("uplo"), uplo_slot);
+	if (symmetric)
+	  SET_SLOT(LDstat, mkString("uplo"), uplo_slot);
 	if (nstats>1) {
 	  SET_VECTOR_ELT(Result, is, LDstat);
 	  SET_STRING_ELT(Snames, is, mkChar(statnames[i]));
@@ -316,11 +321,10 @@ void set_arrays(const double *hapfreqs, const double *margins, double LLR,
   /* LLR */
   if (arrays[0]) (arrays[0])[ij] = LLR;
   /* OR */
-  if (arrays[1]) (arrays[1])[ij] = 
-			  hapfreqs[0]*hapfreqs[3]/(hapfreqs[1]*hapfreqs[2]);
+  double OR =  hapfreqs[0]*hapfreqs[3]/(hapfreqs[1]*hapfreqs[2]);
+  if (arrays[1]) (arrays[1])[ij] = OR;
   /* Yules Q */
-  if (arrays[2]) (arrays[2])[ij] = hapfreqs[0]*hapfreqs[3]/
-			  (hapfreqs[0]*hapfreqs[3])+(hapfreqs[1]*hapfreqs[2]);
+  if (arrays[2]) (arrays[2])[ij] = (OR-1.0)/(OR+1.0);
   /* Covariance */
   double covar = hapfreqs[0] - margins[0]*margins[2];
   if (arrays[3]) (arrays[3])[ij] = covar;

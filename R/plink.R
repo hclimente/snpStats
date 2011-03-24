@@ -27,6 +27,9 @@ read.plink <- function(bed, bim, fam, na.strings=c("0", "-9"), sep=".",
     }
     else
       stop("unrecognised snp selection")
+    if (any(duplicated(select.snps)))
+      stop("snp selection contains duplicates")
+    select.snps <- sort(select.snps)
     df.bim <- df.bim[select.snps,]
     snps <- snps[select.snps]
   }     
@@ -49,6 +52,9 @@ read.plink <- function(bed, bim, fam, na.strings=c("0", "-9"), sep=".",
     }
     else
       stop("unrecognised subject selection")
+    if (any(duplicated(select.subjects)))
+      stop("subject selection contains duplicates")
+    select.subjects <- sort(select.subjects)
     df.fam <- df.bim[select.subjects,]
   }     
   ped <- as.character(df.fam[,1])

@@ -1,4 +1,4 @@
-ld <- function(x, y=NULL, depth=NULL, stats) {
+ld <- function(x, y=NULL, depth=NULL, stats, symmetric=FALSE) {
   if (missing(stats))
     stop("LD stats must be specified")
   cstats <- c("LLR", "OR", "Q", "Covar", "D.prime", "R.squared", "R")%in%stats
@@ -13,5 +13,5 @@ ld <- function(x, y=NULL, depth=NULL, stats) {
       warning("depth too large; it has been reset to", dmax)
     }
   }
-  .Call("ld", x, y, as.integer(depth), cstats, PACKAGE="snpStats");
+  .Call("ld", x, y, as.integer(depth), cstats, symmetric, PACKAGE="snpStats");
 }

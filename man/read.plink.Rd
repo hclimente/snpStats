@@ -39,7 +39,12 @@ read.plink(bed, bim, fam, na.strings = c("0", "-9"), sep = "." , select.subjects
   to read a subset of the data. Use of \code{select.snps} requires that
   the \code{.bed} file is in SNP-major order (the default in
   PLINK). Likewise, use of \code{select.snps} requires that
-  the \code{.bed} file is in individual-major order.
+  the \code{.bed} file is in individual-major order. Subjects are
+  selected by their numeric order in the PLINK files, while SNPs are
+  selected either by order or by name.  Note that
+  the order of selected SNPs/subjects in the output objects
+  will be the same as
+  their order in the PLINK files. 
 
   Row names for the output \code{SnpMatrix} object and for the
   accompanying subject description dataframe are taken as the pedigree
