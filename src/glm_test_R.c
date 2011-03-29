@@ -685,7 +685,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 
     int missing = 0;
     for (int j=0, ij=0; j<nsnpt; j++) {
-      int len = 0;
+      /*      int len = 0; unused */
       int snpsj = snps[j];
       if (snpsj>0) {
 	snpsj--;
@@ -936,7 +936,7 @@ SEXP pool2_glm(SEXP X, SEXP Y, SEXP If_score) {
       SEXP Scorei;
       PROTECT(Scorei = allocVector(VECSXP, 2));
       setAttrib(Scorei, R_NamesSymbol, UVnames);
-      SEXP Unames = getAttrib(XiU, R_NamesSymbol);
+      /* SEXP Unames = getAttrib(XiU, R_NamesSymbol); unused */
       SET_VECTOR_ELT(Scorei, 0, RU);
       SET_VECTOR_ELT(Scorei, 1, RV);
       SET_VECTOR_ELT(Score, i, Scorei);

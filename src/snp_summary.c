@@ -124,8 +124,8 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   index_db name_index = NULL;
   GTYPE **gt2ht = NULL;
-  double *add, *dom;
-  int pmax;
+  double *add = NULL, *dom = NULL;
+  int pmax = 0;
   if (nrules!=0) {
     name_index = create_name_index(snpNames);
     add = (double *)Calloc(N, double);
@@ -381,8 +381,8 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   index_db name_index = NULL;
   GTYPE **gt2ht = NULL;
-  double *add, *dom;
-  int pmax;
+  double *add = NULL, *dom = NULL;
+  int pmax = 0;
   if (nrules!=0) {
     name_index = create_name_index(snpNames);
     add = (double *)Calloc(N, double);

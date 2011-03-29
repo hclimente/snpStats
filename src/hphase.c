@@ -32,7 +32,7 @@ GTYPE *create_gtype_table(const int nsnp) {
       break;
 
     /* Calculate number of phased assignments for this genotype */
-
+  
     int hom=1, het=0;
     for (int i=0; i<nsnp; i++) {
       int ai = alleles[i];

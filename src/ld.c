@@ -56,7 +56,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
   int MX = ncols(X);
 
   int XY = 0, MY = 0;
-  unsigned char *y;
+  unsigned char *y = NULL;
   if (!isNull(Y)) {
     y= RAW(Y);
     XY = 1;
@@ -79,7 +79,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
   }
    
   int symmetric = *LOGICAL(Symmetric);
-  SEXP Result, Snames;
+  SEXP Result = R_NilValue, Snames = R_NilValue;
   int NR = XY? MX*MY: (MX*(MX-1) - (MX-depth)*(MX-depth-1))/2;
   if (nstats>1) {
     PROTECT(Result = allocVector(VECSXP, nstats));
@@ -170,7 +170,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
 
   double hapfreqs[4], margins[4], LLR;
   if (XY) {
-    double ld[7];
+    /* double ld[7]; unused */
     unsigned char*yj = y;
     for (int j=0, ij=0; j<MY; j++, yj+=N) {
       unsigned char *xi = x;
@@ -186,7 +186,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
     }
   }
   else {
-    double ld[7];
+    /* double ld[7]; unused */
     unsigned char *xj = x;
     for (int j=1, ij=0; j<MX; j++, xj+=N) {
       int ifr = j<depth? 0: j - depth;
@@ -265,7 +265,7 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
     double c = -w2/2.0;
     nroot = gsl_poly_solve_cubic(a, b, c, roots, roots+1, roots+2);
   }
-  double llh, p=-1.0;
+  double llh=0.0, p=-1.0;
   if (LLR || (nroot>1)) {
     for (int i=0; i<nroot; i++) {
       double pi = roots[i];

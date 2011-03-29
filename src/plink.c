@@ -17,9 +17,9 @@
 
 void skip(FILE *in, int lines, int size) {
   if (lines) {
-    long nb = lines*size;
-    for (long i=0; i<nb; i++)
-      if (fgetc(in)==EOF) error("unexpected end of file");
+    for (int i=0; i<lines; i++)
+      for (int j=0; j<size; j++)
+	if (fgetc(in)==EOF) error("unexpected end of file");
   }    
 }
 
@@ -85,8 +85,8 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
   if (seek) 
     skip(in, seek[0]-1, nbyte);
   int part=0, ij=0, i=0, j=0;
+  unsigned char byte = 0x00;
   while (1) {
-    unsigned char byte;
     if (!part) {
       byte = (unsigned char) fgetc(in);
       if (feof(in))

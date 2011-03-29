@@ -108,6 +108,7 @@ object of class {\tt SnpMatrix} containing the genotype data. We shall
 show summaries for the first few loci
 <<sample1>>=
 sample$genotypes
+col.summary(sample$genotypes)$MAF
 head(col.summary(sample$genotypes))
 @ 
 The second list element is a dataframe containing the first six fields of the
@@ -154,6 +155,7 @@ The output object is similar to that produced by {\tt read.pedfile}, a
 list with three elements:
 <<plinkout>>=
 sample$genotypes
+col.summary(sample$genotypes)$MAF
 head(sample$fam)
 head(sample$map)
 @ 
@@ -167,6 +169,7 @@ in our small example below
 <<plinkselect>>=
 subset <- read.plink(bed, bim, fam, select.snps=6:10)
 subset$genotypes
+col.summary(subset$genotypes)$MAF
 subset$map
 @ 
 Note that, in order to select certain SNPs, the input PLINK

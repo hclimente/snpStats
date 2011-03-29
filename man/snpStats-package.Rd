@@ -23,8 +23,8 @@ take place entirely within \code{snpStats}.
 
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.1.13\cr
-Date: \tab 2011-03-24\cr
+Version: \tab 1.1.14\cr
+Date: \tab 2011-03-29\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
@@ -34,7 +34,7 @@ Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
 Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
-Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-03-24 15:56:35 UTC; unix\cr
+Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-03-29 11:29:52 UTC; unix\cr
 }
 
 Index:

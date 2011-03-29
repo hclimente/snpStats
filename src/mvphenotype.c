@@ -293,7 +293,8 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
 
   /* Output list */
   
-  SEXP Result, TestNames = R_NilValue, Chisq, Df, Nused, Namelist; 
+  SEXP Result, Chisq, Df, Nused, Namelist; 
+  /* TestNames = R_NilValue; unused */
   PROTECT(Result = allocS4Object());
   PROTECT(Chisq = allocVector(REALSXP, ntest));
   double *chisq = REAL(Chisq);
@@ -401,8 +402,8 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
 
     /* Extract X matrix */
     
-    int space = MAX_NAME-1;
-    char testname[MAX_NAME];
+    /* int space = MAX_NAME-1; unused */
+    /* char testname[MAX_NAME]; unused */
     double *X = (double *)Calloc(N*nsts, double);
     memset(xmiss, 0x00, N*sizeof(int));
     for (int j=0, ij=0; j<nsts; j++) {
@@ -541,7 +542,8 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
 
 
       if (score) {
-	SEXP Scoret, Udnames;
+	SEXP Scoret;
+	/* SEXP Udnames; unused */
 	PROTECT(Scoret = allocVector(VECSXP, 2));
 	setAttrib(Scoret, R_NamesSymbol, UVnames);
 	SET_VECTOR_ELT(Scoret, 0, U);
