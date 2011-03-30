@@ -307,7 +307,7 @@ int emhap(const int nsnp, const int *gtable, const int *htable,
 
    npr    number of predictor SNPs
    g      predictor genotype (single code, npr SNPs)
-   mX     1 if male and X chromsome, otherwise 0
+   mX     1 if haploid, otherwise 0
    hprob  haplotype probs (table of dimension npr+1 with SNP to be 
           predicted varying fastest)
    gtypes genotype->haplotype lookup table for genotype table of dimension npr
@@ -329,13 +329,13 @@ void predict_gt(const int npr, const int g, const int mX, const double *hprob,
     int h1 = 2*haps[ii++];
     int h2 = 2*haps[ii++];
     if (mX) {
-      if (h1!=h2) 
-	error("BUG: heterozygous haplotype assignment for male on X");
-      double p0 = hprob[h1];
-      double p1 = hprob[h1+1];
-      double p = p0+p1;
-      psum += p;
-      qsum += p1;
+      if (h1==h2) { /* Only consider homozygous codings */
+	double p0 = hprob[h1];
+	double p1 = hprob[h1+1];
+	double p = p0+p1;
+	psum += p;
+	qsum += p1;
+      }
     }
     else {
       double p10 = hprob[h1];

@@ -12,11 +12,11 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   /* SNPs ---- an XSnpMatrix */
 
-  int *ifFemale;
-  SEXP Female = R_do_slot(Snps, mkString("Female"));
-  if (TYPEOF(Female)!=LGLSXP)
-    error("Argument error -  Female slot wrong type");
-  ifFemale = LOGICAL(Female);
+  int *ifDiploid;
+  SEXP Diploid = R_do_slot(Snps, mkString("diploid"));
+  if (TYPEOF(Diploid)!=LGLSXP)
+    error("Argument error -  diploid slot wrong type");
+  ifDiploid = LOGICAL(Diploid);
   if (TYPEOF(Snps)!=RAWSXP)
     error("Argument error - Snps wrong type");
   if (Snps == R_NilValue) {
@@ -42,6 +42,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   /* Rules object */
 
   int nrules = 0;
+  SEXP ruleNames = R_NilValue;
   if (!isNull(Rules)) {
     const char *classR = NULL;
     if (TYPEOF(R_data_class(Rules, FALSE)) == STRSXP) {
@@ -52,6 +53,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
     if (strcmp(classR, "ImputationRules")!=0) 
       error("Argument error - Rules");
     nrules = LENGTH(Rules);
+    ruleNames = getAttrib(Rules, R_NamesSymbol);
   }
 
   /* Handling of uncertain genotypes */
@@ -62,49 +64,53 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   /* Output object */
 
-  int ncol = nrules==0? M: nrules;
+  int ncol = (nrules==0)? M: nrules;
 
-  SEXP Result, Calls, Call_rate, Certain_call_rate, MAF, 
-    P_AA, P_AB, P_BB, P_A, P_B, Z_HWE, Calls_female;
-  PROTECT(Result = allocVector(VECSXP, 11));
+  SEXP Result, Calls, Call_rate, Certain_call_rate, AF, MAF, 
+    P_AA, P_AB, P_BB, P_A, P_B, Z_HWE, Calls_diploid;
+  PROTECT(Result = allocVector(VECSXP, 12));
   PROTECT(Calls = allocVector(INTSXP, ncol));
   SET_VECTOR_ELT(Result, 0, Calls);
   PROTECT(Call_rate = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 1, Call_rate);
   PROTECT(Certain_call_rate = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 2, Certain_call_rate);
+  PROTECT(AF = allocVector(REALSXP, ncol));
+  SET_VECTOR_ELT(Result, 3, AF);
   PROTECT(MAF = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 3, MAF);
+  SET_VECTOR_ELT(Result, 4, MAF);
   PROTECT(P_AA = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 4, P_AA);
+  SET_VECTOR_ELT(Result, 5, P_AA);
   PROTECT(P_AB = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 5, P_AB);
+  SET_VECTOR_ELT(Result, 6, P_AB);
   PROTECT(P_BB = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 6, P_BB);
+  SET_VECTOR_ELT(Result, 7, P_BB);
   PROTECT(P_A = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 7, P_A);
+  SET_VECTOR_ELT(Result, 8, P_A);
   PROTECT(P_B = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 8, P_B);
+  SET_VECTOR_ELT(Result, 9, P_B);
   PROTECT(Z_HWE = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 9, Z_HWE);
-  PROTECT(Calls_female = allocVector(INTSXP, ncol));
-  SET_VECTOR_ELT(Result, 10, Calls_female);
+  SET_VECTOR_ELT(Result, 10, Z_HWE);
+  PROTECT(Calls_diploid = allocVector(INTSXP, ncol));
+  SET_VECTOR_ELT(Result, 11, Calls_diploid);
   SEXP Names;
-  PROTECT(Names = allocVector(STRSXP, 11));
+  PROTECT(Names = allocVector(STRSXP, 12));
   SET_STRING_ELT(Names, 0, mkChar("Calls"));
   SET_STRING_ELT(Names, 1, mkChar("Call.rate"));
   SET_STRING_ELT(Names, 2, mkChar("Certain.calls"));
-  SET_STRING_ELT(Names, 3, mkChar("MAF"));
-  SET_STRING_ELT(Names, 4, mkChar("P.AA"));
-  SET_STRING_ELT(Names, 5, mkChar("P.AB"));
-  SET_STRING_ELT(Names, 6, mkChar("P.BB"));
-  SET_STRING_ELT(Names, 7, mkChar("P.A"));
-  SET_STRING_ELT(Names, 8, mkChar("P.B"));
-  SET_STRING_ELT(Names, 9, mkChar("z.HWE"));
-  SET_STRING_ELT(Names, 10, mkChar("Calls.diploid"));
+  SET_STRING_ELT(Names, 3, mkChar("RAF"));
+  SET_STRING_ELT(Names, 4, mkChar("MAF"));
+  SET_STRING_ELT(Names, 5, mkChar("P.AA"));
+  SET_STRING_ELT(Names, 6, mkChar("P.AB"));
+  SET_STRING_ELT(Names, 7, mkChar("P.BB"));
+  SET_STRING_ELT(Names, 8, mkChar("P.A"));
+  SET_STRING_ELT(Names, 9, mkChar("P.B"));
+  SET_STRING_ELT(Names, 10, mkChar("z.HWE"));
+  SET_STRING_ELT(Names, 11, mkChar("Calls.diploid"));
   int *calls = INTEGER(Calls);
   double *call_rate = REAL(Call_rate);
   double *certain = REAL(Certain_call_rate);
+  double *af = REAL(AF);
   double *maf = REAL(MAF);
   double *p_aa = REAL(P_AA);
   double *p_ab = REAL(P_AB);
@@ -112,9 +118,9 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   double *p_ay = REAL(P_A);
   double *p_by = REAL(P_B);
   double *z_hwe = REAL(Z_HWE);
-  int *calls_female = INTEGER(Calls_female);
+  int *calls_diploid = INTEGER(Calls_diploid);
   setAttrib(Result, R_NamesSymbol, Names);
-  setAttrib(Result, R_RowNamesSymbol, snpNames);
+  setAttrib(Result, R_RowNamesSymbol, (nrules==0)? snpNames: ruleNames);
   SEXP dfClass;
   PROTECT(dfClass = allocVector(STRSXP, 1));
   SET_STRING_ELT(dfClass, 0, mkChar("data.frame"));
@@ -161,7 +167,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 	    double p2 = domi;
 	    double p1 = addi-2.0*p2;
 	    double p0 = 1.0-p1-p2;
-	    if (ifFemale[i]) {
+	    if (ifDiploid[i]) {
 	      aap += p0;
 	      abp += p1;
 	      bbp += p2;
@@ -181,7 +187,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 	  obs[i] = 1;
 	  if (g<4) {
 	    ncertain++;
-	    if (ifFemale[i]) 
+	    if (ifDiploid[i]) 
 	      switch (g) {
 	      case 1: aa++; break;
 	      case 2: ab++; break;
@@ -196,7 +202,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 	  else if (uncert) {
 	    double p0, p1, p2;
 	    g2post(g, &p0, &p1, &p2);
-	    if (ifFemale[i]) {
+	    if (ifDiploid[i]) {
 	      aap += p0;
 	      abp += p1;
 	      bbp += p2;
@@ -210,7 +216,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
       }
     }
     
-    /* HWE test only involves certain assignments in females */
+    /* HWE test only involves certain assignments in diploid genotypes */
 
     double nv = aa + ab + bb;
     double na = 2*aa + ab;
@@ -223,7 +229,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
     /* Call rate stuff */
 
     calls[j] = ncall;
-    calls_female[j] = nv;
+    calls_diploid[j] = nv;
     call_rate[j] = (double) ncall/(double) N;
     certain[j] = ncall>0? (double) ncertain /(double) ncall: NA_REAL;
 
@@ -234,6 +240,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
     double ny = ay + by + ayp + byp;
     double nc = 2*nv + ny;
     p = (na + ay + ayp)/nc;
+    af[j] = nc>0? 1.0-p: NA_REAL;
     if (p>0.5)
       p = 1.0 - p;
     maf[j] = nc>0? p: NA_REAL;
@@ -264,7 +271,7 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
       
   /* Tidy up */
 
-  UNPROTECT(14);
+  UNPROTECT(15);
 
   Free(obs);
   if (nrules!=0) {
@@ -308,6 +315,7 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   /* Rules object */
 
   int nrules = 0;
+  SEXP ruleNames = R_NilValue;
   if (!isNull(Rules)) {
     const char *classR = NULL;
     if (TYPEOF(R_data_class(Rules, FALSE)) == STRSXP) {
@@ -318,6 +326,7 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
     if (strcmp(classR, "ImputationRules")!=0) 
       error("Argument error - Rules");
     nrules = LENGTH(Rules);
+    ruleNames = getAttrib(Rules, R_NamesSymbol);
   }
 
   /* Handling of uncertain genotypes */
@@ -328,42 +337,46 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   /* Output object */
 
-  int ncol = nrules==0? M: nrules;
+  int ncol = (nrules==0)? M: nrules;
 
-  SEXP Result, Calls, Call_rate, Certain_call_rate, MAF, 
+  SEXP Result, Calls, Call_rate, Certain_call_rate, AF, MAF, 
     P_AA, P_AB, P_BB, Z_HWE;
-  PROTECT(Result = allocVector(VECSXP, 8));
+  PROTECT(Result = allocVector(VECSXP, 9));
   PROTECT(Calls = allocVector(INTSXP, ncol));
   SET_VECTOR_ELT(Result, 0, Calls);
   PROTECT(Call_rate = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 1, Call_rate);
   PROTECT(Certain_call_rate = allocVector(REALSXP, ncol));
   SET_VECTOR_ELT(Result, 2, Certain_call_rate);
+  PROTECT(AF = allocVector(REALSXP, ncol));
+  SET_VECTOR_ELT(Result, 3, AF);
   PROTECT(MAF = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 3, MAF);
+  SET_VECTOR_ELT(Result, 4, MAF);
   PROTECT(P_AA = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 4, P_AA);
+  SET_VECTOR_ELT(Result, 5, P_AA);
   PROTECT(P_AB = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 5, P_AB);
+  SET_VECTOR_ELT(Result, 6, P_AB);
   PROTECT(P_BB = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 6, P_BB);
+  SET_VECTOR_ELT(Result, 7, P_BB);
   PROTECT(Z_HWE = allocVector(REALSXP, ncol));
-  SET_VECTOR_ELT(Result, 7, Z_HWE);
+  SET_VECTOR_ELT(Result, 8, Z_HWE);
 
   SEXP Names;
-  PROTECT(Names = allocVector(STRSXP, 8));
+  PROTECT(Names = allocVector(STRSXP, 9));
   SET_STRING_ELT(Names, 0, mkChar("Calls"));
   SET_STRING_ELT(Names, 1, mkChar("Call.rate"));
   SET_STRING_ELT(Names, 2, mkChar("Certain.calls"));
-  SET_STRING_ELT(Names, 3, mkChar("MAF"));
-  SET_STRING_ELT(Names, 4, mkChar("P.AA"));
-  SET_STRING_ELT(Names, 5, mkChar("P.AB"));
-  SET_STRING_ELT(Names, 6, mkChar("P.BB"));
-  SET_STRING_ELT(Names, 7, mkChar("z.HWE"));
+  SET_STRING_ELT(Names, 3, mkChar("RAF"));
+  SET_STRING_ELT(Names, 4, mkChar("MAF"));
+  SET_STRING_ELT(Names, 5, mkChar("P.AA"));
+  SET_STRING_ELT(Names, 6, mkChar("P.AB"));
+  SET_STRING_ELT(Names, 7, mkChar("P.BB"));
+  SET_STRING_ELT(Names, 8, mkChar("z.HWE"));
 
   int *calls = INTEGER(Calls);
   double *call_rate = REAL(Call_rate);
   double *certain = REAL(Certain_call_rate);
+  double *af = REAL(AF);
   double *maf = REAL(MAF);
   double *p_aa = REAL(P_AA);
   double *p_ab = REAL(P_AB);
@@ -371,7 +384,7 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   double *z_hwe = REAL(Z_HWE);
 
   setAttrib(Result, R_NamesSymbol, Names);
-  setAttrib(Result, R_RowNamesSymbol, duplicate(snpNames));
+  setAttrib(Result, R_RowNamesSymbol, (nrules==0)? snpNames: ruleNames);
   SEXP dfClass;
   PROTECT(dfClass = allocVector(STRSXP, 1));
   SET_STRING_ELT(dfClass, 0, mkChar("data.frame"));
@@ -469,6 +482,7 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
     nv += aap + abp + bbp;
     na += 2*aap + abp;
     p =  na/(2*nv);
+    af[j] = nv>0? 1.0-p: NA_REAL;
     if (p>0.5)
       p = 1.0 - p;
     maf[j] = nv>0? p: NA_REAL;
@@ -497,7 +511,7 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
 
   /* Tidy up */
 
-  UNPROTECT(11);
+  UNPROTECT(12);
 
   Free(obs);
   if (nrules!=0) {

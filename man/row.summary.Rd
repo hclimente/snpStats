@@ -46,6 +46,7 @@ col.summary(object, rules = NULL, uncertain = TRUE)
       \item Calls: The number of valid calls
       \item Call.rate: The proportion of genotypes called
       \item Certain.calls: Proportion of called SNPs with certain calls
+      \item RAF: The "risk" allele (allele \code{B}) frequency
       \item MAF: The minor allele frequency
       \item P.AA: The frequency of homozygous genotype 1 (A/A)
       \item P.AB: The frequency of heterozygous genotype 2 (A/B)

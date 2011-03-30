@@ -130,10 +130,10 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
 
   /* Sex */
 
-  const int *female = NULL;
+  const int *diploid = NULL;
   if (ifX) {
-    SEXP Female = R_do_slot(Snps, mkString("Female")); 
-    female = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Snps, mkString("diploid")); 
+    diploid = LOGICAL(Diploid);
   }
 
   /* Handling of uncertain genotypes */
@@ -148,7 +148,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
   SEXP Result, Used, U, V;
   PROTECT(Result = allocVector(VECSXP, 4));
   
-  if (female) {
+  if (diploid) {
     PROTECT(U =  allocMatrix(REALSXP, ntest, 3) ); /* Scores */
     PROTECT(V =  allocMatrix(REALSXP, ntest, 4) ); /* Score variances */
   }
@@ -321,7 +321,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
 	    xadd[j] = xdom[j] = 0.0;
 	}
 	else {
-	  do_impute(Snps, n, female, subset, nsubj, name_index, Rule, gt2ht, 
+	  do_impute(Snps, n, diploid, subset, nsubj, name_index, Rule, gt2ht, 
 		    xadd, xdom);
 	  r2 = *REAL(VECTOR_ELT(Rule, 1));
 	}
@@ -345,7 +345,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
 	  error("subset out of range");
 	int strat = (nstrata==1)? 0: (stratum[j]-1);
 	vec[1] = phenotype[j];
-	double *uv = female[j] ? UVF[strat]: UVM[strat];
+	double *uv = diploid[j] ? UVF[strat]: UVM[strat];
 	if (nrules) {
 	  vec[2] = xadd[su];
 	  if (!ISNA(vec[2])) {
@@ -395,7 +395,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
 	      v += 4*af*(1.0-af)*ssy;
 	    }
 	  }
-	  /* Female contribution */
+	  /* Diploid contribution */
 	  if (Nf>1) {
 	    u1 += uvfj[4] - uvfj[3]*uvfj[1]/Nf;
 	    u2 += uvfj[7] - uvfj[6]*uvfj[1]/Nf;

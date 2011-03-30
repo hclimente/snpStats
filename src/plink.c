@@ -17,9 +17,12 @@
 
 void skip(FILE *in, int lines, int size) {
   if (lines) {
-    for (int i=0; i<lines; i++)
-      for (int j=0; j<size; j++)
-	if (fgetc(in)==EOF) error("unexpected end of file");
+    for (int i=0; i<lines; i++) {
+      for (int j=0; j<size; j++) {
+	fgetc(in);
+	if (feof(in)) error("unexpected end of file");
+      }
+    }
   }    
 }
 
@@ -60,7 +63,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
   int ncell = nrow*ncol;
   memset(result, 0x00, ncell);
 
-  /* Read in data */
+  /* Read in first few bytes */
 
   int *seek = NULL;
   int snp_major = start[2];
@@ -103,10 +106,10 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (i==nrow) {
 	i = part = 0;
 	j++;
-	if (seek)
-	  skip(in, seek[j]-seek[j-1]-1, nbyte);
 	if (j==ncol)
 	  break;
+	if (seek)
+	  skip(in, seek[j]-seek[j-1]-1, nbyte);
       }
     }	
     else {
@@ -115,10 +118,10 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       if (j==ncol){
 	j = part = 0;
 	i++;
-	if (seek)
-	  skip(in, seek[i]-seek[i-1]-1, nbyte);
 	if (i==nrow)
 	  break;
+	if (seek)
+	  skip(in, seek[i]-seek[i-1]-1, nbyte);
 	ij = i;
       }
     }
