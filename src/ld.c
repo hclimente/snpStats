@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define EPS 1.0e-10
+#define EPS 1.0e-6
 
 /* Declare GSL function */
 
@@ -187,7 +187,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
   }
   else {
     /* double ld[7]; unused */
-    unsigned char *xj = x;
+    unsigned char *xj = x+N;
     for (int j=1, ij=0; j<MX; j++, xj+=N) {
       int ifr = j<depth? 0: j - depth;
       unsigned char *xi = x+N*ifr; 
@@ -237,7 +237,11 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   T[2]+= 2*G[6]+G[3]+G[7];
   T[3]+= 2*G[8]+G[7]+G[5];
   int Dh = G[4];
-  double Nhap = T[0]+T[1]+T[2]+T[3]+2*Dh;
+  int Nph = T[0]+T[1]+T[2]+T[3];
+  if (!Nph) {
+    return 2;
+  }
+  double Nhap = Nph +2*Dh;
   double E1[4];
   /* Allele frequencies */
   margins[0] = (double)(T[0]+T[1]+Dh)/Nhap;
@@ -252,7 +256,15 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   int nroot=1;
   double w2 = (double)(T[0]*T[3]);
   double w3 = (double)(T[1]*T[2]);
-  if (!Dh) {
+  if (w2==0.0 && w3==0.0) {
+    if (!Dh)
+      return 3;
+    double pi = (1 + (w3 - w2)/Dh)/2.0;
+    if (pi>1.0 || pi<0.0)
+      return 3;
+    roots[0] = pi;
+  }
+  else if (w2==0.0 || w3==0.0 || !Dh) {
     roots[0] = w2/(w2+w3);
   }
   else {
@@ -288,7 +300,7 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
 	llhi += Dh*log(EDh1);
       for (int j=0; j<4; j++) 
 	if (T[j]) llhi += T[j]*log(E1[j]);
-      if (!i || (llhi>llh)) {
+      if (p<0.0 || (llhi>llh)) {
 	llh = llhi;
 	p = pi;
       }
@@ -296,8 +308,9 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   }
   else 
     p = roots[0];
-  if (p==-1.0)
+  if (p==-1.0) {
     return 3;
+  }
   
   /* Normal return */
 
