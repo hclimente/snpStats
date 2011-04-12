@@ -254,21 +254,26 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   /* Solve cubic equation */
   double  roots[3];
   int nroot=1;
+  double w1 = (double)(T[0]+T[3]-T[1]-T[2])/(double)Dh;
   double w2 = (double)(T[0]*T[3]);
   double w3 = (double)(T[1]*T[2]);
   if (w2==0.0 && w3==0.0) {
     if (!Dh)
       return 3;
-    double pi = (1 + (w3 - w2)/Dh)/2.0;
-    if (pi>1.0 || pi<0.0)
-      return 3;
-    roots[0] = pi;
+    double pi = (1.0 - w1)/2.0;
+    if (pi>1.0 || pi<0.0) { 
+      /* No root within valid range; try edges */
+      nroot=2;
+      roots[0] = 0.0;
+      roots[1] = 1.0;
+    }
+    else
+      roots[0] = pi;
   }
   else if (w2==0.0 || w3==0.0 || !Dh) {
     roots[0] = w2/(w2+w3);
   }
   else {
-    double w1 = (double)(T[0]+T[3]-T[1]-T[2])/(double)Dh;
     double Dh2 = Dh*Dh;
     w2 /= Dh2;
     w3 /= Dh2;
