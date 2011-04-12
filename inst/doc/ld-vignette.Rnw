@@ -236,7 +236,7 @@ $\theta/(1+\theta)$ of the doubly heterozygous subjects to be {\tt
 
 We next use {\tt ld} to obtain an estimate of this odds
 ratio\footnote{Here {\tt ld} is called with two arguments of class
-  {\tt snpStats} and, since only the odds ratio is to be calculated, it
+  {\tt SnpMatrix} and, since only the odds ratio is to be calculated, it
   returns the odds ratio rather than a list.}
 and, using this, we partition the doubly
 heterozygous individuals between the two possible phases: 
