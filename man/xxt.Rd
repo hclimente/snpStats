@@ -80,6 +80,10 @@ class \code{"SnpMatrix"} or\code{"XSnpMatrix"}), one per chromosome.
 Note that the  \var{X}.\var{X}-transpose matrices
 produced by applying the \code{xxt} function to each object in turn
 can be added to yield the genome-wide result.
+
+If the matrix is converted to a correlation matrix by pre- and
+post-multiplying by the sqrt of the inverse of its diagonal, then this
+is an unbiased estimate of twice the kinship matrix.
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
 \section{Warning}{

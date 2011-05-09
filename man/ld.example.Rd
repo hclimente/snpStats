@@ -4,7 +4,7 @@
 \alias{ceph.1mb}
 \alias{yri.1mb}
 \alias{support.ld}
-\title{Datasets to illustrate calculation of linkage disequilibrium ststistics}
+\title{Datasets to illustrate calculation of linkage disequilibrium statistics}
 \description{
   This R data file contains data from the International HapMap project,
   concerning 603 SNPs spanning a one megabase region on chromosome 22,

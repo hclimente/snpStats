@@ -61,20 +61,28 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
     error("Argument error - Lower_only wrong type");
   const int lower = *LOGICAL(Lower_only);
 
-  int *ifFemale = NULL;
+  int *ifDiploid = NULL;
   SEXP cl = GET_CLASS(Snps);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(Snps, mkString("Female"));
-    if (TYPEOF(Female)!=LGLSXP)
-      error("Argument error -  Female slot wrong type");
-    ifFemale = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Snps, mkString("diploid"));
+    if (TYPEOF(Diploid)!=LGLSXP)
+      error("Argument error -  diploid slot wrong type");
+    ifDiploid = LOGICAL(Diploid);
   }
   else if (strcmp(CHAR(STRING_ELT(cl, 0)), "SnpMatrix")) {
     error("Argument error - Snps wrong type");
   }    
+  SEXP names = getAttrib(Snps, R_DimNamesSymbol);
+  if (names == R_NilValue) {
+    error("Argument error - Snps object has no names");
+  }
+  SEXP rowNames = VECTOR_ELT(names, 0);
+  if (rowNames == R_NilValue) {
+    error("Argument error - Snps object has no row names");
+  }
 
   const unsigned char *snps = RAW(Snps);
   int N, M;
@@ -130,8 +138,13 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 
   /* Result matrix */
 
-  SEXP Result;
+  SEXP Result, dimnames;
   PROTECT(Result = allocMatrix(REALSXP, N, N));
+  PROTECT(dimnames = allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(dimnames, 0, rowNames);    
+  SET_VECTOR_ELT(dimnames, 1, rowNames);    
+  setAttrib(Result, R_DimNamesSymbol, dimnames);    
+
   double *result = REAL(Result);
   memset(result, 0x00, N*N*sizeof(double));
 
@@ -152,7 +165,7 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 	if (w&&((w<4)|uncert)) {
 	  int si = strata[i]-1;
 	  double gm = g2mean(w);
-	  if (ifFemale && !ifFemale[i]) {
+	  if (ifDiploid && !ifDiploid[i]) {
 	    count[si]++;
 	    acount[si] += gm/2.0;
 	  }
@@ -180,7 +193,7 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 	unsigned char w =  snps[ki++];
 	if (w&&((w<4)|uncert)) {
 	  double gm = g2mean(w);
-	  if (ifFemale && !ifFemale[i]) {
+	  if (ifDiploid && !ifDiploid[i]) {
 	    s1++;
 	    s2 += gm/2.0;
 	  }
@@ -218,7 +231,7 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 	unsigned char sik = snps[ik];
 	if (sik && sd2!=0.0) {
 	  double xik = g2mean(sik) - mean;
-	  xik /= (ifFemale && !ifFemale[i])? (rt2*sd2): sd2;
+	  xik /= (ifDiploid && !ifDiploid[i])? (rt2*sd2): sd2;
 	  if (correct) {
 	    ipw = 1.0/(1.0 - tk*(double)Ti[i]); /* IPW for diagonal */
 	  }
@@ -232,7 +245,7 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 	    unsigned char sjk = snps[jk++]; 
 	    if (sjk && sd2!=0.0) {
 	      double xjk = g2mean(sjk) - mean;
-	      xjk/=  (ifFemale && !ifFemale[j])? (rt2*sd2): sd2;
+	      xjk/=  (ifDiploid && !ifDiploid[j])? (rt2*sd2): sd2;
 	      if (correct) 
 		result[ij] += xik*xjk*((i==j)?ipw: ipw/(1.0-tk*(double)Ti[j]));
 	      else 
@@ -274,7 +287,7 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
     Free(sd);
   }
       
-  UNPROTECT(1);
+  UNPROTECT(2);
   return(Result);
 }
   
@@ -381,16 +394,16 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
 
   double lutab[3][3] = {{4., 2., 0.}, {2., 2., 2.}, {0., 2., 4.}};
 
-  int *ifFemale = NULL;
+  int *ifDiploid = NULL;
   SEXP cl = GET_CLASS(Snps);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(Snps, mkString("Female"));
-    if (TYPEOF(Female)!=LGLSXP)
-      error("Argument error -  Female slot wrong type");
-    ifFemale = LOGICAL(Female);
+    SEXP Diploid = R_do_slot(Snps, mkString("diploid"));
+    if (TYPEOF(Diploid)!=LGLSXP)
+      error("Argument error -  diploid slot wrong type");
+    ifDiploid = LOGICAL(Diploid);
   }
   else if (strcmp(CHAR(STRING_ELT(cl, 0)), "SnpMatrix")) {
     error("Argument error - Snps wrong type");
@@ -436,7 +449,7 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
     int N1 = N+1;
     for (int i=0, ii=0; i<N; i++, ii+=N1) {
       int base_div;
-      if (ifFemale && !ifFemale[i])
+      if (ifDiploid && !ifDiploid[i])
 	base_div = 2;
       else
 	base_div = 1;
@@ -448,7 +461,7 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
 	for (int j=i+1, jk=ik, ji=ii+1, ij=ii+N; 
 	     j<N; j++, ji++, ij+=N) {
 	  int div = base_div ;
-	  if (ifFemale && !ifFemale[j])
+	  if (ifDiploid && !ifDiploid[j])
 	    div *= 2;
 	  unsigned char sjk = snps[jk++]; 
 	  if (sjk&&((sjk<4)|uncert)) {

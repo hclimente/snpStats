@@ -200,37 +200,28 @@ The first field gives the SNP identifier ({\tt snp1} to {\tt snp18}),
 the second gives the sample, or subject, identifier  ({\tt subject1} to 
 {\tt subject100}), the third field gives the genotype call ({\tt
   1=A/A}, {\tt 2=A/B}, {\tt 3=B/B}), and the last field gives a
-confidence measure for the call (here always {\tt 1.000}). We first
-generate the subject and SNP identifiers 
-<<ssid>>=
-samples <- paste("subject", 1:100, sep="")
-snps <- paste("snp", 1:18, sep="")
-@ 
-(more usually these would be read in from accompanying support
-files). To read the long format file in and inspect the data:
+confidence measure for the call (here always {\tt 1.000}).
+To read in this file and inspect the data:
 <<readlong>>=
-gdata <- read.snps.long(longfile, sample.id=samples, snp.id=snps,
+gdata <- read.long(longfile, 
    fields=c(snp=1, sample=2, genotype=3, confidence=4),
-   codes=c("1", "2", "3"), sep="\t",
+   gcodes=c("1", "2", "3"), 
    threshold=0.95)
 gdata
 summary(gdata)
 @ 
 A few remarks:
 \begin{enumerate}
-\item We need to know the names of the subjects and SNPs before
-  calling the function. But the input file could contain much more
-  data than will be extracted by the function call.
-\item Here, the order of subjects and SNPs in the file is the same as
-  specified in the arguments {\tt sample.id} and {\tt
-    snp.id}. Optionally this can be relaxed, although this will result
-  in slower operation.
+\item In our example, the entire file has been read. However, subsets
+  of data may be extracted by specifying the required SNP or sample
+  identifiers.
 \item Any calls for which the call confidence is less than {\tt
     threshold} is set to {\tt NA} (this did not affect any calls in
   this simple example).
 \item Here, calls were represented by a single genotype code. It is
-  also possible to read calls as pairs of alleles.
-\item the {\tt sep="$\backslash$t"} argument indicates a TAB-delimited file.
+  also possible to read calls as pairs of alleles. The function then
+  returns a list whose first argument is the {\tt SnpMatrix} object,
+  and whose second object is a dataframe containing the allele codes.
 \end{enumerate}
 This function has many options and the online help page needs to be
 read carefully.

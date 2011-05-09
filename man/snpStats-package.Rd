@@ -23,18 +23,18 @@ take place entirely within \code{snpStats}.
 
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.1.17\cr
-Date: \tab 2011-04-12\cr
+Version: \tab 1.3.1\cr
+Date: \tab 2011-05-09\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
 License: \tab GPL-3\cr
 URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
-Collate: \tab ss.R contingency.table.R convert.R glm-test.R imputation.R indata.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
+Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2011-02-14 16:59:36 UTC; david\cr
-Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-04-12 07:41:59 UTC; unix\cr
+Packaged: \tab 2011-05-09 16:59:36 UTC; david\cr
+Built: \tab R 2.12.2; x86_64-pc-linux-gnu; 2011-05-09 13:54:47 UTC; unix\cr
 }
 
 Index:
@@ -56,11 +56,14 @@ filter.rules            Filter a set of imputation rules
 for.exercise            Data for exercise in use of the snpStats
                         package
 glm.test.control        Set up control object for GLM tests
+ibsCount                Count alleles identical by state
+ibsDist                 Distance matrix based on identity by state
+                        (IBS)
 imputation.maf          Extract statistics from imputation rules
 impute.snps             Impute snps
 ld                      Pairwise linkage disequilibrium measures
 ld.example              Datasets to illustrate calculation of linkage
-                        disequilibrium ststistics
+                        disequilibrium statistics
 misinherits             Find non-Mendelian inheritances in family data
 mvtests                 Multivariate SNP tests
 plotUncertainty         Plot posterior probabilities of genotype
@@ -72,14 +75,16 @@ pool2                   Pool results of tests from two independent
 qq.chisq                Quantile-quantile plot for chi-squared tests
 read.beagle             Read genotypes imputed by the BEAGLE program
 read.impute             Read genotypes imputed by the IMPUTE2 program
+read.long               Read SNP genotype data in long format
 read.mach               Read genotypes imputed by the MACH program
 read.pedfile            Read a pedfile as '"SnpMatrix"' object
 read.plink              Read a PLINK binary data file as a SnpMatrix
-read.snps.long          Read SNP data in long format
+read.snps.long          Read SNP data in long format (deprecated)
 row.summary             Summarize rows or columns of a snp matrix
 sample.info             Sample datasets to illustrate data input
 single.snp.tests        1-df and 2-df tests for genetic associations
                         with SNPs (or imputed SNPs)
+sm.compare              Compare two SnpMatrix objects
 snp.cbind               Bind together two or more SnpMatrix objects
 snp.cor                 Correlations with columns of a SnpMatrix
 snp.imputation          Calculate imputation rules

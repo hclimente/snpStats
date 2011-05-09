@@ -81,9 +81,11 @@ snp.lhs.estimates(Autosomes[,1:10], ~cc, ~region, data=subject.data, robust=TRUE
 test4 <-
 snp.lhs.estimates(Autosomes[,1:10], ~strata(region), ~cc,
    data=subject.data, robust=TRUE)
+test5 <- snp.lhs.estimates(Autosomes[,1:10], ~region+sex, ~cc, data=subject.data, robust=TRUE)
 print(test1)
 print(test2)
 print(test3)
 print(test4)
+print(test5)
 }
 \keyword{htest}

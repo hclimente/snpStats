@@ -193,10 +193,9 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 
       const double *xi = X;
       double *xbi = Xb;
-      x_rank = skip_rank = 0;
+      x_rank = 0;
+      skip_rank = Mskip;
       for (int i=0, ii=0, ij=0; i<M; i++, xi+=N) {
-	if (i==Mskip)
-	  skip_rank = x_rank;
 	double ssx = wssq(xi, N, weights);
 	wcenter(xi, N, weights, stratum, S, 1, xbi);
 	double *xbj = Xb;
@@ -216,6 +215,8 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	    betaQ[ii++] = bij;
 	  }
 	}
+	else if (i<Mskip) 
+	  skip_rank--;
       }
       wss_last = wssq(resid, N, weights);
       for (int i=0; i<N; i++)

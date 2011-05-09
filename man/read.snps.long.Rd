@@ -1,6 +1,6 @@
 \name{read.snps.long}
 \alias{read.snps.long}
-\title{Read SNP data in long format}
+\title{Read SNP data in long format (deprecated)}
 \description{
   Reads SNP data when organized in free format
   as one call per line. Other than the one
@@ -8,7 +8,9 @@
   input files can be read, the input fields can be in any order on the
   line, and irrelevant fields can be skipped. The samples and SNPs
   to be read  must be pre-specified, and define rows and columns of an
-  output object of class \code{"SnpMatrix"}. 
+  output object of class \code{"SnpMatrix"}. This function has been
+  replaced in versions 1.3 and later by the more flexible function
+  \code{read.long}. 
 }
 \usage{
 read.snps.long(files, sample.id = NULL, snp.id = NULL, diploid = NULL,

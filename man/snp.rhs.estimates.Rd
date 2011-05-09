@@ -89,11 +89,14 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
     \code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}}
 \examples{
 data(testdata)
-sle3 <- snp.rhs.estimates(cc~strata(region), family="binomial",
+test <- snp.rhs.estimates(cc~strata(region), family="binomial",
    data=subject.data, snp.data= Autosomes, sets=1:10)
-print(sle3)
-sle3.robust <- snp.rhs.estimates(cc~strata(region), family="binomial",
+print(test)
+test2 <- snp.rhs.estimates(cc~region+sex, family="binomial",
+   data=subject.data, snp.data= Autosomes, sets=1:10)
+print(test2)
+test.robust <- snp.rhs.estimates(cc~strata(region), family="binomial",
    data=subject.data, snp.data= Autosomes, sets=1:10, robust=TRUE)
-print(sle3.robust)
+print(test.robust)
 }
 \keyword{htest}
