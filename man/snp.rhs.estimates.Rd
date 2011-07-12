@@ -81,7 +81,10 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   \code{cluster(...)} call may be included in the base model
   formula. This identifies clusters of potentially correlated
   observations (e.g. for members of the same family); in this case, an
-  appropriate robust estimate of the variance of the score test is used.
+  appropriate robust estimate of the variance of the parameter
+  estimates is used.
+
+  Uncertain genotypes (e.g. as a result of imputation) are ignored.
 }
 \seealso{\code{\link{GlmEstimates-class}},
     \code{\link{snp.lhs.estimates}},

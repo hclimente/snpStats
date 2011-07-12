@@ -1,11 +1,11 @@
-setOldClass(c("haplotype", "genotype"), test=TRUE)
+#setOldClass(c("haplotype", "genotype"), test=TRUE)
 
 #content should be raw - TODO: put restriction 
 setClass("SnpMatrix", contains="matrix")
 
 setClass("XSnpMatrix", representation("SnpMatrix", diploid="logical"),
          contains="SnpMatrix")
-
+ 
 # constructor 
 setMethod("initialize", 
           "SnpMatrix",
@@ -693,7 +693,7 @@ setMethod("pool2",
                     score="logical"),
           function(x, y, score) {
             if (!is.null(x@var.names) && !is.null(y@var.names) &&
-                (cat(x@var.names)!=cat(y@var.names)))
+                (any(x@var.names!=y@var.names)))
               warning("tests to be pooled have non-matching var.names slots") 
             nm.x <- names(x)
             nm.y <- names(y)

@@ -4,7 +4,8 @@ function(file, samples, snps,
            allele.A=NA, allele.B=NA),
          split="\t| +", gcodes, no.call="", threshold=NULL,
          lex.order=FALSE, verbose=FALSE) {
-
+  ## Number of ignored lines to list if verbose operation
+  list.ignore <- 50
   ## Input file(s)
   if (length(file)>1) {
     if (missing(samples) || missing(snps))
@@ -364,7 +365,7 @@ function(file, samples, snps,
     if (lex.order) {
       swa<- (!(is.na(aA)|is.na(aB)) & (aA>aB))
       if (any(swa)) {
-        switch.alleles(genotypes, swa)
+        genotypes <- switch.alleles(genotypes, swa)
         aAsw <- aA[swa]
         aA[swa] <- aB[swa]
         aB[swa] <- aAsw

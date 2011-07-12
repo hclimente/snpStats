@@ -179,7 +179,7 @@ imp <- single.snp.tests(cc, stratum, data=subject.support,
 Using the observed data in the matrix {\tt target} and the set of
 imputation rules stored in {\tt rules}, the above
 command  imputes each of the imputed SNPs, carries out 1- and 2-df
-single tests for association,  returns the results in the object {\tt
+single locus tests for association,  returns the results in the object {\tt
   imp}. To see how successful imputation has been, we can carry out
 the same tests using the {\em true} data in {\tt missing}:
 

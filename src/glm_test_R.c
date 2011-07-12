@@ -1163,7 +1163,7 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
  
     for (int i=0; i<N; i++) {
       int yij = (int) yj[i];
-      if (yij) {
+      if (yij && yij<4) {
 	if (!yv)
 	  yv = yij;
 	else if (mono) 
@@ -1535,7 +1535,7 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
       const unsigned char *zj = z + N*snpsj;
       for (int i=0; i<N; i++, ij++) {
 	unsigned char zij = zj[i];
-	if (zij) {
+	if (zij && zij<4) {
 	  xz[ij] = (double) (zij - 1);
 	}
 	else {

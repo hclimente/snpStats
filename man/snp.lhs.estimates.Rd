@@ -67,6 +67,8 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
   observations (e.g. for members of the same family); in this case, an
   appropriate robust estimate of the variance-covariance matrix of
   parameter estimates is calculated.
+
+  Uncertain genotypes (e.g. as a result of imputation) are ignored.
 }
 \seealso{\code{\link{GlmEstimates-class}}, \code{\link{snp.lhs.tests}}}
 \examples{

@@ -74,20 +74,20 @@ provides an {\tt image} method, a convenient way to examine patterns
 in the matrices. You should look at these carefully and
 note any differences.
 <<image1,eval=FALSE>>=
-image(ld.ceph$D.prime) 
+image(ld.ceph$D.prime, lwd=0) 
 @ 
 <<png1,echo=FALSE>>=
 png(file="image1.png", width=800, height=800)
-image(ld.ceph$D.prime)
+image(ld.ceph$D.prime, lwd=0)
 dev.off()
 @ 
 \grinc{image1.png}
 <<image2,eval=FALSE>>=
-image(ld.yri$D.prime)
+image(ld.yri$D.prime, lwd=0)
 @ 
 <<png2,echo=FALSE>>=
 png(file="image2.png", width=800, height=800)
-image(ld.yri$D.prime)
+image(ld.yri$D.prime, lwd=0)
 dev.off()
 @ 
 \grinc{image2.png}
@@ -111,11 +111,11 @@ spectrum <- rainbow(10, start=0, end=1/6)[10:1]
 @ 
 and plot the image, with a colour key down its right hand side
 <<imagecol,eval=FALSE>>=
-image(ld.ceph$D.prime, cuts=9, col.regions=spectrum, colorkey=TRUE)
+image(ld.ceph$D.prime, lwd=0, cuts=9, col.regions=spectrum, colorkey=TRUE)
 @ 
 <<pngcol,echo=FALSE>>=
 png(file="imagecol.png", width=800, height=800)
-image(ld.ceph$D.prime, cuts=9, col.regions=spectrum, colorkey=TRUE)
+image(ld.ceph$D.prime, lwd=0, cuts=9, col.regions=spectrum, colorkey=TRUE)
 dev.off()
 @ 
 \grinc{imagecol.png}
@@ -127,20 +127,20 @@ the 75-th, using the European data
 use <- 75:274
 @ 
 <<image3,eval=FALSE>>=
-image(ld.ceph$D.prime[use,use])
+image(ld.ceph$D.prime[use,use], lwd=0)
 @ 
 <<png3,echo=FALSE>>=
 png(file="image3.png", width=800, height=800)
-image(ld.ceph$D.prime[use,use])
+image(ld.ceph$D.prime[use,use], lwd=0)
 dev.off()
 @ 
 \grinc{image3.png}
 <<image4,eval=FALSE>>=
-image(ld.ceph$R.squared[use,use])
+image(ld.ceph$R.squared[use,use], lwd=0)
 @ 
 <<png4,echo=FALSE>>=
 png(file="image4.png", width=800, height=800)
-image(ld.ceph$R.squared[use,use])
+image(ld.ceph$R.squared[use,use], lwd=0)
 dev.off()
 @ 
 \grinc{image4.png}
@@ -236,7 +236,7 @@ $\theta/(1+\theta)$ of the doubly heterozygous subjects to be {\tt
 
 We next use {\tt ld} to obtain an estimate of this odds
 ratio\footnote{Here {\tt ld} is called with two arguments of class
-  {\tt SnpMatrix} and, since only the odds ratio is to be calculated, it
+  {\tt SnpStats} and, since only the odds ratio is to be calculated, it
   returns the odds ratio rather than a list.}
 and, using this, we partition the doubly
 heterozygous individuals between the two possible phases: 
@@ -246,6 +246,7 @@ options(digits=4)
 <<OR>>=
 OR <- ld(ceph.1mb[,1], ceph.1mb[,5], stats="OR")
 OR
+OR <- 
 AABB <- tab33[2,2]*OR/(1+OR)
 ABBA <- tab33[2,2]*1/(1+OR)
 AABB
@@ -292,10 +293,9 @@ illustrative purposes we shall consider the region surroung the 168-th
 SNP, rs2385786. We first calculate D-prime values for the 100 SNPs on
 either side of rs2385786, and their positions:
 <<extent>>=
-left <- ld(ceph.1mb[,168], ceph.1mb[,68:167], stats="D.prime")
-right <- ld(ceph.1mb[,168], ceph.1mb[,169:268], stats="D.prime")
-D.prime <- c(left, right)
-where <- pos[c(68:167, 169:268)]
+lr100 <- c(68:167, 169:268)
+D.prime <- ld(ceph.1mb[,168], ceph.1mb[,lr100], stats="D.prime")
+where <- pos[lr100]
 @ 
 We now plot D.prime against position, adding a simple smoother:
 <<eplot,fig=TRUE>>=
@@ -304,4 +304,56 @@ lines(where, smooth(D.prime))
 @ 
 Although the data are somewhat noisy (the sample size is small), the
 region of LD is fairly clearly delineated.
+\section*{Selecting tag SNPs}
+Several ways have been suggested to select a set of ``tag'' SNPs which
+can be used to test for associations in a given region. That described
+below is based upon a heirarchical cluster analysis. We shall apply it
+to the region of high LD identified in the previous section, which
+lies between positions  $1.579\times 10^7$ and $1.587\times 10^7$. 
+
+The following commands identify which SNPs lie in this region, and
+extracts the relevant part of the $R^2$ matrix, as a symmetric matrix
+rather than as an upper triangular matrix.
+<<ldregion>>=
+use <- pos>=1.579e7 & pos<=1.587e7
+r2 <- forceSymmetric(ld.ceph$R.squared[use, use])
+@ 
+The next step is to convert $(1-R^2)$ into a distance matrix, stored as
+required for the hierachical clustering function {\tt hclust}, and to
+carry out a complete linkage cluster analysis 
+<<dist>>=
+D <- as.dist(1-r2)
+hc <- hclust(D, method="complete")
+@ 
+To plot the dendrogram, we must first adjust the character size for legibility:
+<<clplot,fig=TRUE>>=
+par(cex=0.5)
+plot(hc)
+@ 
+The interpretation of this dendrogram is that, if we were to draw a
+horizontal line at a ``height'' of 0.5, then this would divide the
+SNPs into clusters in such a way that the value of $(1-R^2)$ between
+any pair of SNPs in a cluster would be no more than 0.5 (so that $R^2$
+would be at least 0.5). This is carried out using the {\tt rect.hclust}
+function, which returns a list giving the names of the members of each
+cluster together with their positions in the rows and columns of the 
+distance matrix\footnote{The command also superimposes rectangles
+  corresponding to these clusters on an existing dendrogram plot}:
+<<clusters>>=
+clusters <- rect.hclust(hc, h=0.5)
+clusters
+@ 
+It can be seen that there are \Sexpr{length(clusters)} clusters.
+To have a reasonable chance of picking up an association with the SNPs
+in this 80kb region, we would need to type a SNP from each one of these
+clusters. Of these, \Sexpr{sum(sapply(clusters, length)==1)} SNPs
+would only tag themselves!
+
+A threshold $R^2$ of 0.5 might seem rather low. However, this is a
+``worst case'' figure and most values of $R^2$ would be substantially
+better than this, particularly if an effort is made to choose tag SNPs
+which are in the center of clusters rather than on their edges. Also,
+this process has only considered tagging by single SNPs; it can be
+that two or more tag SNPs, taken together, can provide substantially
+better prediction than any one of them alone.
 \end{document}
