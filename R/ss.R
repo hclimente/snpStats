@@ -228,8 +228,9 @@ setMethod("[",
        function(x, i){
          if (is.character(i))
            i <- match(i, names(x), nomatch=0)
-         res <- new("ImputationRules", x@.Data[i])
-         names(res) <- names(x)[i]
+         ss <- x@.Data[i]
+         names(ss) <- names(x)[i]
+         res <- new("ImputationRules", ss)
          attr(res, "Max.predictors") <-
            max(sapply(res, function(rule) length(rule$snps)))
          res
@@ -343,20 +344,6 @@ setClass("GlmTests",
 setClass("GlmTestsScore", representation("GlmTests", score="list"),
          contains="GlmTests")
 
-setMethod("names", "GlmTests",
-          function(x) {
-            objn <- x@snp.names
-            if (is.list(objn)) {
-              nobjn <- attr(objn, "names")
-              if (!is.null(nobjn))
-                nobjn
-              else
-                vapply(objn, function(x){
-                       paste(x[1],x[length(x)], sep="...")}, "character")
-            }
-            else
-              as.character(objn)
-          })
               
 setMethod("[",
           signature(x="SingleSnpTests", i="ANY",
@@ -423,13 +410,14 @@ setMethod("[",
           signature(x="GlmTests", i="ANY",
                     j="missing", drop="missing"),
            function(x, i, j, drop) {
-              i <- match(i, names(x), nomatch=0)
-            new("GlmTests",
-                snp.names = x@snp.names[i],
-                var.names = x@var.names,
-                chisq = x@chisq[i],
-                df = x@df[i],
-                N = x@N[i])
+             if (is.character(i))
+               i <- match(i, names(x), nomatch=0)
+             new("GlmTests",
+                 snp.names = x@snp.names[i],
+                 var.names = x@var.names,
+                 chisq = x@chisq[i],
+                 df = x@df[i],
+                 N = x@N[i])
           })
 
 setMethod("[",
@@ -597,20 +585,20 @@ setMethod("effective.sample.size", signature(x="SingleSnpTests"),
 
 setMethod("names", signature(x="SingleSnpTests"), function(x) x@snp.names)
 
-setMethod("names", signature(x="GlmTests"),
+setMethod("names", "GlmTests",
           function(x) {
-            if (is.list(x@snp.names)) {
-              test.names <- attr(x@snp.names, "names")
-              if (is.null(test.names))
-                test.names <- sapply(x@snp.names,
-                                     function(y)
-                                     paste(y[1], y[length(y)], sep="..."))
-              test.names
+            objn <- x@snp.names
+            if (is.list(objn)) {
+              nobjn <- attr(objn, "names")
+              if (!is.null(nobjn))
+                nobjn
+              else
+                vapply(objn, function(x){
+                  paste(x[1],x[length(x)], sep="...")}, "character")
             }
             else
-              x@snp.names
+              as.character(objn)
           })
-        
 
 setMethod("pool2",
           signature(x="SingleSnpTestsScore",y="SingleSnpTestsScore",
@@ -930,6 +918,15 @@ setMethod("show", "GlmEstimates",
             }
           }
           )
+
+## Wald test
+
+setAs("GlmEstimates", "GlmTests",
+      function(from) {
+        .Call("wald", from, package="snpStats")
+      }
+      )
+        
 
 ## To do
 

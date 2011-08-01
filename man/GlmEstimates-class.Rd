@@ -3,6 +3,7 @@
 \docType{class}
 \alias{GlmEstimates-class}
 \alias{[,GlmEstimates,ANY,missing,missing-method}
+\alias{coerce,GlmEstimates,GlmTests-method}
 \alias{show,GlmEstimates-method}
 
 \title{Class "GlmEstimates"}
@@ -27,8 +28,10 @@ Class \code{"\linkS4class{vector}"}, by class "list", distance 2.
 }
 \section{Methods}{
   \describe{
-    \item{[}{\code{signature(x = "GlmEstimates", i = "ANY", j = "missing", drop = "missing")}: ... }
-    \item{show}{\code{signature(object = "GlmEstimates")}: ... }
+    \item{[}{\code{signature(x = "GlmEstimates", i = "ANY", j = "missing", drop = "missing")}: Subset }
+    \item{coerce}{\code{signature(from = "GlmEstimates", to =
+	"GlmTests")}: Calculate Wald tests }
+    \item{show}{\code{signature(object = "GlmEstimates")}: Display}
 	 }
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}

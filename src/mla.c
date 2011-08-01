@@ -18,7 +18,7 @@ int wcenter(const double *y, int n, const double *weight, const int *stratum,
     if (!nstrata) {
       /* Nothing to do ... if necessary copy input to output */
       if (ynew!=y) 
-	for(i=0; i<n; i++) ynew[i]  = resid? y[i]: 0.0; /* 0.0 ??? */
+	for(i=0; i<n; i++) ynew[i]  = y[i];
       return(0);
     }
     else
@@ -27,10 +27,10 @@ int wcenter(const double *y, int n, const double *weight, const int *stratum,
   int empty = 0;
   if (nstrata>1) {
     double *swy, *swt;
-    swy = (double *) calloc(nstrata, sizeof(double));
-    swt =  (double *) calloc(nstrata, sizeof(double));
-    for (s=0; s<nstrata; s++) 
-      swy[s] = swt[s] = 0.0;
+    swy = (double *) Calloc(nstrata, double);
+    swt =  (double *) Calloc(nstrata, double);
+    memset(swy, 0x00, nstrata*sizeof(double));
+    memset(swt, 0x00, nstrata*sizeof(double));
     if (weight) {
       for (i=0; i<n; i++) {
 	double wi  = weight[i];
@@ -58,8 +58,8 @@ int wcenter(const double *y, int n, const double *weight, const int *stratum,
       if (swt[s]) 
 	ynew[i] = resid? y[i] - swy[s]: swy[s];
     }
-    free(swy);
-    free(swt);
+    Free(swy);
+    Free(swt);
   }
   else {
     double swt=0.0, swy=0.0;
@@ -116,8 +116,13 @@ double wresid(const double *y, int n, const double *weight, const double *x,
       ynew[i] = y[i] - swxy*x[i];
     return(swxy);
   }
-  else 
+  else {
+    if (ynew!=y) {
+      for (i=0; i<n; i++)
+	ynew[i] = y[i];
+    }
     return(NA_REAL);
+  }
 }
 
 /* Weighted sum of squares */

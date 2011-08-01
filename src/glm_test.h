@@ -15,7 +15,8 @@
 /* GLM definition functions */
 
 double varfun(int, double);
-int muvalid(int, double);
+double validmu(int, double);
+double loglik(int, double, double);
 double linkfun(int, double);
 double invlink(int, double);
 double dlink(int, double);
@@ -26,7 +27,7 @@ double dlink(int, double);
 
 int glm_fit(int family, int link, int N, int M, int P, int S,
 	    const double *y, const double *prior, const double *X, 
-	    const int *stratum, int maxit, double conv, int init, 
+	    const int *stratum, int maxit, double conv, double r2max, int init, 
 	    int *rank, double *Xb, 
 	    double *fitted, double *resid, double *weights, 
 	    double *scale, int *df_resid,

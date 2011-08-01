@@ -25,6 +25,8 @@ stratum      If S>1, stratum assignments coded 1...S (N-vector)
 maxit        Maximum number of iterations of IRLS algorithm
 conv         Proportional change in weighted sum of squares residuals to
              declare convergence
+r2max        Maximum value of R^2 between an X variable and previous variables
+             before it is dropped as aliased
 init         If true (non-zero), the iteration starts from initial estimates 
              of fitted values (see below). This option has no effect if
 	     no iteration is required
@@ -56,17 +58,17 @@ Return
 
 int glm_fit(int family, int link, int N, int M, int P, int S,
 	    const double *y, const double *prior, const double *X, 
-	    const int *stratum, int maxit, double conv, int init, 
+	    const int *stratum, int maxit, double conv, double r2max, int init, 
 	    int *rank, double *Xb, 
 	    double *fitted, double *resid, double *weights, 
 	    double *scale, int *df_resid, 
 	    int  *P_est, int *which, double *betaQ, double *tri) {
-  const double eta = 1.e-8;       /* Singularity threshold */
+  double eta = 1.0 - r2max;       /* Singularity threshold */
   int Mskip=M-P; /* Number of parameters NOT estimated */
   int Nu, dfr, irls;
   int empty = 0;
-  int estimate = P>0;
-  if (estimate && !(P_est && which && betaQ && tri))
+  *scale = 1.0; /* Default scale factor */
+  if ((P>0) && !(P_est && which && betaQ && tri))
     error("Code bug: missing work arrays for estimation");
 
   /*  Is iteration necessary? */
@@ -86,10 +88,6 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
     double mu = fitted[i];
     double ri, wi;
     double pi = prior? prior[i] : 1.0;
-    if (!muvalid(family, mu)) {
-      invalid = 1;
-      pi = 0.0;
-    }
     if (!(pi)) 
       wi = ri = 0.0;
     else {
@@ -111,55 +109,60 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 
   /* If M>0, include covariates */
 
-  int x_rank = 0, skip_rank = 0, convg = 0, iter = 0;
+  int x_rank = 0, skip_xb = 0, convg = 0, iter = 0;
   if (M) {
     convg = 0;
-    double wss_last = 0.0;
     if (irls) {
 
       /* IRLS algorithm */
 
       double *yw = (double *) Calloc(N, double);
+      double logL_prev = 0.0;
       while(iter<maxit && !convg) {
+	double logL = 0.0;
 	for (int i=0; i<N; i++) 
 	  yw[i] = resid[i] + linkfun(family, fitted[i]);
 	empty = wcenter(yw, N, weights, stratum, S, 1, resid);
-	const double *xi = X;
-	double *xbi = Xb;
-	x_rank = 0;
-	skip_rank = Mskip;
+	const double *xi = X; /* X matrix */
+	double *xbi = Xb;     /* Orthogonal basis matrix */
+	x_rank = 0; /* Columns in Xb matrix */
+	skip_xb = 0; /* Columns in Xb matrix not estimands */
+	/* Loop over columns of X matrix */
 	for (int i=0, ii=0, ij=0; i<M; i++, xi+=N) {
-	  double ssx = wssq(xi, N, weights);
-	  wcenter(xi, N, weights, stratum, S, 1, xbi);
+	  double ssx = wssq(xi, N, weights); /* SSQ */
+	  wcenter(xi, N, weights, stratum, S, 1, xbi); /* Center */
+	  /* Regress on earlier columns */
 	  double *xbj = Xb;
 	  for (int j=0; j<x_rank; j++, xbj+=N) {
-	    double bij = wresid(xbi, N, weights, xbj, xbi);
-	    if (j>=skip_rank && estimate) 
-	      tri[ij++] = bij; /* Off-diagonal (upper triangle)  elements */
+	    double bij = wresid(xbi, N, weights, xbj, xbi); /* Coefficient */
+	    if (j>=skip_xb) 
+	      tri[ij++] = bij; /* Save in off-diagonal elements of tri */
 	  }
-	  double ssr = wssq(xbi, N, weights);
-	  double bij = 0.0;
-	  if (ssr/ssx > eta) {
-	    bij = wresid(resid, N, weights, xbi, resid);
+	  double ssr = wssq(xbi, N, weights); /* Residual SSQ */
+	  if ((ssx>0.0) && (ssr/ssx>eta)) {
+	    double bQi = wresid(resid, N, weights, xbi, resid);
 	    x_rank++;
 	    xbi+=N;	
-	    if (i>=Mskip && estimate) {
-	      tri[ij++] = ssr; /* Diagonal elements */
+	    if (i<Mskip) 
+	      skip_xb++;
+	    else {
+	      tri[ij++] = ssr; /* Diagonal elements of tri */
 	      which[ii] = i;
-	      betaQ[ii++] = bij;
+	      betaQ[ii++] = bQi;
 	    }
 	  }
-	  else if (i<Mskip)
-	    skip_rank--;
+	  else
+	    ij -= (x_rank - skip_xb); /* Drop off-diagonal elements of tri */
 	}
 	double wss = 0.0;
 	Nu = 0;
 	for (int i=0; i<N; i++) {
 	  double D, Vmu, ri, wi;
 	  double mu = invlink(family, yw[i] - resid[i]);
-	  fitted[i] = mu;
+	  fitted[i] = validmu(family, mu);
 	  double pi = prior? prior[i] : 1.0;
-	  if (!(pi && muvalid(family, mu) && (weights[i]>0.0))) 
+	  logL += pi*loglik(family, y[i], mu);
+	  if (!(pi && (weights[i]>0.0))) 
 	    wi = ri = 0.0;
 	  else {
 	    Vmu = varfun(family, mu);
@@ -178,9 +181,18 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	  weights[i] = wi;
 	  resid[i] = ri;
 	}
-	convg = (family==2) || (Nu<=0) ||
-	  (iter && (abs(wss-wss_last)/wss_last < conv));
-	wss_last = wss;
+	if (family>2) {
+	  dfr = Nu  - S + empty - x_rank;
+	  *scale = wss/(dfr);
+	}
+	if (iter>1) {
+	  double dL = (logL - logL_prev)/(*scale);
+	  if (dL<0.0) 
+	    convg = 2;
+	  if (iter<maxit && dL<conv)
+	    convg = 1;
+	}
+	logL_prev = logL;
 	iter ++;
       }
       for (int i=0; i<N; i++)
@@ -194,39 +206,38 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
       const double *xi = X;
       double *xbi = Xb;
       x_rank = 0;
-      skip_rank = Mskip;
+      skip_xb = 0;
       for (int i=0, ii=0, ij=0; i<M; i++, xi+=N) {
 	double ssx = wssq(xi, N, weights);
 	wcenter(xi, N, weights, stratum, S, 1, xbi);
 	double *xbj = Xb;
 	for (int j=0; j<x_rank; j++, xbj+=N) {
 	  double bij = wresid(xbi, N, weights, xbj, xbi);
-	  if (j>=skip_rank && estimate)
-	    tri[ij++] = bij; /* Off-diagonal  */
+	  if (j>=skip_xb)
+	    tri[ij++] = -bij; /* Off-diagonal  */
 	}
 	double ssr = wssq(xbi, N, weights);
 	if (ssr/ssx > eta) {
-	  double bij = wresid(resid, N, weights, xbi, resid);
+	  double bQi = wresid(resid, N, weights, xbi, resid);
 	  x_rank++;
 	  xbi+=N;
-	  if (i>=Mskip && estimate) {
+	  if (i<Mskip) 
+	    skip_xb++;
+	  else {
 	    tri[ij++] = ssr; /* Diagonal */
 	    which[ii] = i;
-	    betaQ[ii++] = bij;
+	    betaQ[ii++] = bQi;
 	  }
 	}
-	else if (i<Mskip) 
-	  skip_rank--;
+	else 
+	  ij -= (x_rank - skip_xb);
       }
-      wss_last = wssq(resid, N, weights);
+      double wss = wssq(resid, N, weights);
       for (int i=0; i<N; i++)
 	fitted[i] = y[i] - resid[i];
+      dfr = Nu  - S + empty - x_rank;
+      *scale = wss/(dfr);
     }
-    dfr = Nu  - S + empty - x_rank;
-    if (family>2) 
-      *scale = wss_last/(dfr);
-    else
-      *scale = 1.0;
   }
 
   /* No covariates */
@@ -243,8 +254,8 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
   }
   *df_resid = dfr>0? dfr : 0;
   *rank = x_rank;
-  if (estimate) {
-    *P_est = x_rank - skip_rank;
+  if (P_est) {
+    *P_est = x_rank - skip_xb;
   }
   return(irls && !convg);
 }
@@ -275,19 +286,48 @@ double varfun(int family, double mu){
 
 /* Valid values for fitted value, mu. 
 
-If, during iteration, an invalid value is returned, the case is omitted 
+Suitable values for extreme predictions
 
 */
 
-int muvalid(int family, double mu) {
-  const double minb = 0.0001, maxb = 0.9999, minp = 0.0001;
+double validmu(int family, double mu) {
+  const double zero = 1.e-200, one = 1.0-1.e-200;
   switch (family) {
-  case 1: return(mu>minb && mu<maxb);    /* Binomial */
-  case 2: return(mu>minp);               /* Poisson */
-  default: return(1);                     
+  case 1: /* Binomial */
+    if (mu<zero)
+      return(zero);
+    else if (mu>one )
+      return(one );
+    else
+      return(mu);
+  case 2: /* Poisson */
+    if(mu<zero)
+      return(zero);
+    else
+      return(mu);
+  default: return(mu);                     
   }
 }
 
+/* Log likelihood contribution 
+   (to be multiplied by prior weight */
+
+double loglik(int family, double y, double mu) {
+  double x = 0.0;
+  switch (family) {
+  case 1: /* Binomial */
+    return(y*log(mu) + (1.-y)*log(1.-mu));
+  case 2: /* Poisson */
+    return(y*log(mu) -mu);
+  case 3: /* Gaussian */
+    x = y-mu;
+    return(x*x);
+  case 4: /* Gamma */
+    x = y/mu;
+    return(log(x) - x);
+  default: return(NA_REAL);
+  }
+}
 /* Link function
 
 Link
@@ -440,42 +480,41 @@ void glm_score_test(int N, int M, int S, const int *stratum,
     Free(U);
 }
 
+    
 /* Invert diagonal and unit upper triangular matrices stored as one array 
    Result matrix can overwrite input matrix */
 
 void inv_tri(int N, const double *tri, double *result) {
-  for (int i=0, ij=0; i<N; i++) {
-    for (int j=0, jks=1; j<i; jks+=(3+(j++))) {
-      double w=tri[ij];
-      for (int k=j+1, ik=ij+1, jk=jks; k<i; jk+=(++k), ik++)  
-	w += (tri[ik]*tri[jk]);
-      result[ij++] = (-w); /* Element of upper triangle */
+  for (int j=0, ij=0; j<N; j++) {
+    for (int i=0, ii1=1; i<j; i++, ii1+=(i+2)) {
+      double w = tri[ij];
+      for (int k=i+1, kj=ij+1, ik=ii1; k<j; k++, kj++, ik+=k) {
+	w += result[ik]*tri[kj];
+      }
+      result[ij++] = (-w);
     }
-    result[ij] = 1/tri[ij]; /* Diagonal element */
-    ij++;
-  } 
+    double diag = tri[ij];
+    if (diag<=0.0) 
+      error("inv_tri: negative diagonal, %d %d %lf", j, ij, diag);
+    result[ij++] = 1/diag;
+  }
 }
 
 /* For packed upper unit triangular matrix, U, and diagonal matrix D 
    (occupying the same space, tri), calculate U.D.U-transpose and scale 
-   it by a connstatnt multiple. Result matrix can overwite input U/D matrix */
+   it by a connstant multiple. Result matrix can overwite input U/D matrix */
 
 void UDUt(int N, const double *tri, double scale, double *result) {
-  for (int j=0, ij=0, jj=0; j<N; jj+=(1+(++j))) {
-    for (int i=0; i<=j; i++) {
+  for (int j=0, ij=0, jj=0; j<N; j++, jj+=(1+j)) {
+    for (int i=0; i<=j; i++, ij++) {
       double w = 0.0;
-      for (int k=j, jk=jj, ik=ij, kk=jj; k<N;) {
-	int k1 = k + 1;
-	jk+=k1;
-	ik+=k1;
+      for (int k=j,jk=jj,ik=jj-i+j,kk=jj; k<N; k++,kk+=(1+k),jk+=k,ik+=k) {
 	double Uik = (i==k)? 1.0: tri[ik];
 	double Ujk = (j==k)? 1.0: tri[jk];
 	double Dk = tri[kk];
 	w += Uik*Ujk*Dk;
-	kk+=(1+k1);
-	k = k1;
       }
-      result[ij++] = scale*w;
+      result[ij] = scale*w;
     }
   }
 }
@@ -483,7 +522,7 @@ void UDUt(int N, const double *tri, double scale, double *result) {
 /* For packed upper unit triangular matrix, U, and diagonal matrix D 
    (occupying the same space, tri), and packed symmetric matrix V, 
    calculate U.D.V.D.U-transpose and multiply by a scale factor.
-   Result matrix can overwite input V */
+   Result matrix can overwrite input V */
 
 
 void UDVDUt(int N, const double *tri, const double *V, double scale, 
@@ -520,18 +559,14 @@ void glm_est(int P_est, const double *betaQ, double *tri,
 	     double scale,  const double *meatrix, 
 	     double *beta, double *var_beta) {
   
-  /* Invert upper unit triangular and diagonal matrices */
-
   inv_tri(P_est, tri, tri);
-
-  /* Multiply coefficients by inverse of triangular matrix */
-
-  for (int i=0, ijs=1; i<P_est; ijs+=(2+(++i))) {
+  for (int i=0, ijs=1; i<P_est; i++, ijs+=(2+i)) {
     double w= betaQ[i];
-    for (int j=i+1, ij=ijs; j<P_est; ij+=(++j))
+    for (int j=i+1, ij=ijs; j<P_est; j++, ij+=j)
       w += betaQ[j]*tri[ij];
     beta[i] = w;
   }
+
 
   /* Variance covariance matrix */
 
@@ -581,9 +616,3 @@ void meat_matrix(int N, int P, int C, const int *cluster,
   }
 }
 
-
-	  
-
-	
-	
-	

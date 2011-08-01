@@ -12,7 +12,7 @@ of the variance function,  "robust" tests may be selected.
 \usage{
 snp.rhs.tests(formula, family = "binomial", link, weights, subset, data = parent.frame(),
    snp.data, rules=NULL, tests=NULL, robust = FALSE, uncertain=FALSE, 
-   control=glm.test.control(maxit=20, epsilon=1.e-4, R2Max=0.98),
+   control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999),
    allow.missing=0.01, score=FALSE)
 }
 \arguments{

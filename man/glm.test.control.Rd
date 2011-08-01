@@ -8,7 +8,7 @@
  function sets various control parameters for this.
 }
 \usage{
-glm.test.control(maxit, epsilon, R2Max)
+glm.test.control(maxit = 20, epsilon = 1.e-5, R2Max = 0.999)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

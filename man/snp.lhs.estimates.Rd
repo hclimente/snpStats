@@ -12,8 +12,8 @@
 }
 \usage{
 snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
-                data = sys.parent(), robust = FALSE,
-                control=glm.test.control(maxit=20, epsilon=1.e-4,R2Max=0.98))
+                data = sys.parent(), robust = FALSE, uncertain = FALSE,
+                control=glm.test.control(maxit=20, epsilon=1.e-5,R2Max=0.999))
 }
 \arguments{
   \item{snp.data}{The SNP data, as an object of class
@@ -34,6 +34,9 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
   \item{robust}{If \code{TRUE}, Hardy-Weinberg equilibrium will is not
     assumed in calculating the variance-covariance matrix of parameter
     estimates}
+  \item{uncertain}{If \code{TRUE}, uncertain genotypes are used and
+    scored by their posterior expectations. Otherwise they are treated
+    as missing. If set, this option forces \code{robust} variance estimates}
   \item{control}{An object giving parameters for the IRLS algorithm
     fitting of the base model and for the acceptable aliasing amongst
     new terms to be tested. See \code{\link{glm.test.control}}}
@@ -68,7 +71,8 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
   appropriate robust estimate of the variance-covariance matrix of
   parameter estimates is calculated.
 
-  Uncertain genotypes (e.g. as a result of imputation) are ignored.
+  If uncertain genotypes (e.g. as a result of imputation) are used, the
+  interpretation of the regression coefficients is questionable.
 }
 \seealso{\code{\link{GlmEstimates-class}}, \code{\link{snp.lhs.tests}}}
 \examples{

@@ -256,6 +256,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
     }
     
     if (mono) { /* Monomorphic SNP */
+      warning("Monomorphic SNP: %d", t+1);
       memset(u, 0x00, P*sizeof(double));
       memset(v, 0x00, sizeof(double)*(P*(P+1))/2); 
     }
@@ -266,7 +267,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
       int rank, dfr;
       double scale;
       double rc = glm_fit(BINOMIAL, LOGIT, N, M, 0, S, yd, prior, x, stratum, 
-			  maxit, epsilon, 0, 
+			  maxit, epsilon, r2Max, 0, 
 			  &rank, xb, fitted, resid, weights, &scale, &dfr,
 			  NULL, NULL, NULL, NULL);
       if (rc) 
@@ -434,7 +435,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
   if (!IS_S4_OBJECT(Z)) {
     error("Z in snp_rhs_score is missing S4 Object bit");
   }
-
+ 
   /* Z and its dimensions */
 
   int Nz;
@@ -597,7 +598,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
   int rank, rank_all, df_r, df_r_all;
   double scale, scale_all;
   int err = glm_fit(fam, lnk, N, M, 0, S, y, prior_all, x, stratum, 
-		    maxit, epsilon, 0, 
+		    maxit, epsilon, r2Max, 0, 
 		    &rank_all, xb_all, 
 		    fitted_all, resid_all, weights_all, 
 		    &scale_all, &df_r_all, NULL, NULL, NULL, NULL);
@@ -753,7 +754,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
       for (int i=0; i<N; i++) 
 	fitted[i] = fitted_all[i];
       int err = glm_fit(fam, lnk, N, M, 0, S, y, prior, x, stratum, 
-			maxit, epsilon, 1,
+			maxit, epsilon, r2Max, 1,
 			&rank, xb, fitted, resid, weights, 
 			&scale, &df_r, NULL, NULL, NULL, NULL);
       if (err) 
@@ -979,7 +980,7 @@ SEXP pool2_glm(SEXP X, SEXP Y, SEXP If_score) {
 SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum, 
 		      const SEXP Snp_subset, const SEXP P_est, 
 		      const SEXP Robust, const SEXP Cluster, 
-		      const SEXP Control){
+		      const SEXP Uncertain, const SEXP Control){
 
   /* Y should be a SnpMatrix or an XSnpMatrix */
   const char *classY = NULL;
@@ -1093,6 +1094,14 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
   }
   else if (TYPEOF(Cluster)!=NILSXP)
     error("Argument error - Cluster");
+
+  /* Handling of uncertain genotypes */
+
+  if (TYPEOF(Uncertain) != LGLSXP)
+    error("Argument error: Uncertain is wrong type");
+  int uncert = *LOGICAL(Uncertain);
+  /* Force robust variance if uncertain option used */
+  robust = robust || uncert; 
   
   /* Control object */
 
@@ -1106,12 +1115,10 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
   if (TYPEOF(Epsilon)!=REALSXP || LENGTH(Epsilon)!=1)
     error("Argument error - Epsilon");
   double epsilon = REAL(Epsilon)[0];
-  /*not used*//*
   SEXP R2Max = VECTOR_ELT(Control, 2);
   if (TYPEOF(R2Max)!=REALSXP || LENGTH(R2Max)!=1)
     error("Argument error - R2Max");
   double r2Max = REAL(R2Max)[0];
-  */
   
   /* Work arrays */
 
@@ -1161,15 +1168,22 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
     const unsigned char *yj = y + N*j;
     int mono = 1, yv = 0;
  
+
+    /* Load SNP as Binomial y-variate, with prior weights */
+
     for (int i=0; i<N; i++) {
       int yij = (int) yj[i];
-      if (yij && yij<4) {
-	if (!yv)
-	  yv = yij;
-	else if (mono) 
-	  mono = (yv == yij);
+      if (yij && (uncert||yij<4)) {
+	if (mono) {
+	  if (yij<4) {
+	    mono = !yv || (yij==yv);
+	    yv = yij;
+	  }
+	  else 
+	    mono = 0;
+	}
 	prior[i] = (!diploid || diploid[i])? 2.0: 1.0;
-	yd[i] = ((double) (yij - 1))/2.0;
+	yd[i] = g2mean(yij)/2.0;
       }
       else {
 	prior[i] = yd[i] = 0.0;
@@ -1183,7 +1197,7 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
       int rank, dfr, pest;
       double scale;
       double rc = glm_fit(BINOMIAL, LOGIT, N, M, P, S, yd, prior, x, stratum, 
-			  maxit, epsilon, 0, 
+			  maxit, epsilon, r2Max, 0, 
 			  &rank, xb, fitted, resid, weights, &scale, &dfr,
 			  &pest, which, beta, tri);
       if (rc) 
@@ -1195,10 +1209,10 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
       else {
 	SEXP B, Bnames, V, Nu;
 	double *b, *v;
-	PROTECT(B = allocVector(REALSXP, P));
-	PROTECT(Bnames = allocVector(STRSXP, P));
-	PROTECT(V = allocVector(REALSXP, (P*(P+1))/2));
-	PROTECT(Nu = allocVector(REALSXP, 1));
+	PROTECT(B = allocVector(REALSXP, pest));
+	PROTECT(Bnames = allocVector(STRSXP, pest));
+	PROTECT(V = allocVector(REALSXP, (pest*(pest+1))/2));
+	PROTECT(Nu = allocVector(INTSXP, 1));
 	b = REAL(B);
 	v = REAL(V);
 	if (C) {
@@ -1210,7 +1224,7 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
 	int nunit = 0;
 	for (int i=0; i<N; i++) 
 	  if (weights[i]) nunit++;
-	*REAL(Nu) = nunit;
+	*INTEGER(Nu) = nunit;
       
 	/* Names for B */
 	
@@ -1230,31 +1244,32 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
       }
     }
     else {
-      warning("Monomorphic SNP for test %d", t+1);
+      warning("Monomorphic SNP: %d", t+1);
       SET_VECTOR_ELT(Estimates, t, R_NilValue);
     }
     UNPROTECT(1);
   }
 	  
   setAttrib(Estimates, R_NamesSymbol, Rnames);  
-  SEXP Class, Package;
+  SEXP Class, Package, Lhs;
   PROTECT(Class = allocVector(STRSXP, 1));
   SET_STRING_ELT(Class, 0, mkChar("GlmEstimates"));
   PROTECT(Package = allocVector(STRSXP, 1));
   SET_STRING_ELT(Package, 0, mkChar("snpStats"));
   setAttrib(Class, install("package"), Package);
   classgets(Estimates, Class);
-
-
-  UNPROTECT(5);
+  PROTECT(Lhs = allocVector(LGLSXP, 1));
+  LOGICAL(Lhs)[0] = 1;
+  setAttrib(Estimates, install("snpLHS"), Lhs);
+  UNPROTECT(6);
   SET_S4_OBJECT(Estimates);
   return(Estimates);
 }
 
 SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link, 
-		      SEXP X, SEXP Stratum, SEXP Z, 
+		      SEXP X, SEXP Stratum, SEXP Z, SEXP Rules, 
 		      SEXP Prior, SEXP Sets, SEXP Robust, SEXP Cluster, 
-		      SEXP Control) {
+		      SEXP Uncertain, SEXP Control) {
 
   char setname[MAX_NAME_LENGTH];
   int max_name_length =  MAX_NAME_LENGTH -1;
@@ -1355,7 +1370,6 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
   }
   if (Nz!=N)
     error("Dimension error - Z");
-  SEXP Snp_names =  VECTOR_ELT(getAttrib(Z, R_DimNamesSymbol), 1);
 
   /* If X-chromosome, indicators of diploid genotype */
 
@@ -1367,6 +1381,22 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
   else
     diploid = NULL;
   
+  /* If imputation involved, calculate snp name index and lookup tables */
+
+  index_db name_index = NULL;
+  SEXP Snp_names =  VECTOR_ELT(getAttrib(Z, R_DimNamesSymbol), 1);
+  SEXP Rule_names = R_NilValue;	
+  int pmax = 0;
+  GTYPE **gt2ht = NULL;
+  if (TYPEOF(Rules)!=NILSXP) {
+    name_index = create_name_index(Snp_names);
+    Rule_names = getAttrib(Rules, R_NamesSymbol);
+    pmax = *INTEGER(getAttrib(Rules, install("Max.predictors")));
+    gt2ht = (GTYPE **)Calloc(pmax, GTYPE *);
+    for (int i=0; i<pmax; i++)
+      gt2ht[i] = create_gtype_table(i+1);
+  }
+
   /* Prior weights */
 
   double *prior = NULL;
@@ -1427,6 +1457,12 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
   else if (TYPEOF(Cluster)!=NILSXP)
     error("Argument error - Cluster");
   
+  /* Handling of uncertain genotypes */
+
+  if (TYPEOF(Uncertain) != LGLSXP)
+    error("Argument error: Uncertain is wrong type");
+  int uncert = *LOGICAL(Uncertain);
+
   /* Control object */
 
   if (TYPEOF(Control)!=VECSXP || LENGTH(Control)!=3) 
@@ -1439,12 +1475,10 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
   if (TYPEOF(Epsilon)!=REALSXP || LENGTH(Epsilon)!=1)
     error("Argument error - Epsilon");
   double epsilon = REAL(Epsilon)[0];
-  /* not used *//*
   SEXP R2Max = VECTOR_ELT(Control, 2);
   if (TYPEOF(R2Max)!=REALSXP || LENGTH(R2Max)!=1)
     error("Argument error - R2Max");
   double r2Max = REAL(R2Max)[0];
-  */
 
   /* Work arrays */
 
@@ -1514,42 +1548,66 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
     int missing = 0;
     for (int j=0, ij=NM; j<nsnp_set; j++) {
       int snpsj = snps[j];
-      snpsj--;
-
+      const char *srname;
+      if (snpsj>0) {
+	snpsj--; 
+	srname = CHAR(STRING_ELT(Snp_names, snpsj));
+	const unsigned char *zj = z + N*snpsj;
+	for (int i=0; i<N; i++, ij++) {
+	  unsigned char zij = zj[i];
+	  if (zij && (uncert||(zij<4))) {
+	    xz[ij] = g2mean(zij);
+	  }
+	  else {
+	    xz[ij] = 0.0;
+	    if (new_prior[i]){
+	      missing ++;
+	      new_prior[i] = 0.0;
+	    }
+	  }
+	}
+      }	      		      
+      else {
+	snpsj = -(1+snpsj);
+	SEXP Rule_namej = STRING_ELT(Rule_names, snpsj);
+	srname = CHAR(Rule_namej);
+	SEXP Rule =  VECTOR_ELT(Rules, snpsj);
+	if (!isNull(Rule)){ /* Not monomorphic */
+	  do_impute(Z, N, diploid, NULL, N, name_index, Rule, gt2ht, xz+ij, 
+		    NULL);
+	  for (int i=0; i<N; i++, ij++) {
+	    if (ISNA(xz[ij])) {
+	      xz[ij] = 0.0;
+	      if (new_prior[i]) {
+		missing ++;
+		new_prior[i] = 0.0;
+	      }
+	    }
+	  } 
+	}
+	else {
+	  for (int i=0; i<N; i++, ij++)
+	    xz[ij] = 0.0;
+	}
+      }
       if (gen_names) {
 	if (!j){
-	  strncpy(setname, CHAR(STRING_ELT(Snp_names, snpsj)), max_name_length);
+	  strncpy(setname, srname, max_name_length);
 	}
 	else if ((nsnp_set>1) && (j==(nsnp_set-1))) {
 	  int len = strlen(setname);
 	  int space = max_name_length - len;
 	  if (space>2) {
 	    setname[len++] = '.';
-	    setname[len++] = ',';
+	    setname[len++] = '.';
 	  }
-	  strncpy(setname+len, CHAR(STRING_ELT(Snp_names, snpsj)), 
-		  space-2);
-	}
-      }
-
-      const unsigned char *zj = z + N*snpsj;
-      for (int i=0; i<N; i++, ij++) {
-	unsigned char zij = zj[i];
-	if (zij && zij<4) {
-	  xz[ij] = (double) (zij - 1);
-	}
-	else {
-	  xz[ij] = 0.0;
-	  if (new_prior[i]){
-	    missing ++;
-	    new_prior[i] = 0.0;
-	  }
+	  strncpy(setname+len, srname, space-2);
 	}
       }
     }
     if (gen_names)
       SET_STRING_ELT(SetNames, set, mkChar(setname));
-
+ 
     if (missing == N) { /* No data */
       warning("No valid data for set %d", set+1);
       SET_VECTOR_ELT(Estimates, set, R_NilValue);
@@ -1559,7 +1617,7 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
       double scale;
       int err = glm_fit(fam, lnk, N, M+nsnp_set, nsnp_set, S, 
 			y, new_prior, xz, stratum, 
-			maxit, epsilon, 0,
+			maxit, epsilon, r2Max, 0,
 			&rank, xb, fitted, resid, weights, 
 			&scale, &df_r, &pest, which, beta, tri);
       if (err) 
@@ -1591,11 +1649,15 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
 
 	/* Names for B */
 	for (int i=0; i<pest; i++) {
-	  SET_STRING_ELT(Snames, i, 
-			 STRING_ELT(Snp_names, snps[which[i]-M]-1));
+	  int snpswi = snps[which[i]-M];
+	  if (snpswi>0) 
+	    SET_STRING_ELT(Snames, i, 
+			 STRING_ELT(Snp_names, snpswi-1));
+	  else
+	    SET_STRING_ELT(Snames, i, 
+			   STRING_ELT(Rule_names, -(snpswi+1)));
 	}
 	setAttrib(B, R_NamesSymbol, Snames);
-	
 	SEXP Estt;
 	PROTECT(Estt = allocVector(VECSXP, 4));
 	setAttrib(Estt, R_NamesSymbol, BVnames);
@@ -1608,17 +1670,140 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
       }
     }
   }
-  SEXP Class, Package;
+
+  /* Return hash table memory and gt->ht tables */
+
+  if (name_index) {
+    index_destroy(name_index);
+    for (int i=0; i<pmax; i++)
+      destroy_gtype_table(gt2ht[i], i+1);
+    Free(gt2ht);
+  }
+
+  SEXP Class, Package, Lhs;
   PROTECT(Class = allocVector(STRSXP, 1));
   SET_STRING_ELT(Class, 0, mkChar("GlmEstimates"));
   PROTECT(Package = allocVector(STRSXP, 1));
   SET_STRING_ELT(Package, 0, mkChar("snpStats"));
   setAttrib(Class, install("package"), Package);
   classgets(Estimates, Class);
+  PROTECT(Lhs = allocVector(LGLSXP, 1));
+  LOGICAL(Lhs)[0] = 0;
+  setAttrib(Estimates, install("snpLHS"), Lhs);
 
-  UNPROTECT(gen_names? 6: 5);
+  UNPROTECT(gen_names? 7: 6);
 
   SET_S4_OBJECT(Estimates);
   return(Estimates);
   
 }
+
+/* Wald tests from estimates list element */
+
+
+SEXP wald(const SEXP From) {
+  SEXP LHS = getAttrib(From, install("snpLHS"));
+  int lhs = LOGICAL(LHS)[0];
+  int ntest = LENGTH(From);
+  int maxsnp, maxwork;
+  SEXP To, Snp_names, Var_names, Chisq, Df, N;
+
+  /* Find first valid entry */
+  SEXP F1 = R_NilValue;
+  for (int i=0; i<ntest; i++) {
+    F1 = VECTOR_ELT(From, i);
+    if (!isNull(F1))
+      break;
+  }
+
+  SEXP From_names = getAttrib(From, R_NamesSymbol);
+  if (lhs) {
+    maxsnp = 1;
+    Snp_names = From_names;
+    Var_names = getAttrib(VECTOR_ELT(F1, 0), R_NamesSymbol);
+    maxwork = LENGTH(Var_names);
+  }
+  else {
+    /* Maximum size */
+    maxsnp = 0;
+    for (int i=0; i<ntest; i++) {
+      SEXP Fi = VECTOR_ELT(From, i);
+      if (!isNull(Fi)) {
+	int nb = LENGTH(VECTOR_ELT(Fi, 0));
+	if (nb>maxsnp)
+	  maxsnp = nb;
+      }
+    }
+    if (maxsnp>1) {
+      PROTECT(Snp_names = allocVector(VECSXP, ntest));
+      setAttrib(Snp_names, R_NamesSymbol,  getAttrib(From, R_NamesSymbol));
+    }
+    else
+      Snp_names = From_names;
+    Var_names = VECTOR_ELT(F1, 3);
+    maxwork = maxsnp;
+  }
+  PROTECT(Chisq = allocVector(REALSXP, ntest));
+  double *chisq = REAL(Chisq);
+  PROTECT(Df = allocVector(INTSXP, ntest));
+  int *df = INTEGER(Df);
+  PROTECT(N = allocVector(INTSXP, ntest));
+  int *n = INTEGER(N);
+  PROTECT(To = R_do_new_object(R_getClassDef("GlmTests")));
+  /* setAttrib(To, R_NamesSymbol, getAttrib(From, R_NamesSymbol)); */
+  R_do_slot_assign(To, mkString("snp.names"), Snp_names);
+  R_do_slot_assign(To, mkString("var.names"), Var_names);
+  R_do_slot_assign(To, mkString("chisq"), Chisq);
+  R_do_slot_assign(To, mkString("df"), Df);
+  R_do_slot_assign(To, mkString("N"), N);
+  
+  /* Loop over fits */
+
+  double *work = NULL;
+  if (maxwork>1) 
+    work = (double *) Calloc((maxwork*(maxwork+1))/2, double);
+  for (int i=0; i<ntest; i++) {
+    SEXP Fi = VECTOR_ELT(From, i);
+    double wald = NA_REAL;
+    int rank = NA_INTEGER, ni = NA_INTEGER; 
+    if (!isNull(Fi)) {
+      SEXP B = VECTOR_ELT(Fi, 0);
+      double *b = REAL(B);
+      SEXP B_names = getAttrib(B, R_NamesSymbol);
+      if (!lhs) {
+	if (maxsnp>1) 
+	  SET_VECTOR_ELT(Snp_names, i, B_names);
+      }
+      int nb = LENGTH(B);
+      double *v = REAL(VECTOR_ELT(Fi, 1));
+      if (maxwork>1) {
+	int res = qform(nb, b, v, work, &wald, &rank);
+	if (!res) {
+	  wald = NA_REAL;
+	  rank = NA_INTEGER;
+	}
+      }
+      else {
+	if (v[0]>0.0) {
+	  wald = b[0]*b[0]/v[0];
+	  rank = 1;
+	}
+      }
+      ni = INTEGER(VECTOR_ELT(Fi, 2))[0];
+    }
+    chisq[i] = wald;
+    df[i] = rank;
+    n[i] = ni;
+  }
+
+  if (maxwork>1)
+    Free(work);
+  if (lhs || maxsnp==1)
+    UNPROTECT(4);
+  else 
+    UNPROTECT(5);
+ 
+  return(To);
+}
+
+  

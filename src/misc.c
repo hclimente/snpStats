@@ -47,4 +47,39 @@ SEXP asnum(SEXP Snps) {
   UNPROTECT(1);
   return Result;
 }
-    
+
+SEXP pp(const SEXP X, const SEXP Transp) {
+  int N = length(X);
+  const unsigned char *x = RAW(X);
+  int transp = LOGICAL(Transp)[0];
+  SEXP Result = R_NilValue;
+  if (transp) {
+    PROTECT(Result = allocMatrix(REALSXP, 3, N));
+    double *result = REAL(Result);
+    for (int i=0, ij=0; i<N; i++) {
+      double p0, p1, p2;
+      g2post(x[i], &p0, &p1, &p2);
+      result[ij++] = p0;
+      result[ij++] = p1;
+      result[ij++] = p2;
+    } 
+  }
+  else {
+    PROTECT(Result = allocMatrix(REALSXP, N, 3));
+    double *result = REAL(Result);
+    int N2 = 2*N;
+    for (int i=0; i<N; i++) {
+      double p0, p1, p2;
+      g2post(x[i], &p0, &p1, &p2);
+      result[i] = p0;
+      result[i+N] = p1;
+      result[i+N2] = p2;
+    }
+  }
+  UNPROTECT(1);
+  return(Result);
+}
+
+      
+  
+  

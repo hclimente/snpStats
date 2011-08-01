@@ -14,7 +14,7 @@
 \usage{
 snp.lhs.tests(snp.data, base.formula, add.formula, subset, snp.subset,
                 data = sys.parent(), robust = FALSE, uncertain = FALSE, 
-                control=glm.test.control(maxit=20, epsilon=1.e-4,R2Max=0.98),
+                control=glm.test.control(maxit=20, epsilon=1.e-5,R2Max=0.999),
                 score=FALSE)
 }
 \arguments{

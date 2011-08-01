@@ -68,3 +68,6 @@ plotUncertainty <- function(snp, nlevels = 10,
 }
       
   
+pp <- function(x, transpose=FALSE) {
+  .Call("pp", as.raw(x), transpose, PACKAGE="snpStats")
+}

@@ -13,8 +13,9 @@ model-based estimates.
 }
 \usage{
 snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
-= parent.frame(), snp.data, sets=NULL, robust = FALSE,
-   control=glm.test.control(maxit=20, epsilon=1.e-4, R2Max=0.98))
+= parent.frame(), snp.data,
+   rules = NULL, sets = NULL, robust = FALSE, uncertain = FALSE,
+   control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999))
 }
 \arguments{
   \item{formula}{The model formula, with phenotype as dependent variable
@@ -30,7 +31,8 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   default action is to use the "canonical" link for the family selected}
   \item{data}{The dataframe in which the model formula is to be interpreted}
   \item{snp.data}{An object of class \code{"SnpMatrix"} or
-    \code{"XSnpMatrix"} containing the SNP data} 
+    \code{"XSnpMatrix"} containing the SNP data}
+  \item{rules}{Optionally, an object of class \code{"ImputationRules"}}
   \item{sets}{Either a vector of SNP names (or  numbers) for the SNPs
     to be added to the model formula, or a logical vector of length
     equal to the number of columns in \code{snp.data}
@@ -39,6 +41,9 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   \item{weights}{"Prior" weights in the generalized linear model}
   \item{subset}{Array defining the subset of rows of  \code{data} to use}
   \item{robust}{If \code{TRUE}, robust tests will be carried out}
+  \item{uncertain}{If \code{TRUE}, uncertain genotypes are used and
+    scored by their posterior expectations. Otherwise they are treated
+    as missing}
   \item{control}{An object giving parameters for the IRLS algorithm
     fitting of the base model and for the acceptable aliasing amongst
     new terms to be tested. See \code{\link{glm.test.control}}}
@@ -67,6 +72,9 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   appropriate column in the input \code{snp.data}.  They can also
   be referenced by a logical selection vector of length equal to the
   number of columns in \code{snp.data}.
+
+  If the \code{rules} argument is supplied, SNPs may be imputed using
+  these rules and included in the model.
 }
 \value{
   An object of class \code{\link[=GlmEstimates-class]{snp.estimates.glm}}
@@ -84,7 +92,11 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   appropriate robust estimate of the variance of the parameter
   estimates is used.
 
-  Uncertain genotypes (e.g. as a result of imputation) are ignored.
+  If uncertain genotypes (e.g. as a result of imputation) are used, the
+  interpretation of the regression coefficients is questionable; the
+  regression coefficient for an imperfectly measurement of a variable is
+  not a biased (attenuated) estimate of the coefficient of the variable
+  measured.
 }
 \seealso{\code{\link{GlmEstimates-class}},
     \code{\link{snp.lhs.estimates}},

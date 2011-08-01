@@ -334,19 +334,17 @@ The interpretation of this dendrogram is that, if we were to draw a
 horizontal line at a ``height'' of 0.5, then this would divide the
 SNPs into clusters in such a way that the value of $(1-R^2)$ between
 any pair of SNPs in a cluster would be no more than 0.5 (so that $R^2$
-would be at least 0.5). This is carried out using the {\tt rect.hclust}
-function, which returns a list giving the names of the members of each
-cluster together with their positions in the rows and columns of the 
-distance matrix\footnote{The command also superimposes rectangles
-  corresponding to these clusters on an existing dendrogram plot}:
+would be at least 0.5). This can be carried out using the {\tt cutree}
+function, which returns the cluster membership of each SNP:
 <<clusters>>=
-clusters <- rect.hclust(hc, h=0.5)
-clusters
+clusters <- cutree(hc, h=0.5)
+head(clusters)
+table(clusters)
 @ 
-It can be seen that there are \Sexpr{length(clusters)} clusters.
+It can be seen that there are \Sexpr{max(clusters)} clusters. 
 To have a reasonable chance of picking up an association with the SNPs
 in this 80kb region, we would need to type a SNP from each one of these
-clusters. Of these, \Sexpr{sum(sapply(clusters, length)==1)} SNPs
+clusters. Of these, \Sexpr{sum(table(clusters)==1)} SNPs
 would only tag themselves!
 
 A threshold $R^2$ of 0.5 might seem rather low. However, this is a

@@ -57,7 +57,7 @@ characters or SPACEs). The first six fields contain:
 \item the sex of the subject ({\tt 1 =} Male, {\tt 2 =} Female), and
 \item a binary trait indicator ({\tt 1 =} Absent, {\tt 2 =} Present).
 \end{enumerate}
-Missing values in the last two fiels are usually coded as zero. 
+Missing values in the last two fields are usually coded as zero. 
 
 The first few rows and columns of a sample file is shown below:
 \begin{verbatim}
@@ -187,15 +187,10 @@ A simple example is provided by the small gzipped data file {\tt
 longfile <- system.file("extdata/sample-long.gz", package="snpStats")
 longfile
 @ 
-The first few lines of the file are given below
-\begin{verbatim}
-snp1    subject1        1       1.000
-snp1    subject2        2       1.000
-snp1    subject3        1       1.000
-snp1    subject4        1       1.000
-snp1    subject5        2       1.000
-...
-\end{verbatim}
+The first 5 lines of the file are listed as follows:
+<<longlist>>=
+cat(readLines(longfile, 5), sep="\n")
+@ 
 The first field gives the SNP identifier ({\tt snp1} to {\tt snp18}),
 the second gives the sample, or subject, identifier  ({\tt subject1} to 
 {\tt subject100}), the third field gives the genotype call ({\tt
