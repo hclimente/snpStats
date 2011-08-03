@@ -291,7 +291,7 @@ Suitable values for extreme predictions
 */
 
 double validmu(int family, double mu) {
-  const double zero = 1.e-200, one = 1.0-1.e-200;
+  const double zero = 1.e-10, one = 1.0-1.e-10;
   switch (family) {
   case 1: /* Binomial */
     if (mu<zero)

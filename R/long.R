@@ -12,11 +12,11 @@ function(file, samples, snps,
       stop("When input is from multiple files, sample and snp arguments must be supplied")
     if (verbose)
       cat("Data to be read from multiple files", file[1], "...\n")
-    con <- gzfile(file[1], open="rt")
+    con <- file(file[1], open="rt")
   } else {
     if (verbose)
       cat("Data to be read from the file", file, "\n")
-    con <- gzfile(file, open="rt")
+    con <- file(file, open="rt")
   }
   ifile <- 1
   ## Sample and snp fields
@@ -212,7 +212,7 @@ function(file, samples, snps,
       } else {
         ifile <- ifile+1
         close(con)
-        con <- gzfile(file[ifile], open="rt")
+        con <- file(file[ifile], open="rt")
         line <- readLines(con, n=1)
         if (length(line)==0 || nchar(line)==0)
           stop("Empty file: ", file[ifile])

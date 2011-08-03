@@ -20,7 +20,6 @@ pdftitle={TDT and snpStats Vignette}]
 \usepackage{Sweave}
 
 \SweaveOpts{echo=TRUE, pdf=TRUE, eps=FALSE}
-\newcommand{\grinc}[1]{\begin{center}\includegraphics[width=4in,height=4in]{#1}\end{center}}
 
 \begin{document}
 \setkeys{Gin}{width=1.0\textwidth}
@@ -72,25 +71,19 @@ matrices, stored in a packed form defined in the {\tt Matrix}
 package. They are too large to be listed, but the {\tt Matrix} package
 provides an {\tt image} method, a convenient way to examine patterns
 in the matrices. You should look at these carefully and
-note any differences.
+note any differences. 
 <<image1,eval=FALSE>>=
-image(ld.ceph$D.prime, lwd=0) 
-@ 
-<<png1,echo=FALSE>>=
-png(file="image1.png", width=800, height=800)
 image(ld.ceph$D.prime, lwd=0)
-dev.off()
 @ 
-\grinc{image1.png}
+<<image1a,echo=FALSE,fig=TRUE>>=
+print(image(ld.ceph$D.prime, lwd=0))
+@ 
 <<image2,eval=FALSE>>=
 image(ld.yri$D.prime, lwd=0)
 @ 
-<<png2,echo=FALSE>>=
-png(file="image2.png", width=800, height=800)
-image(ld.yri$D.prime, lwd=0)
-dev.off()
+<<image2a,echo=FALSE,fig=TRUE>>=
+print(image(ld.yri$D.prime, lwd=0))
 @ 
-\grinc{image2.png}
 The important things to note are 
 \begin{enumerate}
 \item there are fairly well-defined ``blocks'' of LD, and
@@ -113,12 +106,9 @@ and plot the image, with a colour key down its right hand side
 <<imagecol,eval=FALSE>>=
 image(ld.ceph$D.prime, lwd=0, cuts=9, col.regions=spectrum, colorkey=TRUE)
 @ 
-<<pngcol,echo=FALSE>>=
-png(file="imagecol.png", width=800, height=800)
-image(ld.ceph$D.prime, lwd=0, cuts=9, col.regions=spectrum, colorkey=TRUE)
-dev.off()
+<<imagecola,echo=FALSE,fig=TRUE>>=
+print(image(ld.ceph$D.prime, lwd=0, cuts=9, col.regions=spectrum, colorkey=TRUE))
 @ 
-\grinc{imagecol.png}
 
 The R-squared matrices provide similar pictures, although they are rather less
 regular. To show this clearly, we focus on the 200 SNPs starting from
@@ -129,21 +119,15 @@ use <- 75:274
 <<image3,eval=FALSE>>=
 image(ld.ceph$D.prime[use,use], lwd=0)
 @ 
-<<png3,echo=FALSE>>=
-png(file="image3.png", width=800, height=800)
-image(ld.ceph$D.prime[use,use], lwd=0)
-dev.off()
+<<image3a,echo=FALSE,fig=TRUE>>=
+print(image(ld.ceph$D.prime[use,use], lwd=0))
 @ 
-\grinc{image3.png}
 <<image4,eval=FALSE>>=
 image(ld.ceph$R.squared[use,use], lwd=0)
 @ 
-<<png4,echo=FALSE>>=
-png(file="image4.png", width=800, height=800)
-image(ld.ceph$R.squared[use,use], lwd=0)
-dev.off()
+<<image4a,echo=FALSE,fig=TRUE>>=
+print(image(ld.ceph$R.squared[use,use], lwd=0))
 @ 
-\grinc{image4.png}
 The R-squared values are smaller and there are ``holes'' in the LD blocks; 
 SNPs within an LD block do not necessarily have large R-squared
 between them. This is further demonstrated in the next section.
