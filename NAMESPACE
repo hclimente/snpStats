@@ -1,3 +1,4 @@
+useDynLib("snpStats")
 import(methods)
 importFrom(graphics, abline, axis, barplot, legend, mtext, par, plot,
            points, polygon)
