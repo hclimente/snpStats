@@ -418,7 +418,7 @@ function(snp.data, base.formula, add.formula, subset, snp.subset,
   m <- as.call(c(as.list(m), list(na.action=as.symbol("na.omit"))))
   m <- eval(m)
   bnames <- rownames(m)
-
+ 
   # Base model matrix -- minus any cluster or strata variables
 
   strats <- attr(Terms, "specials")$strata

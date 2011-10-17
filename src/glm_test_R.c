@@ -363,8 +363,8 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 
   if (TYPEOF(Y)!=REALSXP)
     error("Argument error - Y");
-  double *y = REAL(Y);
   int N = LENGTH(Y);
+  double *y = REAL(Y);
 
   /* Family */
 

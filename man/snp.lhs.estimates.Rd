@@ -56,7 +56,7 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
   columns of the \code{snp.data} object. 
 }
 \value{
-  An object of class \code{\link[=GlmEstimates-class]{snp.estimates.glm}}
+  An object of class \code{\link[=GlmEstimates-class]{GlmEstimates}}
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
 \note{
@@ -73,6 +73,11 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
 
   If uncertain genotypes (e.g. as a result of imputation) are used, the
   interpretation of the regression coefficients is questionable.
+
+  A known bug is that the function fails when no \code{data} argument is
+  supplied and the base model formula contains no variables
+  (\code{~1}). A work-round is to create a data frame to hold the
+  variables in the models and pass this as \code{data=}. 
 }
 \seealso{\code{\link{GlmEstimates-class}}, \code{\link{snp.lhs.tests}}}
 \examples{

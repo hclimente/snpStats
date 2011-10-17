@@ -18,7 +18,7 @@ convert.snpMatrix <- function(object) {
     if (icl==2) { ## X.snp.matrix
       object <- unclass(object)
       dip <- attr(object, "Female")
-      object <- new("XSnpMatrix", diploid=dip)
+      object <- new("XSnpMatrix", object, diploid=dip)
       return(object)
     }
     else if (icl==5) { ## snp.tests.glm 

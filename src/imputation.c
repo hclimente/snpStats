@@ -31,8 +31,9 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 		const SEXP Xpos, const SEXP Ypos, const SEXP Phase, 
 		const SEXP Try, const SEXP Stop,
 		const SEXP Hapcontr, const SEXP EMcontr,
-		const SEXP MinA){
+		const SEXP MinA, const SEXP Same){
 
+  int same = *LOGICAL(Same); /* Do X and Y coincide? */
   int try =  *INTEGER(Try);   /* Number to search */
   if (LENGTH(Stop)!=3)
     error("Stop argument not of length 3");
@@ -139,9 +140,14 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
       double yy = snpcov(yi, yi, diploid, nsubject, phase, minA);
       if (!ISNA(yy)) {
 	int start = nearest_N(xpos, nx, ypos[i], try);
-	for (int j=0; j<try; j++) { 
-	  int jx = nsubject*(xord[start+j]-1);
-	  xy[j] = snpcov(x+jx, yi, diploid, nsubject, phase, minA);
+	for (int j=0; j<try; j++) {
+	  int sj = start+j;
+	  if (same && (sj==i))
+	    xy[j] = NA_REAL;
+	  else {
+	    int jx = nsubject*(xord[sj]-1);
+	    xy[j] = snpcov(x+jx, yi, diploid, nsubject, phase, minA);
+	  }
 	}
 	move_window(cache, start);
 	get_diag(cache, xxd, covariances, x, nsubject, xord, diploid, phase, 
@@ -154,8 +160,8 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 	  double max_due = 0.0;
 	  int best = -1;
 	  for (int j=0; j<try; j++) {
-	    double xxj = xxd[j];
 	    double xyj = xy[j];
+	    double xxj = xxd[j];
 	    if (xxj==0.0 || ISNA(xxj) || ISNA(xyj))
 	      continue;
 	    double xyj2 = xyj*xyj;

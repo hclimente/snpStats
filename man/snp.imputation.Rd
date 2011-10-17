@@ -4,7 +4,9 @@
 \description{
   Given two set of SNPs typed in the same subjects, this function
   calculates rules which can be used to impute one set
-  from the other in a subsequent sample.
+  from the other in a subsequent sample. The function can also calculate
+  rules for imputing each SNP in a single dataset from other SNPs in the
+  same dataset
 }
 \usage{
 snp.imputation(X, Y, pos.X, pos.Y, phase=FALSE, try=50, stopping=c(0.95, 4, 0.05),
@@ -15,9 +17,13 @@ snp.imputation(X, Y, pos.X, pos.Y, phase=FALSE, try=50, stopping=c(0.95, 4, 0.05
     \code{"XSnpMatrix"} containing observations
     of the SNPs to be used for imputation ("predictor SNPs")}
   \item{Y}{An object of same class as \code{X} containing observations
-  of the SNPs to be imputed in a future sample ("target SNPs")}
-  \item{pos.X}{The positions of the  predictor SNPs}
-  \item{pos.Y}{The positions of the target SNPs}
+  of the SNPs to be imputed in a future sample ("target SNPs"). If this
+  argument is missing, then target SNPs are also drawn from \code{X}}
+  \item{pos.X}{The positions of the  predictor SNPs. Can be missing if
+    there is no \code{Y} argument and the columns of \code{X} are in
+    genome position order}
+  \item{pos.Y}{The positions of the target SNPs. Only required when
+    a \code{Y} argument is present}
   \item{phase}{See "Details" below}
   \item{try}{The number of potential predictor SNPs to be
     considered in the stepwise regression procedure around each target

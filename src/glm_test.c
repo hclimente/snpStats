@@ -214,7 +214,7 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	for (int j=0; j<x_rank; j++, xbj+=N) {
 	  double bij = wresid(xbi, N, weights, xbj, xbi);
 	  if (j>=skip_xb)
-	    tri[ij++] = -bij; /* Off-diagonal  */
+	    tri[ij++] = bij; /* Off-diagonal  */
 	}
 	double ssr = wssq(xbi, N, weights);
 	if (ssr/ssx > eta) {

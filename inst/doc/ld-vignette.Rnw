@@ -230,7 +230,6 @@ options(digits=4)
 <<OR>>=
 OR <- ld(ceph.1mb[,1], ceph.1mb[,5], stats="OR")
 OR
-OR <- 
 AABB <- tab33[2,2]*OR/(1+OR)
 ABBA <- tab33[2,2]*1/(1+OR)
 AABB

@@ -77,7 +77,7 @@ snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
   these rules and included in the model.
 }
 \value{
-  An object of class \code{\link[=GlmEstimates-class]{snp.estimates.glm}}
+  An object of class \code{\link[=GlmEstimates-class]{GlmEstimates}}
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
 \note{

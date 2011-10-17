@@ -10,7 +10,7 @@ ld <- function(x, y=NULL, depth=NULL, stats, symmetric=FALSE) {
     dmax <- ncol(x)-1
     if (depth>dmax) {
       depth <- as.integer(dmax)
-      warning("depth too large; it has been reset to", dmax)
+      warning("depth too large; it has been reset to ", dmax)
     }
   }
   .Call("ld", x, y, as.integer(depth), cstats, symmetric, PACKAGE="snpStats");
