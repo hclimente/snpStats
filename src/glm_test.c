@@ -181,8 +181,8 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	  weights[i] = wi;
 	  resid[i] = ri;
 	}
+	dfr = Nu  - S + empty - x_rank;
 	if (family>2) {
-	  dfr = Nu  - S + empty - x_rank;
 	  *scale = wss/(dfr);
 	}
 	if (iter>1) {
@@ -415,6 +415,7 @@ void glm_score_test(int N, int M, int S, const int *stratum,
   if (C) {
     nc = (C==1)? N: C;
     Ui = U = (double *) Calloc(nc*P, double);
+    memset(U, 0x00, nc*P*sizeof(double));
   }
     
 
@@ -442,7 +443,6 @@ void glm_score_test(int N, int M, int S, const int *stratum,
 	    Ui[k] = Zri[k]*weights[k]*resid[k];
 	}
 	else {
-	  memset(Ui, 0x00, nc*sizeof(double));
 	  for (int k=0; k<N; k++) {
 	    int kc = cluster[k] - 1;
 	    Ui[kc] += Zri[k]*weights[k]*resid[k];
@@ -474,6 +474,8 @@ void glm_score_test(int N, int M, int S, const int *stratum,
       for (int j=0; j<=i; j++) 
 	score_var[ij++] = 0.0;
     }
+    if (C)
+      Ui += nc;
   }
   Free(Zr);
   if (C)

@@ -184,7 +184,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
   /* Output arrays */
 
   SEXP Result, Rnames, Vnames, Chisq, Df, Nused, 
-    Score = R_NilValue, UVnames = R_NilValue;
+    Score = R_NilValue, UVnames = R_NilValue, Varnames = R_NilValue;
   PROTECT(Result = allocS4Object());
 
   SEXP snpNames = VECTOR_ELT(getAttrib(Y, R_DimNamesSymbol), 1);
@@ -198,7 +198,11 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
   PROTECT(Df = allocVector(INTSXP, ntest));
   int *df = INTEGER(Df);
   PROTECT(Nused = allocVector(INTSXP, ntest));
-  int *nused = INTEGER(Df);
+  int *nused = INTEGER(Nused);
+  PROTECT(Varnames = allocVector(STRSXP, 1));
+  /* Should put something in as a place holder */
+  SET_STRING_ELT(Varnames, 0, mkChar("X-variable"));
+  R_do_slot_assign(Result, mkString("var.names"), Varnames);
   R_do_slot_assign(Result, mkString("snp.names"), Rnames);
   R_do_slot_assign(Result, mkString("chisq"), Chisq);
   R_do_slot_assign(Result, mkString("df"), Df);
@@ -231,7 +235,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
 
     int j = snp_subset? snp_subset[t] - 1: t; 
     const unsigned char *yj = y + N*j;
-    int mono = 1, yv = 0;
+    int mono = 1, yv = 0, nu = 0;
  
 
     /* Load SNP as Binomial y-variate, with prior weights */
@@ -249,12 +253,14 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
 	}
 	prior[i] = (!diploid || diploid[i])? 2.0: 1.0;
 	yd[i] = g2mean(yij)/2.0;
+	nu++;
       }
       else {
 	prior[i] = yd[i] = 0.0;
       }
     }
-    
+    nused[t] = nu;
+
     if (mono) { /* Monomorphic SNP */
       warning("Monomorphic SNP: %d", t+1);
       memset(u, 0x00, P*sizeof(double));
@@ -341,9 +347,9 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
   classgets(Result, Class);
 
   if (if_score)
-    UNPROTECT(10);
+    UNPROTECT(11);
   else
-    UNPROTECT(8);
+    UNPROTECT(9);
 
   return(Result);
 }
@@ -415,7 +421,6 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
   }
   else if (TYPEOF(Stratum)!=NILSXP)
     error("Argument error - Stratum");
-
 
   /* Z should be a SnpMatrix or an XSnpMatrix */
 

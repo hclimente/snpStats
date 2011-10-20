@@ -258,6 +258,22 @@ function(formula, family="binomial", link, weights, subset,
   if (length(strats)) {
     temps <- untangle.specials(Terms, "strata", 1)
     strats <- strata(m[, temps$vars], shortlabel=TRUE)
+    if (fam==1) {
+      ## Check for saturated response
+      levs <- levels(strats)
+      for (s in 1:nlevels(strats)) {
+        ins <- use & (as.numeric(strats)==s)
+        if (all(Y[ins]==1)) {
+          use[ins] <- FALSE
+          warning("100 percent response in stratum ", levs[s],
+                "; ", sum(ins), " observations dropped")
+        } else if (all(Y[ins]==0)) {
+          use[ins] <- FALSE
+          warning("0 percent response in stratum ", levs[s],
+                "; ", sum(ins), " observations dropped")
+        }   
+      }
+    }
     dropx <- c(dropx, temps$terms)
   }
   else
@@ -298,7 +314,7 @@ function(formula, family="binomial", link, weights, subset,
 
   # Sort and reshape arrays if necessary
 
-  if (N != length(use)) {
+  if (!all(use)) {
     Y <- Y[use]
     if (!is.null(X))
       X <- X[use,,drop=FALSE]
@@ -308,6 +324,7 @@ function(formula, family="binomial", link, weights, subset,
       strats <- strats[use]
     if (!is.null(clust))
       clust <- clust[use]
+    map <- map[use]
     snp.data <- snp.data[map,]
   }
   else if (any(map != 1:N))
@@ -343,7 +360,8 @@ function(formula, family="binomial", link, weights, subset,
   } else {
     stop("illegal tests argument")
   }
-  
+
+
   .Call("snp_rhs_score", Y, fam, lnk, X, strats, snp.data, rules,
         weights, tests, robust, clust, uncertain, control, allow.missing,
         as.logical(score),
