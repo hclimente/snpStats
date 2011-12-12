@@ -69,7 +69,9 @@ snp.lhs.tests(snp.data, base.formula, add.formula, subset, snp.subset,
   formula. This identifies clusters of potentially correlated
   observations (e.g. for members of the same family); in this case, an
   appropriate robust estimate of the variance of the score test is used.
-
+  No more than one
+  \code{strata()} call may be used, and neither \code{strata(...)}  or
+  \code{cluster(...)} calls may appear in the \code{add.formula}.
   A known bug is that the function fails when no \code{data} argument is
   supplied and the base model formula contains no variables
   (\code{~1}). A work-round is to create a data frame to hold the

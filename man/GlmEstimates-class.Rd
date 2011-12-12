@@ -35,6 +35,17 @@ Class \code{"\linkS4class{vector}"}, by class "list", distance 2.
 	 }
 }
 \author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\note{Wald tests calculated by coercing an object of class
+  \code{GlmEstimates} to class \code{GlmTests} are \emph{asymptotically}
+  equivalent to the "score" tests calculated by
+  \code{\link{snp.lhs.tests}} and \code{\link{snp.rhs.tests}}, and both types
+  of test are \emph{asymptotically} correct. But the asymptotic properties of
+  Wald tests are not as good as those of score tests and, in
+  circumstances such as low sample size or low minor allele frequency,
+  Wald and score tests may differ substantially. In general score tests
+  are to be preferred, but Wald tests are provided in \code{snpStats}
+  because they are widely used.
+}
 \seealso{
   \code{\link{snp.lhs.estimates}},
   \code{\link{snp.rhs.estimates}}

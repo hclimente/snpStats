@@ -69,7 +69,9 @@ snp.lhs.estimates(snp.data, base.formula, add.formula, subset, snp.subset,
   formula. This identifies clusters of potentially correlated
   observations (e.g. for members of the same family); in this case, an
   appropriate robust estimate of the variance-covariance matrix of
-  parameter estimates is calculated.
+  parameter estimates is calculated. No more than one
+  \code{strata()} call may be used, and neither \code{strata(...)}  or
+  \code{cluster(...)} calls may appear in the \code{add.formula}.
 
   If uncertain genotypes (e.g. as a result of imputation) are used, the
   interpretation of the regression coefficients is questionable.
