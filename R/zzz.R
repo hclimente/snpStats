@@ -1,7 +1,7 @@
-.onLoad <- function(libname, package) {
+.onLoad <- function(libname, pkgname) {
   methods:::bind_activation(TRUE)
 }
 
-.Last.lib <- function(libname, package) {
+.Last.lib <- function(libpath) {
   methods:::bind_activation(FALSE)
 }

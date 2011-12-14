@@ -9,32 +9,20 @@ SnpMatrix and XSnpMatrix classes and methods
 Classes and statistical methods for large SNP association studies, extending the snpMatrix package
 }
 \details{
-This package extends the \code{snpMatrix} package allowing for uncertainty
-in genotype assignments, for example, as  consequence of
-imputation. It provides most of the functionality of \code{snpMatrix}, although
-it currently lacks a few of the functions. It is intended that the most 
-important of these will be provided in the near future. It also
-includes some novel commands. Note that the \code{snpMatrix} classes
-have been renamed and, in two cases, changed slightly. For more
-details, see the "differences" vignette.
-
-Further development of the snpMatrix project by this developer will
-take place entirely within \code{snpStats}.
-
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.3.7\cr
-Date: \tab 2011-10-20\cr
+Version: \tab 1.5.2\cr
+Date: \tab 2011-12-14\cr
 Depends: \tab R(>= 2.3.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
 License: \tab GPL-3\cr
 URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
-Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R\cr
+Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2011-10-20\cr
-Built: \tab R 2.13.1; x86_64-unknown-linux-gnu; 2011-10-20 16:24:10 UTC; unix\cr
+Packaged: \tab 2011-12-14\cr
+Built: \tab R 2.13.1; x86_64-unknown-linux-gnu; 2011-12-14 16:27:06 UTC; unix\cr
 }
 
 Index:
