@@ -11,7 +11,7 @@
    See http://graphics.stanford.edu/~seander/bithacks.html
 */
 
-inline int bitcount(unsigned int x) {
+static inline int bitcount(unsigned int x) {
   return((x * 0x200040008001ULL & 0x111111111111111ULL) % 0xf);
 }
 

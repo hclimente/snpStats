@@ -28,7 +28,6 @@ void insnp(char *filename, char *tmpdir,
   sprintf(sort_command, 
 	  "sort  -k 2,2 -k 1,1 -T \"%s\" -o \"%s\" \"%s\"",
           tmpdir, filename, filename);
-  printf("%s\n", sort_command);
   int error = system(sort_command);
   if (error) goto sort_error;
   FILE *infile = fopen(filename, "r");
@@ -112,24 +111,4 @@ void insnp(char *filename, char *tmpdir,
  open_error: *iferror = 2; return;
  read_error: *iferror = 3; return;
  
-}
-
-int main() {
-  char* chips[2] = {"1", "2"};
-  char* snps[3] = {"a", "b", "c"};
-  char* codes[3] = {"aa", "ab", "bb"};
-  int counts[2] = {0,0};
-  char res[6];
-  int nchips = 2;
-  int nsnps = 3;
-  int iferror;
-  double thresh=0.8;
-  int i = 0;
-  insnp("test.txt", "~/temp", &nchips, chips, &nsnps, snps, codes, &thresh, 
-	res, counts, &iferror); 
-  printf("iferror = %d, counts = %d, %d\n", iferror, counts[0], counts[1]);
-  for (i=0; i<6; i++)
-    printf("%-2o\n", res[i]);
-  
-  exit(0);
 }

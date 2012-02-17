@@ -139,10 +139,11 @@ setAs("SnpMatrix", "numeric",
 setAs("SnpMatrix", "character",
       function(from) {
         df <- dim(from)
+        dnames <- dimnames(from)
         from <- 1+as.integer(from)
         to <- ifelse(from<5, c("NA", "A/A", "A/B", "B/B")[from], "Uncertain")
         dim(to) <- df
-        dimnames(to) <- dimnames(from)
+        dimnames(to) <- dnames
         to
       })
 

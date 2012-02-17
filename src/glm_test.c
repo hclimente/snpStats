@@ -158,7 +158,7 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	Nu = 0;
 	for (int i=0; i<N; i++) {
 	  double D, Vmu, ri, wi;
-	  double mu = invlink(family, yw[i] - resid[i]);
+	  double mu = invlink(link, yw[i] - resid[i]);
 	  fitted[i] = validmu(family, mu);
 	  double pi = prior? prior[i] : 1.0;
 	  logL += pi*loglik(family, y[i], mu);
@@ -196,7 +196,7 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	iter ++;
       }
       for (int i=0; i<N; i++)
-	fitted[i] =  invlink(family, yw[i] - resid[i]);
+	fitted[i] =  invlink(link, yw[i] - resid[i]);
       Free(yw);
     }
     else {  

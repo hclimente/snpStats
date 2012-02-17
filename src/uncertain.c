@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include <math.h>
+#include <R.h>
 
 /* One byte coding of SNP genotype allowing for uncertainty */
 
@@ -139,7 +140,7 @@ unsigned char post2g(double pAB, double pBB) {
     }
   }
   if ((iAA + iAB + iBB)!=21)
-    printf("Illegal sum\n");
+    error("Bug -- illegal sum");
   /* Simple sequential coding 0:252 */
   int first = 253 - ((22-iAB)*(23-iAB))/2 + iBB;
   /* Recode to 1:253, so that vertices are at 1, 2, 3 */
