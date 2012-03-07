@@ -12,8 +12,7 @@ of the variance function,  "robust" tests may be selected.
 \usage{
 snp.rhs.tests(formula, family = "binomial", link, weights, subset, data = parent.frame(),
    snp.data, rules=NULL, tests=NULL, robust = FALSE, uncertain=FALSE, 
-   control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999),
-   allow.missing=0.01, score=FALSE)
+   control=glm.test.control(), allow.missing=0.01, score=FALSE)
 }
 \arguments{
   \item{formula}{The base model formula, with phenotype as dependent variable}

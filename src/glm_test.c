@@ -129,16 +129,19 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	skip_xb = 0; /* Columns in Xb matrix not estimands */
 	/* Loop over columns of X matrix */
 	for (int i=0, ii=0, ij=0; i<M; i++, xi+=N) {
-	  double ssx = wssq(xi, N, weights); /* SSQ */
 	  wcenter(xi, N, weights, stratum, S, 1, xbi); /* Center */
+	  double ssx = wssq(xbi, N, weights); /* Corrected SSQ */
 	  /* Regress on earlier columns */
-	  double *xbj = Xb;
-	  for (int j=0; j<x_rank; j++, xbj+=N) {
-	    double bij = wresid(xbi, N, weights, xbj, xbi); /* Coefficient */
-	    if (j>=skip_xb) 
-	      tri[ij++] = bij; /* Save in off-diagonal elements of tri */
+	  double ssr = ssx;
+	  if (x_rank) {
+	    double *xbj = Xb;
+	    for (int j=0; j<x_rank; j++, xbj+=N) {
+	      double bij = wresid(xbi, N, weights, xbj, xbi); /* Coefficient */
+	      if (j>=skip_xb) 
+		tri[ij++] = bij; /* Save in off-diagonal elements of tri */
+	    }
+	    ssr = wssq(xbi, N, weights); /* Residual SSQ */
 	  }
-	  double ssr = wssq(xbi, N, weights); /* Residual SSQ */
 	  if ((ssx>0.0) && (ssr/ssx>eta)) {
 	    double bQi = wresid(resid, N, weights, xbi, resid);
 	    x_rank++;
@@ -208,16 +211,19 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
       x_rank = 0;
       skip_xb = 0;
       for (int i=0, ii=0, ij=0; i<M; i++, xi+=N) {
-	double ssx = wssq(xi, N, weights);
 	wcenter(xi, N, weights, stratum, S, 1, xbi);
-	double *xbj = Xb;
-	for (int j=0; j<x_rank; j++, xbj+=N) {
-	  double bij = wresid(xbi, N, weights, xbj, xbi);
-	  if (j>=skip_xb)
-	    tri[ij++] = bij; /* Off-diagonal  */
+	double ssx = wssq(xbi, N, weights);
+	double ssr = ssx;
+	if (x_rank) {
+	  double *xbj = Xb;
+	  for (int j=0; j<x_rank; j++, xbj+=N) {
+	    double bij = wresid(xbi, N, weights, xbj, xbi);
+	    if (j>=skip_xb)
+	      tri[ij++] = bij; /* Off-diagonal  */
+	  }
+	  ssr = wssq(xbi, N, weights);
 	}
-	double ssr = wssq(xbi, N, weights);
-	if (ssr/ssx > eta) {
+	if ((ssx>0.0) && (ssr/ssx > eta)) {
 	  double bQi = wresid(resid, N, weights, xbi, resid);
 	  x_rank++;
 	  xbi+=N;
@@ -384,7 +390,7 @@ Z         N*P matrix containing these (destroyed)
 C         If robust variance estimate to be used, number of clusters
           (if C==1, each unit forms a cluster)
 cluster   If C>1, cluster assignments code 1...C (N-vector)
-max_R2    For P>1, the maximum value of R^2 between each column and revious 
+max_R2    For P>1, the maximum value of R^2 between each column and previous 
           columns (after regression on X and strata)
 
 For all other input arguments, see glm_fit, but note that M now coincides 

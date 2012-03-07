@@ -1,7 +1,7 @@
 Package: snpStats
 Title: SnpMatrix and XSnpMatrix classes and methods 
-Version: 1.5.4
-Date: 2012-2-17
+Version: 1.5.5
+Date: 2012-03-07
 Author: David Clayton <david.clayton@cimr.cam.ac.uk> 
 Description: Classes and statistical methods for large SNP association studies, extending the snpMatrix package (now removed)
 Maintainer: David Clayton <david.clayton@cimr.cam.ac.uk>
@@ -13,6 +13,6 @@ URL: http://www-gene.cimr.cam.ac.uk/clayton
 Collate: ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R
 LazyLoad: yes
 biocViews: Microarray, SNP, GeneticVariability
-Packaged: 2012-2-17
+Packaged: 2012-03-07
 
 

@@ -1,7 +1,7 @@
 # Set control parameters 
 
 glm.test.control <-
-function(maxit=20, epsilon=1.e-5, R2Max=0.999) 
+function(maxit=20, epsilon=1.e-5, R2Max=0.99) 
   list(maxit=as.integer(maxit),
        epsilon=as.double(epsilon),
        R2Max=as.double(R2Max))
@@ -13,7 +13,7 @@ snp.lhs.tests <-
   
 function(snp.data, base.formula, add.formula, subset, snp.subset,
          data=sys.parent(), robust=FALSE, uncertain=FALSE,
-         control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999),
+         control=glm.test.control(),
          score=FALSE)
 {   
   if (is(snp.data,"SnpMatrix")) 
@@ -154,7 +154,7 @@ snp.rhs.tests <-
 function(formula, family="binomial", link, weights, subset,
           data=parent.frame(), snp.data, rules=NULL, 
           tests=NULL, robust=FALSE, uncertain=FALSE, 
-          control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999),
+          control=glm.test.control(),
           allow.missing=0.01, score=FALSE) {
   
   call <- match.call()
@@ -361,7 +361,6 @@ function(formula, family="binomial", link, weights, subset,
     stop("illegal tests argument")
   }
 
-
   .Call("snp_rhs_score", Y, fam, lnk, X, strats, snp.data, rules,
         weights, tests, robust, clust, uncertain, control, allow.missing,
         as.logical(score),
@@ -407,7 +406,7 @@ snp.lhs.estimates <-
   
 function(snp.data, base.formula, add.formula, subset, snp.subset,
          data=sys.parent(), robust=FALSE, uncertain=FALSE,
-         control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999))
+         control=glm.test.control())
 {   
   if (is(snp.data,"SnpMatrix")) 
     snames <- rownames(snp.data)
@@ -547,7 +546,7 @@ snp.rhs.estimates <-
   
 function(formula, family="binomial", link, weights, subset,
         data=parent.frame(), snp.data, rules=NULL, sets=NULL, robust=FALSE, uncertain=FALSE,
-        control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999)) {
+        control=glm.test.control()) {
   
   call <- match.call()
 

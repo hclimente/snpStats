@@ -11,8 +11,8 @@ Classes and statistical methods for large SNP association studies, extending the
 \details{
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.5.4\cr
-Date: \tab 2012-2-17\cr
+Version: \tab 1.5.5\cr
+Date: \tab 2012-03-07\cr
 Depends: \tab R(>= 2.10.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
@@ -21,8 +21,8 @@ URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
 Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2012-2-17\cr
-Built: \tab R 2.14.0; x86_64-pc-linux-gnu; 2012-02-17 09:16:18 UTC; unix\cr
+Packaged: \tab 2012-03-07\cr
+Built: \tab R 2.14.0; x86_64-pc-linux-gnu; 2012-03-07 15:15:00 UTC; unix\cr
 }
 
 Index:
@@ -43,7 +43,7 @@ families                Test data for family association tests
 filter.rules            Filter a set of imputation rules
 for.exercise            Data for exercise in use of the snpStats
                         package
-glm.test.control        Set up control object for GLM tests
+glm.test.control        Set up control object for GLM computations
 ibsCount                Count alleles identical by state
 ibsDist                 Distance matrix based on identity by state
                         (IBS)

@@ -1,14 +1,14 @@
 \name{glm.test.control}
 \alias{glm.test.control}
-\title{Set up control object for GLM tests}
+\title{Set up control object for GLM computations}
 \description{
- To carry out a score test for a GLM, we first fit a "base" model using
- the standard iteratively reweighted least squares (IRLS) algorithm and
- then carry out a score test for addition of further terms. This
- function sets various control parameters for this.
+  Several commands depend on fitting a generalized linear model (GLM),
+  using the standard 
+  iteratively reweighted least squares (IRLS) algorithm.  This
+  function sets various control parameters for this.
 }
 \usage{
-glm.test.control(maxit = 20, epsilon = 1.e-5, R2Max = 0.999)
+glm.test.control(maxit = 20, epsilon = 1.e-5, R2Max = 0.99)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,26 +18,23 @@ glm.test.control(maxit = 20, epsilon = 1.e-5, R2Max = 0.999)
 }
 \details{
 Sometimes (although not always), an iterative scheme is necessary to fit
-the "base"  generalized linear model (GLM) before carrying out a score
-test for effect of adding new term(s). The \code{maxit} parameter sets
+a generalized linear model (GLM). The \code{maxit} parameter sets
 the maximum number of iterations to be carried out, while the
 \code{epsilon} parameter sets the criterion for determining
-convergence. After fitting the base model, the new terms are added, but
-terms judged to be "aliased" are omitted. The method for determining
-aliasing is as follows (denoting the "design" matrix for the additional
-terms by \code{Z}):
-  \enumerate{ 
-    \item{Step 1}{Regress each column of \code{Z} on the base model matrix,
-    using the final GLM weights from the base model fit, and replace
-    \code{Z} with the residuals from these regressions.}
-    \item{Step 2}{Consider each column of the new \code{Z} matrix in turn,
-    regressing it on the \emph{previous} columns (again using the weights
-    from the base model fit). If the proportion of the weighted sum of
-    squares "explained" by this regression exceeds \code{R2Max}, the term
-    is dropped and not included in the test,}
-  }
-The aim of this procedure to avoid wasting degrees of freedom on columns
-so strongly aliased that there is little power to detect their effect.
+convergence. Variables which are judged to be "aliased" are dropped.
+A variable is judged to be aliased if RSS/TSS is less than (1-R2Max),
+where
+\itemize{
+  \item{RSS }{is the residual (weighted) sum of squares from the
+    regression of that variable on the variables which precede it in the
+    model formula (and any stratification defined in a strata()
+    call in th emodel formula), and}
+  \item{TSS }{is the total (weighted) sum of squared deviations of this
+    variable from its mean (or, when a strata() call is present,
+    from its stratum-specific  means).}
+}
+The weights used in this calculation
+are the "working" weights of the IRLS algorithm.
 }
 \value{
   Returns the parameters as a list in the expected order

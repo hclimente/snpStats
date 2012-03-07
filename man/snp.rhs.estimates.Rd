@@ -12,10 +12,10 @@ matrix of estimates may be calculated in place of the usual
 model-based estimates.
 }
 \usage{
-snp.rhs.estimates(formula, family = "binomial", link, weights, subset, data
-= parent.frame(), snp.data,
-   rules = NULL, sets = NULL, robust = FALSE, uncertain = FALSE,
-   control=glm.test.control(maxit=20, epsilon=1.e-5, R2Max=0.999))
+snp.rhs.estimates(formula, family = "binomial", link, weights, subset,
+data = parent.frame(), snp.data,
+   rules = NULL, sets = NULL, robust = FALSE, uncertain = FALSE, control
+= glm.test.control())
 }
 \arguments{
   \item{formula}{The model formula, with phenotype as dependent variable

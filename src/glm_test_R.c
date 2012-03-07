@@ -218,6 +218,7 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
 
   /* Do calculations */
 
+  int warn_alias = 0;
   for (int t=0; t<ntest; t++) {
 
     SEXP U = R_NilValue, V = R_NilValue;
@@ -278,7 +279,12 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
 			  NULL, NULL, NULL, NULL);
       if (rc) 
 	warning("Failure to converge while fitting base model for SNP %d",j+1);
-    
+
+      if ((rank<M) && !warn_alias) {
+	warn_alias = 1;
+        warning("Variable(s) in the base model were aliased and have been dropped");
+      }
+
       /* Score test */
       
       if (dfr) {
@@ -610,7 +616,11 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
   if (err) 
     error("failure to converge at initial fitting of base model");
 
-
+  int warn_alias = 0;
+  if (rank_all<M) {
+    warning("Variable(s) in the base model were aliased and have been dropped");
+    warn_alias = 1;
+  }
   /* Output list */
 
   SEXP Result, TestNames = R_NilValue, Chisq, Df, Nused, Score = R_NilValue, 
@@ -762,6 +772,10 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 			maxit, epsilon, r2Max, 1,
 			&rank, xb, fitted, resid, weights, 
 			&scale, &df_r, NULL, NULL, NULL, NULL);
+      if ((rank<M) && !warn_alias) {
+	warn_alias = 1;
+	warning("Variable(s) in the base model were aliased and have been dropped");
+      }
       if (err) 
 	warning("No convergence while fitting base model for test %d", test+1);
       glm_score_test(N, rank, S, stratum, nsnpt, zw, C, cluster,
@@ -1155,7 +1169,7 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
 
   /* Do calculations */
 
-
+  int warn_alias = 0;
   for (int t=0; t<nest; t++) {
     int j = snp_subset? snp_subset[t] - 1: t;
 
@@ -1207,6 +1221,11 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
 			  &pest, which, beta, tri);
       if (rc) 
 	warning("Failure to converge while fitting model for SNP %d",j+1);
+      if (((rank-pest)<(M-P)) && !warn_alias) {
+	warn_alias = 1;
+	warning("Variable(s) in the base model were aliased and have been dropped");
+      }
+
       if (!pest) {
 	warning("No estimable parameters for test %d", t+1);
 	SET_VECTOR_ELT(Estimates, t, R_NilValue);
@@ -1532,6 +1551,7 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
 
   int snp;
   int *snps = &snp;
+  int warn_alias = 0;
   for (int set=0; set<nset; set++) {
 
     int nsnp_set = 1;
@@ -1627,6 +1647,10 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
 			&scale, &df_r, &pest, which, beta, tri);
       if (err) 
 	warning("No convergence while fitting model for set %d", set+1);
+      if (((rank-pest)<M) && !warn_alias) {
+	warn_alias = 1;
+	warning("Variable(s) in base model were aliased and were dropped");
+      }
       if (!pest) {
 	warning("No estimable parameters for set %d", set+1);
 	SET_VECTOR_ELT(Estimates, set, R_NilValue);
@@ -1810,5 +1834,3 @@ SEXP wald(const SEXP From) {
  
   return(To);
 }
-
-  
