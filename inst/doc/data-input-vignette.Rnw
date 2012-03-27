@@ -216,8 +216,23 @@ A few remarks:
 \item Here, calls were represented by a single genotype code. It is
   also possible to read calls as pairs of alleles. The function then
   returns a list whose first argument is the {\tt SnpMatrix} object,
-  and whose second object is a dataframe containing the allele codes.
+  and whose second object is a dataframe containing the allele
+  codes. This option is demonstrated below, using an alternative
+  coding of the same data (all SNPs are {\tt CT} SNPs):
 \end{enumerate}
+<<readlongallele>>=
+allelesfile <- system.file("extdata/sample-long-alleles.gz", package="snpStats")
+cat(readLines(allelesfile, 5), sep="\n")
+gdata <- read.long(allelesfile, 
+   fields=c(snp=1, sample=2, allele.A=3, allele.B=4, confidence=5),
+   threshold=0.95)
+gdata
+gdata$genotypes
+gdata$alleles
+@
+Note that the assignment of alleles depends on the order in which they
+were encountered.
+
 This function has many options and the online help page needs to be
 read carefully.
 \section*{Other formats}

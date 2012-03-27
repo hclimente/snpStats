@@ -64,8 +64,10 @@ setMethod("initialize",
             .Object
           })
 
-setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="missing"),
-          function(x, i, j) {
+setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="ANY"),
+          function(x, i, j, drop=FALSE) {
+            if (drop!=FALSE)
+              stop("dimensions cannot be dropped from a SnpMatrix object")
             if (missing(i)) {
               if (missing(j))
                 return(x)
@@ -88,14 +90,16 @@ setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="missing"),
           }
 )
 
-setMethod("[", signature(x="XSnpMatrix",i="ANY",j="ANY",drop="missing"),
-          function(x, i, j) {
+setMethod("[", signature(x="XSnpMatrix",i="ANY",j="ANY",drop="ANY"),
+          function(x, i, j, drop=FALSE) {
+            if (drop!=FALSE)
+              stop("dimensions cannot be dropped from an XSnpMatrix object")
             diploid <- x@diploid
             if (missing(i)) {
               if (missing(j))
                 return(x)
               else 
-                x <-  x@.Data[,j,drop=drop]
+                x <-  x@.Data[,j, drop=FALSE]
             }
             else {
               if (is.character(i))

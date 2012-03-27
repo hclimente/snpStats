@@ -2,7 +2,7 @@
 \docType{class}
 \alias{SnpMatrix-class}
 \alias{initialize,SnpMatrix-method} 
-\alias{[,SnpMatrix,ANY,ANY,missing-method}
+\alias{[,SnpMatrix,ANY,ANY,ANY-method}
 \alias{rbind2,SnpMatrix,SnpMatrix-method}
 \alias{cbind2,SnpMatrix,SnpMatrix-method}
 \alias{coerce,SnpMatrix,numeric-method}

@@ -2,7 +2,7 @@
 \docType{class}
 \alias{XSnpMatrix-class}
 \alias{initialize,XSnpMatrix-method}
-\alias{[,XSnpMatrix,ANY,ANY,missing-method}
+\alias{[,XSnpMatrix,ANY,ANY,ANY-method}
 \alias{[<-,XSnpMatrix,ANY,ANY,XSnpMatrix-method}
 \alias{coerce,XSnpMatrix,character-method}
 \alias{coerce,SnpMatrix,XSnpMatrix-method}

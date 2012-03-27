@@ -88,15 +88,22 @@ identifiers are assumed to have been found. This implies that
 the file must be sorted, in some consistent order,
 by sample and by SNP (although either one of these may vary fastest).
 
-If the genotype is read as a single field, it's handling is specified
-by the \code{gcodes} argument. If this is absent, \code{NULL}, or
-\code{NA},  then
-the genotype is assumed to be represented by a two-character field
-(the two characters representing the two alleles). If \code{gcodes} is
-a single string, then this is assumed to
-be a regular expression which will split the genotype field into two allele
+If the genotype is to be read as a single field, the \code{genotype}
+element of the \code{fields} argument must be set to the appropriate
+value, and the \code{allele.A} and \code{allele.B} elements should be
+set to \code{NA}. Its handling is controlled
+by the \code{gcodes} argument. If this is missing or \code{NA},  then
+the genotype is assumed to be represented by a two-character field,
+the two characters representing the two alleles. If \code{gcodes} is
+a single string, then it is assumed to contain
+a regular expression which will split the genotype field into two allele
 fields. Otherwise, \code{gcode} must be an array of length three,
-specifying the three genotype codes in the order "AA", "AB", "BB"
+specifying the three genotype codes in the order "AA", "AB", "BB".
+
+If the two alleles of the genotype are to be read from two separate
+fields, the \code{genotype} element should be set to \code{NA} and the
+\code{allele.A} and \code{allele.B} elements set to the appropriate
+values. The \code{gcode} argument should be missing or set to \code{NA}.
 }
 \value{
 If the genotype is read as a single field matching one of three

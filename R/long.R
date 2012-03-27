@@ -86,14 +86,27 @@ function(file, samples, snps,
   }
   af1 <- fields["allele.A"]
   af2 <- fields["allele.B"]
+  gf <- fields["genotype"]
+  if ((is.na(af1)+is.na(af2))==1)
+    stop("only one allele field specified in fields argument")
   aread <- !is.na(af1) && !is.na(af2)
-  if (!aread) {
+  gread <- !is.na(gf)
+  if (aread) {
+    if (gread)
+      stop("both genotype and allele fields specified")
+    if (verbose)
+      cat("Alleles are read from two different fields\n")
+    if (missing(gcodes)) {
+      gcodes <- NA
+    } else if (!is.na(gcodes)) {
+      stop("gcodes argument set when data are read as alleles")
+    }
+  } else {
+    if (!gread)
+      stop("neither allele or genotype fields specified")
     if (verbose)
       cat("Genotype read as a single field ")
-    gf <- fields["genotype"]
-    if (is.null(gf) || is.na(gf))
-      stop("neither alleles nor genotypes specified to be read")
-    if (missing(gcodes) || is.na(gcodes) || is.null(gcodes)) {
+    if (missing(gcodes) || is.na(gcodes)) {
       ## 2-character allele coding
       if (verbose)
         cat("of two characters (which specify the alleles)\n")
@@ -107,7 +120,7 @@ function(file, samples, snps,
       stop("invalid value passed for gcodes argument")
     else if (verbose)
       cat("to be split into alleles by the regexp", gcodes, "\n")
-  }
+  } 
 
   ## If missing size, read ahead
 

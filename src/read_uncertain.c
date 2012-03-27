@@ -9,7 +9,7 @@
 /* wc function */
 
 void gzwc(const gzFile infile, const int nline, 
-	  int *chars, int *words, int *lines){
+	  long *chars, long *words, long *lines){
   int ch;
   int sp=1;
 
@@ -66,7 +66,8 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
   gzFile infile =  gzopen(filename, "rb");
   if (!infile)
     error("Could not open input file");
-  int chars, words, lines, ncol;
+  long chars, words, lines;
+  int ncol;
   if (!nsubj) {
     gzwc(infile, 0, &chars, &words, &lines);
     if (words%lines)
@@ -136,7 +137,7 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
     gznext(infile, buffer, BUFFERSIZE);
     SET_STRING_ELT(Rnames, i, mkChar(buffer));
     gznext(infile, buffer, BUFFERSIZE);
-    if (strcmp(buffer, "ML_PROB")!=0)
+    if ((strcmp(buffer, "ML_PROB")!=0) && (strcmp(buffer, "PROB")!=0))
       error("file does not appear to be an MLPROB file (field 2=%s)", buffer);
     for (int j=0, ij=i; j<ncol; j++, ij+=lines) {
       double pAA, pAB;
@@ -201,7 +202,8 @@ SEXP read_impute(const SEXP Filename, const SEXP Rownames, const SEXP Nsnp,
   gzFile infile =  gzopen(filename, "rb");
   if (!infile)
     error("Could not open input file");
-  int chars, words, lines, N;
+  long chars, words, lines;
+  int N;
   if (!nsnp) {
     gzwc(infile, 0, &chars, &words, &lines);
     if (words%lines)

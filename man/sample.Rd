@@ -5,14 +5,17 @@
 \alias{sample.bim}
 \alias{sample.fam}
 \alias{sample-long.gz}
+\alias{sample-long-alleles.gz}
 \alias{mach1.out.mlprob.gz}
 \title{Sample datasets to illustrate data input}
 \description{
   The first five files concern data on 20 diallelic loci on 120
   subjects. These data are 
   distributed with the Haploview package (Barrett et al., 2003). The
-  sixth file contains a additional dataset of 18 SNPs in 100 subjects,
-  coded in long format. These six files are used in the data input
+  sixth files contains a additional dataset of 18 SNPs in
+  100 subjects, coded in "long" format, and the seventh file duplicates
+  this dataset in an alternative long format. These seven files are used
+  in the data input
   vignette. The final file is a sample imputed genotype
   dataset distributed with the MACH imputation package, and used in the
   imputation vignette.
@@ -22,7 +25,7 @@
   \code{system.file} function.
 }
 \format{
-  There are five files:
+  The following files are described here:
   \itemize{
     \item \code{sample.ped.gz}: A gzipped pedfile
     \item \code{sample.info}: An accompanying locus information file
@@ -30,6 +33,7 @@
     \item \code{sample.bim}: The PLINK \code{.bim} file
     \item \code{sample.fam}: The PLINK \code{.fam} file
     \item \code{sample-long.gz}: A sample of long-formatted data
+    \item \code{sample-long-alleles.gz}: The same as above, but allele-coded
     \item \code{mach1.out.mlprob.gz}: An \code{mlprob} output file from
     the MACH genotype imputation program. This file contains, for each
     imputed genotype call, posterior probabilities for the three possible
