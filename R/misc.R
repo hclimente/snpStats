@@ -71,3 +71,11 @@ plotUncertainty <- function(snp, nlevels = 10,
 pp <- function(x, transpose=FALSE) {
   .Call("pp", as.raw(x), transpose, PACKAGE="snpStats")
 }
+
+mean2g <- function(m, maxE=FALSE) .Call("Rmean2g", m, maxE, PACKAGE="snpStats")
+
+g2post <- function(g, transpose=FALSE) .Call("Rg2post", g, transpose,
+                       PACKAGE="snpStats")
+
+post2g <- function(p, transpose=FALSE) .Call("Rpost2g", p, transpose,
+                       PACKAGE="snpStats")

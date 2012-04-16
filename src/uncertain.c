@@ -159,21 +159,28 @@ int g2post(unsigned char code, double *pAA, double *pAB, double *pBB) {
   return(1);
 }
 
-/* Maximum entropy mapping of posterior mean genotype into one byte code */
+/* Mapping of posterior mean genotype into one byte code */
 
-unsigned char mean2g(double mean) {
-  /* Maximum entropy assignment given mean genotype in range [0,2] */
+unsigned char mean2g(double mean, int maxE) {
   if (mean<0.0 || mean>2.0)
-    return((unsigned char) mean);
+    return((unsigned char) 0);
   if (mean==0.0 || mean==2.0)
-    return((unsigned char) mean);
-  /* Probabilities are theta, theta*phi, and theta*phi^2
-     Phi is the positive root of quadratic */
-  double m1 = mean - 1.0;
-  double phi = (sqrt(4.0 - 3.0*m1*m1) + m1)/(2*(1 - m1));
-  double phi2 = phi*phi;
-  double theta = 1.0/(1.0 + phi + phi2);
-  return(post2g(theta*phi, theta*phi2));
+    return((unsigned char) (1+mean));
+  if (maxE) { /* Maximum entropy assignment */
+    /* Probabilities are theta, theta*phi, and theta*phi^2
+       Phi is the positive root of quadratic */
+    double m1 = mean - 1.0;
+    double phi = (sqrt(4.0 - 3.0*m1*m1) + m1)/(2*(1 - m1));
+    double phi2 = phi*phi;
+    double theta = 1.0/(1.0 + phi + phi2);
+    return(post2g(theta*phi, theta*phi2));
+  }
+  else { /* Least uncertain */
+    if (mean>=1.0)
+      return(post2g(2.0-mean, mean-1.0));
+    else 
+      return(post2g(mean, 0.0));
+  }
 }
 
 /* One byte code into posterior mean */
