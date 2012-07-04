@@ -43,10 +43,7 @@ multiplicative effects of 1.3, 1.4 and 1.5 for each copy of the risk allele.
 }
 \source{
   The data were obtained from the diabetes and inflammation laboratory
-  (see \url{http://www-gene.cimr.cam.ac.uk/todd})
-}
-\references{
-  \url{http://www-gene.cimr.cam.ac.uk/clayton}
+  (see \url{http://www-gene.cimr.cam.ac.uk})
 }
 \examples{
 data(for.exercise)

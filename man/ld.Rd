@@ -64,7 +64,7 @@ defined in the \code{"\link[Matrix:Matrix-class]{Matrix}"} package)
   (this paper is included in package documentation)
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton \email{dc208@cam.ac.uk}
 }
 \seealso{
 \code{"\link[Matrix:Matrix-class]{Matrix-class}"}

@@ -28,7 +28,7 @@ impute.snps(rules, snps, subset = NULL, as.numeric = TRUE)
 \references{
   Wallace, C. et al. (2010) \emph{Nature Genetics}, \bold{42}:68-71
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{snp.imputation}}}
 \examples{
 # Remove 5 SNPs from a datset and derive imputation rules for them

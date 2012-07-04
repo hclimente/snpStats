@@ -66,7 +66,7 @@ col.summary(object, rules = NULL, uncertain = TRUE)
 \note{The current version of \code{row.summary}
   does not deal with the X chromosome
   differently, so that males are counted as homozygous.}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \examples{
 data(testdata)
 rs <- row.summary(Autosomes)

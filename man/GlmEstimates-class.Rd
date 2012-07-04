@@ -34,7 +34,7 @@ Class \code{"\linkS4class{vector}"}, by class "list", distance 2.
     \item{show}{\code{signature(object = "GlmEstimates")}: Display}
 	 }
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{Wald tests calculated by coercing an object of class
   \code{GlmEstimates} to class \code{GlmTests} are \emph{asymptotically}
   equivalent to the "score" tests calculated by

@@ -88,7 +88,7 @@ single.snp.tests(phenotype, stratum, data = sys.parent(), snp.data,
   treated as homozygous females and corrected variance estimates are
   used.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{snp.lhs.tests}}, \code{\link{snp.rhs.tests}},
   \code{\link{impute.snps}}, \code{\link{ImputationRules-class}},
   \code{\link{pool}}, 

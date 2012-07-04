@@ -28,7 +28,7 @@ write.SnpMatrix(x, file, as.alleles= FALSE, append = FALSE, quote = TRUE, sep = 
 \value{
   A numeric vector giving the dimensions of the matrix written
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link[utils]{write.table}}, \code{\link{SnpMatrix-class}},
   \code{\link{XSnpMatrix-class}}}
 \keyword{manip}

@@ -57,7 +57,7 @@ mvtests(phenotype, sets, stratum, data = sys.parent(), snp.data, rules = NULL, c
   depending on whether \code{score} is set to \code{FALSE} or \code{TRUE}
   in the call
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{
   This is an experimental version
 }

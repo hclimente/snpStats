@@ -81,7 +81,7 @@ provide methods for pooling results from several studies or parts of a study
       the effect of switching of the alleles for the specified tests}
   }
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{
 \code{\link{single.snp.tests}}, \code{\link{pool}}
 }

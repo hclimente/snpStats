@@ -54,7 +54,7 @@ greater than 1.0.
 \code{raw}. \code{g2post} returns a numeric matrix. 
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton \email{dc208@cam.ac.uk}
 }
 \note{
 These functions are provided mainly for users wishing to write their own

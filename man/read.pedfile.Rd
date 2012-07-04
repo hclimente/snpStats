@@ -89,7 +89,7 @@ A list, comprising
   objects; such data should first be read as a \code{SnpMatrix} and then
   coerced to an \code{XSnpMatrix} using \code{new} or \code{as}.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}}
 \examples{
 ##

@@ -84,7 +84,7 @@ qq.chisq(x, df=1, x.max, main="QQ plot",
   }
 \references{Devlin, B. and Roeder, K. (1999) Genomic control for
   association studies. \emph{Biometrics}, \bold{55}:997-1004}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{single.snp.tests}}, \code{\link{snp.lhs.tests}},
   \code{\link{snp.rhs.tests}} }
 \examples{

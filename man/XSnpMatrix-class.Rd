@@ -60,8 +60,7 @@ Class \code{"vector"}, by class "SnpMatrix", with explicit coerce.
       \code{\link{row.summary}} and \code{\link{col.summary}}}
   }
 }
-\references{\url{http://www-gene.cimr.cam.ac.uk/clayton}}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{SnpMatrix-class}}
 }
 \examples{

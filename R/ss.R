@@ -724,7 +724,7 @@ setMethod("pool2",
             }
             if (score)
               res <- new("GlmTestsScore",
-                         test.names=c(to.pool, x.only, y.only),
+                         snp.names=c(to.pool, x.only, y.only),
                          var.names=x@var.names,
                          chisq=c(res.chisq, x@chisq[ix], y@chisq[iy]),        
                          df=c(res.df, x@df[ix], y@df[iy]),        
@@ -733,7 +733,7 @@ setMethod("pool2",
                            append(x@score[ix], y@score[iy])))
             else
                res <- new("GlmTests",
-                          test.names=c(to.pool, x.only, y.only),
+                          snp.names=c(to.pool, x.only, y.only),
                           var.names=x@var.names,
                           chisq=c(res.chisq, x@chisq[ix], y@chisq[iy]),        
                           df=c(res.df, x@df[ix], y@df[iy]),        

@@ -34,7 +34,7 @@ side, the three probabilities. Each of the 253 probability classes is
 represented by a hexagonal cell, coloured according to its frequency in
 the data, which is also written within the cell
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \examples{
 ## No example available yet
 }

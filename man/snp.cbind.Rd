@@ -38,7 +38,7 @@ warnings.
 \value{
   A new matrix, of the same type as the input matrices.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link[base]{cbind}}, \code{\link[base:cbind]{rbind}}}
 \examples{
 data(testdata)

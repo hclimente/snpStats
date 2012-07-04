@@ -38,7 +38,7 @@ misinherits(ped, id, father, mother, data = sys.parent(), snp.data)
   genotype for a specific SNP, the corresponding element of the output
   matrix is set to NA.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{tdt.snp}}}
 \examples{
 data(families)

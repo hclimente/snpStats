@@ -24,7 +24,7 @@ filter.rules(rules, snps.excluded, exclusions = TRUE)
 \value{
   A character vector containing the names of imputed SNPs to be removed
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{ImputationRules-class}},
     \code{\link{snp.imputation}}
 }

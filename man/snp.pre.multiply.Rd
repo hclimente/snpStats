@@ -37,7 +37,7 @@ calculated from one dataset to a different dataset
 \value{
   The resulting matrix product
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{xxt}}}
 \examples{
 ##--

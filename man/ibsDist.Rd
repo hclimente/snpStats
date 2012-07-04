@@ -17,7 +17,7 @@ ibsDist(counts)
 \value{
   An object of class \code{"dist"} (see \code{\link[stats]{dist}})
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{ibsCount}}, \code{\link[stats]{dist}}}
 \examples{
 data(testdata)

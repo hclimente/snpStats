@@ -117,7 +117,7 @@ which was accepted. Thus, monomorphic SNPs have \code{allele.B} coded as
 alleles coded as \code{NA}.
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton \email{dc208@cam.ac.uk}
 }
 \note{
   Unlike \code{read.snps.long},

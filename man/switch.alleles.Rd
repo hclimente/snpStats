@@ -33,7 +33,7 @@ switch.alleles(x, snps)
   (and faster) to apply this process to the test result objects rather
   than to the genotype data themselves.
   }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{  \code{\link{SnpMatrix-class}},
   \code{\link{XSnpMatrix-class}},
   \code{\link{SingleSnpTests-class}},

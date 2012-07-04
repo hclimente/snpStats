@@ -36,7 +36,7 @@ the prior is symmetric about 0.5. The default,
 A vector containing the log (base 10) of the Bayes Factors for an allele
 switch. 
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}}
 \examples{
 data(testdata)

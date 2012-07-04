@@ -89,8 +89,7 @@ Class \code{"vector"}, by class "matrix", with explicit coerce.
 
 	 }
 }
-\references{\url{http://www-gene.cimr.cam.ac.uk/clayton}}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{This class requires at least version 2.3 of R}
 \seealso{\code{\link{XSnpMatrix-class}}
 }

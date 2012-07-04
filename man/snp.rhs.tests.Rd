@@ -92,7 +92,7 @@ snp.rhs.tests(formula, family = "binomial", link, weights, subset, data = parent
 }
 \references{Boos, Dennis D. (1992) On generalized score tests. \emph{The
   American Statistician}, \strong{46}:327-333.}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{
   A factor (or
   several factors) may be included as arguments to the function

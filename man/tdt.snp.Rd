@@ -96,7 +96,7 @@ tdt.snp(ped, id, father, mother, affected, data = sys.parent(), snp.data,
   association tests i.e. assuming that 
   genotype relative risks for males mirror thos of homozygous females
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{single.snp.tests}}, \code{\link{impute.snps}}, 
   \code{\link{pool}}, \code{\link{ImputationRules-class}},
   \code{\link{SingleSnpTests-class}},

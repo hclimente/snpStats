@@ -54,7 +54,7 @@ sm.compare(obj1, obj2, row.wise = TRUE, col.wise = TRUE)
   above. These are named \code{row.wise} and \code{col.wise}
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton \email{dc208@cam.ac.uk}
 }
 \note{
   No special provision is yet made for objects of class

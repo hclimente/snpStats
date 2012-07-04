@@ -81,7 +81,7 @@
       the effect of switching of the alleles of specified SNPs}
   }
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{Most of the methods for this class are shared with
 the \code{\linkS4class{SingleSnpTests}} and
 \code{\linkS4class{SingleSnpTestsScore}} classes

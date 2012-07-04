@@ -11,18 +11,17 @@ Classes and statistical methods for large SNP association studies, extending the
 \details{
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.7.1\cr
-Date: \tab 2012-04-16\cr
+Version: \tab 1.7.2\cr
+Date: \tab 2012-07-04\cr
 Depends: \tab R(>= 2.10.0), survival, methods, Matrix\cr
 Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
 Suggests: \tab hexbin\cr
 License: \tab GPL-3\cr
-URL: \tab http://www-gene.cimr.cam.ac.uk/clayton\cr
 Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2012-04-16\cr
-Built: \tab R 2.13.1; i686-pc-linux-gnu; 2012-04-16 08:50:14 UTC; unix\cr
+Packaged: \tab 2012-07-04\cr
+Built: \tab R 2.13.1; i686-pc-linux-gnu; 2012-07-04 11:19:01 UTC; unix\cr
 }
 
 Index:
@@ -115,8 +114,8 @@ Further information is available in the following vignettes:
 }
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton <dc208@cam.ac.uk>
 
-Maintainer: David Clayton \email{david.clayton@cimr.cam.ac.uk}
+Maintainer: David Clayton <dc208@cam.ac.uk>
 }
 \keyword{ package }

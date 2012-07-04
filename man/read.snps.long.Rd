@@ -118,7 +118,7 @@ read.snps.long(files, sample.id = NULL, snp.id = NULL, diploid = NULL,
   observation until reaching the end of the data, ignoring everything
   else on the way. 
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{read.plink}}, 
   \code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}}
 \keyword{manip}

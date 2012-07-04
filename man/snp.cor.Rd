@@ -25,7 +25,7 @@ snp.cor(x, y, uncertain = FALSE)
 \value{
 An  \var{M} by \var{P} matrix of correlation coefficients
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{
   This version cannot handle X chromosomes
 }

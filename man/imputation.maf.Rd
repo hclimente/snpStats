@@ -30,7 +30,7 @@ imputation.nsnp(rules)
 \value{
   Either a logical vector, or a numeric vector containing the extracted values
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{ImputationRules-class}},
   \code{\link{snp.imputation}}}
 \examples{

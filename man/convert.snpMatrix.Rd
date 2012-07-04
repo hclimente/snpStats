@@ -33,5 +33,5 @@ convert.snpMatrix.dir(dir = ".", ext = "RData")
 \code{convert.snpMatrix} returns the converted object. 
 \code{convert.snpMatrix.dir} rewrites the files in place.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \keyword{classes}

@@ -95,7 +95,7 @@ Returns \code{NULL}.
   PLINK: Whole genome association analysis toolset.
   \url{http://pngu.mgh.harvard.edu/~purcell/plink/}
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{read.plink}},
   \code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}
 }

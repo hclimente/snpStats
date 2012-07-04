@@ -26,7 +26,7 @@ pp(x, transpose = FALSE)
   A numeric matrix
 }
 \author{
-David Clayton \email{david.clayton@cimr.cam.ac.uk}
+David Clayton \email{dc208@cam.ac.uk}
 }
 \examples{
 ##

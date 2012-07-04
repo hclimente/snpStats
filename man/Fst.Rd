@@ -27,7 +27,7 @@ Fst(snps, group)
 }
 \note{Uncertain genotypes are treated as missing
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}
+\author{David Clayton \email{dc208@cam.ac.uk}
 }
 \examples{
 

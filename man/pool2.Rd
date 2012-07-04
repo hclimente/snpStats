@@ -23,7 +23,7 @@ pool2(x, y, score)
   \code{.score}) extension. Tests are produced for the \emph{union} of
   SNPs tested in all the input objects. 
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{pool}},
   \code{\link{SingleSnpTestsScore-class}},
   \code{\link{GlmTests-class}},

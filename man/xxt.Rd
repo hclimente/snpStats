@@ -85,7 +85,7 @@ If the matrix is converted to a correlation matrix by pre- and
 post-multiplying by the sqrt of the inverse of its diagonal, then this
 is an unbiased estimate of twice the kinship matrix.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \section{Warning}{
   The correction for missing observations can result in an output matrix
   which is not positive semi-definite. This should not matter in the

@@ -64,7 +64,7 @@ effective.sample.size(x)
 }
 \note{The \code{df} and \code{simplify} arguments are not always
   required (or legal). See above}
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{single.snp.tests}}, 
   \code{\link{snp.lhs.tests}}, \code{\link{snp.rhs.tests}},
   \code{\link{SingleSnpTests-class}},

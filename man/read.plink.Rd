@@ -72,7 +72,7 @@ read.plink(bed, bim, fam, na.strings = c("0", "-9"), sep = "." , select.subjects
 \references{PLINK: Whole genome association analysis toolset.
   \url{http://pngu.mgh.harvard.edu/~purcell/plink/}
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{write.plink}},
   \code{\link{SnpMatrix-class}}, \code{\link{XSnpMatrix-class}}}
 \keyword{manip}

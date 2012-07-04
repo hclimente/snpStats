@@ -112,7 +112,7 @@ snp.imputation(X, Y, pos.X, pos.Y, phase=FALSE, try=50, stopping=c(0.95, 4, 0.05
   Wallace, C. et al. (2010) \emph{Nature Genetics}, \bold{42}:68-71
 }
 \note{The \code{phase=TRUE} option is not yet implemented} 
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{ImputationRules-class}},
   \code{\link{imputation.maf}}, \code{\link{imputation.r2}}}
 \examples{

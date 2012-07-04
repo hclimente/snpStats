@@ -79,7 +79,7 @@ data = parent.frame(), snp.data,
 \value{
   An object of class \code{\link[=GlmEstimates-class]{GlmEstimates}}
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \note{
   A factor (or
   several factors) may be included as arguments to the function

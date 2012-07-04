@@ -39,7 +39,7 @@ first read as a \code{SnpMatrix} and subsequently coerced to an
 \value{
 an object of class \code{SnpMatrix}
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{\code{\link{SnpMatrix-class}}}
 \examples{
 ##---- No example available yet

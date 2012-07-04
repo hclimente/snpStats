@@ -41,7 +41,7 @@
       operations}
   }
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk}}
+\author{David Clayton \email{dc208@cam.ac.uk}}
 \seealso{
   \code{\link{snp.imputation}}, \code{\link{impute.snps}},
   \code{\link{single.snp.tests}}

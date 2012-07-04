@@ -38,7 +38,7 @@ per chromosome. Note that the matrices
 produced by applying the \code{ibsCount} function to each object in turn
 can be added to yield the genome-wide result.
 }
-\author{David Clayton \email{david.clayton@cimr.cam.ac.uk} }
+\author{David Clayton \email{dc208@cam.ac.uk} }
 \seealso{\code{\link{ibsDist}} which calculates a distance matrix based
   on proportion of alleles which are IBS}
 \examples{
