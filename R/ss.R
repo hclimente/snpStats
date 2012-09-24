@@ -316,21 +316,15 @@ setMethod("show", "SnpMatrix",
 
 setMethod("is.na", "SnpMatrix", function(x){ x==0})
 
-.rbind2 <- function(x,y){
-  .External("snp_rbind",x, y, PACKAGE="snpStats")
-}
 snp.rbind <- function(...){
   .External("snp_rbind", ..., PACKAGE="snpStats")
-}
-.cbind2 <- function(x,y){
-  .External("snp_cbind",x, y, PACKAGE="snpStats")
 }
 snp.cbind <- function(...){
   .External("snp_cbind", ..., PACKAGE="snpStats")
 }
 
-setMethod("rbind2", signature(x="SnpMatrix", y="SnpMatrix"), .rbind2)
-setMethod("cbind2", signature(x="SnpMatrix", y="SnpMatrix"), .cbind2)
+setMethod("rbind", signature(...="SnpMatrix"), snp.rbind)
+setMethod("cbind", signature(...="SnpMatrix"), snp.cbind)
 
 
 

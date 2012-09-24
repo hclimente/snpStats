@@ -69,7 +69,7 @@ m <- p[,2]+2*p[,3]       ## Posterior expectations
 mg <- mean2g(m)          ## Transform to codes ...
 pmg <- g2post(mg)        ## ... and transform to probabilities
 ## Write everything out
-print(cbind(as.numeric(g), p, as.numeric(pg), m, as.numeric(mg), pmg))
+print(cbind(as(g, "numeric"), p, as.numeric(pg), m, as.numeric(mg), pmg))
 }
 \keyword{programming}
 

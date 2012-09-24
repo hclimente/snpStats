@@ -7,12 +7,14 @@ importFrom(stats, model.matrix, model.offset, model.response,
            model.weights, pchisq, qbeta, qchisq, terms)
 importFrom(survival, cluster, strata, untangle.specials)
 importFrom(utils, download.file, flush.console, head, read.table)
+importFrom(BiocGenerics, cbind)
+importFrom(BiocGenerics, rbind)
 
 exportClasses(SnpMatrix, XSnpMatrix, ImputationRules,
               SingleSnpTests, SingleSnpTestsScore,
               GlmTests, GlmEstimates)
-exportMethods(cbind2, chi.squared, deg.freedom, effect.sign, is.na, 
-              names, pool2, p.value, rbind2, show, summary, switch.alleles,
+exportMethods(cbind, chi.squared, deg.freedom, effect.sign, is.na, 
+              names, pool2, p.value, rbind, show, summary, switch.alleles,
               plot, sample.size, effective.sample.size,
               "[", "[<-", coerce, initialize)
 export(can.impute, convert.snpMatrix, convert.snpMatrix.dir,
@@ -21,7 +23,7 @@ export(can.impute, convert.snpMatrix, convert.snpMatrix.dir,
        misinherits, mvtests, plotUncertainty, pool, post2g, pp, qq.chisq, 
        read.beagle, read.impute, read.long, read.mach, read.pedfile,
        read.plink, read.snps.long, row.summary, col.summary,
-       single.snp.tests, sm.compare, snp.cbind, snp.rbind,
+       single.snp.tests, sm.compare,
        snp.cor, snp.imputation, snp.lhs.tests, snp.lhs.estimates,
        snp.post.multiply, snp.pre.multiply,
        snp.rhs.tests, snp.rhs.estimates, tdt.snp,

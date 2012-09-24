@@ -11,17 +11,17 @@ Classes and statistical methods for large SNP association studies, extending the
 \details{
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.7.2\cr
-Date: \tab 2012-07-04\cr
+Version: \tab 1.7.4\cr
+Date: \tab 2012-09-24\cr
 Depends: \tab R(>= 2.10.0), survival, methods, Matrix\cr
-Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix\cr
+Imports: \tab graphics, grDevices, methods, stats, survival, utils, Matrix, BiocGenerics\cr
 Suggests: \tab hexbin\cr
 License: \tab GPL-3\cr
 Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2012-07-04\cr
-Built: \tab R 2.13.1; i686-pc-linux-gnu; 2012-07-04 11:19:01 UTC; unix\cr
+Packaged: \tab 2012-09-24\cr
+Built: \tab R 2.15.1; i686-pc-linux-gnu; 2012-09-24 09:15:52 UTC; unix\cr
 }
 
 Index:
@@ -76,7 +76,6 @@ sample.info             Sample datasets to illustrate data input
 single.snp.tests        1-df and 2-df tests for genetic associations
                         with SNPs (or imputed SNPs)
 sm.compare              Compare two SnpMatrix objects
-snp.cbind               Bind together two or more SnpMatrix objects
 snp.cor                 Correlations with columns of a SnpMatrix
 snp.imputation          Calculate imputation rules
 snp.lhs.estimates       Logistic regression with SNP genotypes as
@@ -114,7 +113,7 @@ Further information is available in the following vignettes:
 }
 }
 \author{
-David Clayton <dc208@cam.ac.uk>
+David Clayton <dc208@cam.ac.uk> 
 
 Maintainer: David Clayton <dc208@cam.ac.uk>
 }

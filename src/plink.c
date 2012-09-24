@@ -126,7 +126,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
       }
     }
   }
-
+  fclose(in);
   UNPROTECT(4);
   return Result;
 }
