@@ -40,7 +40,6 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
     if (stats[i]) nstats++;
 
   /* X ---- should be a SnpMatrix or an XSnpMatrix */
-
   const char *classX = NULL;
   classX = CHAR(STRING_ELT(GET_CLASS(X), 0));
   int *diploid = NULL; /* default Not X */
@@ -162,6 +161,8 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
 	is++;
 	UNPROTECT(2); /* LDstat and x_slot */
       }
+      else
+	arrays[i] = NULL;
     }
     UNPROTECT(7); /* i, p, Dim, Dimnames, factors, uplo, dsCMatrix */
   }
@@ -253,25 +254,29 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   }
   /* Solve cubic equation */
   double  roots[3];
-  int nroot=1;
+  int nroot = 0;
   double w1 = (double)(T[0]+T[3]-T[1]-T[2])/(double)Dh;
   double w2 = (double)(T[0]*T[3]);
   double w3 = (double)(T[1]*T[2]);
-  if (w2==0.0 && w3==0.0) {
+  if (!Dh) {
+    nroot = 1;
+    roots[0] = w2/(w2+w3);
+  }
+  else if (w2==0.0 && w3==0.0) {
     if (!Dh)
       return 3;
     double pi = (1.0 - w1)/2.0;
-    if (pi>1.0 || pi<0.0) { 
-      /* No root within valid range; try edges */
+    if (pi<1.0 && pi>0.0) { 
+      nroot = 3;
+      roots[0] = 0.0;
+      roots[1] = pi;
+      roots[2] = 1.0;
+    }
+    else {
       nroot=2;
       roots[0] = 0.0;
       roots[1] = 1.0;
     }
-    else
-      roots[0] = pi;
-  }
-  else if (w2==0.0 || w3==0.0 || !Dh) {
-    roots[0] = w2/(w2+w3);
   }
   else {
     double Dh2 = Dh*Dh;
@@ -339,10 +344,12 @@ void set_arrays(const double *hapfreqs, const double *margins, double LLR,
   /* LLR */
   if (arrays[0]) (arrays[0])[ij] = LLR;
   /* OR */
-  double OR =  hapfreqs[0]*hapfreqs[3]/(hapfreqs[1]*hapfreqs[2]);
-  if (arrays[1]) (arrays[1])[ij] = OR;
+  double ad = hapfreqs[0]*hapfreqs[3];
+  double bc = hapfreqs[1]*hapfreqs[2];
+  double OR =  ad/bc;
+  if (arrays[1]) (arrays[1])[ij] = ad/bc;
   /* Yules Q */
-  if (arrays[2]) (arrays[2])[ij] = (OR-1.0)/(OR+1.0);
+  if (arrays[2]) (arrays[2])[ij] = (ad-bc)/(ad+bc);
   /* Covariance */
   double covar = hapfreqs[0] - margins[0]*margins[2];
   if (arrays[3]) (arrays[3])[ij] = covar;
