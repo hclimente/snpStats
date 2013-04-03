@@ -1,6 +1,6 @@
 Package: snpStats
 Title: SnpMatrix and XSnpMatrix classes and methods 
-Version: 1.9.3
+Version: 1.10.0
 Date: 2012-11-07
 Author: David Clayton <dc208@cam.ac.uk> 
 Description: Classes and statistical methods for large SNP association studies, extending the snpMatrix package (now removed)
