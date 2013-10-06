@@ -255,30 +255,15 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   /* Solve cubic equation */
   double  roots[3];
   int nroot = 0;
-  double w1 = (double)(T[0]+T[3]-T[1]-T[2])/(double)Dh;
+  double w1 = (double)(T[0]+T[3]-T[1]-T[2]);
   double w2 = (double)(T[0]*T[3]);
   double w3 = (double)(T[1]*T[2]);
   if (!Dh) {
     nroot = 1;
     roots[0] = w2/(w2+w3);
   }
-  else if (w2==0.0 && w3==0.0) {
-    if (!Dh)
-      return 3;
-    double pi = (1.0 - w1)/2.0;
-    if (pi<1.0 && pi>0.0) { 
-      nroot = 3;
-      roots[0] = 0.0;
-      roots[1] = pi;
-      roots[2] = 1.0;
-    }
-    else {
-      nroot=2;
-      roots[0] = 0.0;
-      roots[1] = 1.0;
-    }
-  }
-  else {
+  else { 
+    w1 /= Dh;
     double Dh2 = Dh*Dh;
     w2 /= Dh2;
     w3 /= Dh2;
@@ -286,13 +271,13 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
     double b = (w2 + w3 - w1 + 1.0)/2.0;
     double c = -w2/2.0;
     nroot = gsl_poly_solve_cubic(a, b, c, roots, roots+1, roots+2);
+    if (!nroot)
+      return 3;
   }
-  double llh=0.0, p=-1.0;
+  double llh = 0.0, p = -1.0;
   if (LLR || (nroot>1)) {
     for (int i=0; i<nroot; i++) {
       double pi = roots[i];
-      if (pi<(-EPS) || pi>(1.0+EPS))
-	continue;
       if (pi<0.0)
 	pi = 0.0;
       if (pi>1.0)
@@ -318,7 +303,7 @@ int phase(const int N, const unsigned char *x, const unsigned char *y,
   }
   else 
     p = roots[0];
-  if (p==-1.0) {
+  if (p<0) {
     return 3;
   }
   

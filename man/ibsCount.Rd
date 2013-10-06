@@ -25,8 +25,8 @@ and 1 for male:male comparisons.
 }
 \value{
   If there are \var{N} rows in the input matrix, the function returns an
-  \var{N}*\var{N} matrix. The upper triangle contains the total number
-  of comparisons and the lower triangle contains the number of these
+  \var{N}*\var{N} matrix. The lower triangle contains the total number
+  of comparisons and the upper triangle contains the number of these
   which  are IBS. The diagonal contains the number of valid calls for
   each subject. 
 }

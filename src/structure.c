@@ -367,8 +367,8 @@ SEXP corsm(const SEXP Snps, const SEXP X, const SEXP Uncertain) {
 /*
   IBS matrix.
 
-  Calculates NxN matrix of type integer, whose upper triangle counts number 
-  non-missing pairs of chromosomes and whose lower triangle counts number 
+  Calculates NxN matrix of type integer, whose lower triangle counts number 
+  non-missing pairs of chromosomes and whose upper triangle counts number 
   IBS. The diagonal counts non-missing calls for each subject
 
   For autosomes, each pair of non-missing SNPs add 4 above the diagonal, and 
@@ -468,7 +468,7 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
 	    double pj[3];
 	    g2post(sjk, pj, pj+1, pj+2);
 	    double add = 0;
-	    for (int ii=0; ii<2; ii++) {
+	    for (int ii=0; ii<3; ii++) {
 	      double pii = pi[ii];
 	      if (pii) {
 		for (int jj=0; jj<3; jj++) {
