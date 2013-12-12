@@ -5,9 +5,9 @@
 #include <Rmath.h>
 #include "uncertain.h"
 
-/* Fst calculation -- as used in HapMap */
+/* Fst calculation -- as used in HapMap, but with option to be more like AOV */
 
-SEXP Fst(SEXP Snps, SEXP Group) {
+SEXP Fst(SEXP Snps, SEXP Group, SEXP HapMap) {
   
   /* Process Snps argument */
 
@@ -51,6 +51,12 @@ SEXP Fst(SEXP Snps, SEXP Group) {
   int ngrp = nlevels(Group);
   int *group = INTEGER(Group);
 
+  /* Process HapMap argument */
+
+  if (TYPEOF(HapMap)!=LGLSXP)
+    error("Argument error - typeof(HapMap)");
+  int hapmap = *LOGICAL(HapMap);
+
   /* Setup result object */
 
   SEXP Fst, Weight;
@@ -81,9 +87,12 @@ SEXP Fst(SEXP Snps, SEXP Group) {
       }	
     }
   }
+
   double sgw = 0.0;
   for (int g=0; g<ngrp; g++) {
-    double w = (double)na[g]*(double)(na[g]-1);
+    double w = (double)na[g];
+    if (hapmap)
+      w = w*(w-1.0);
     sgw += w;
     gwts[g] = w;
   }

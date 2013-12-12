@@ -16,8 +16,8 @@ col.summary <- function(object, rules=NULL, uncertain=TRUE) {
      stop("not a SnpMatrix object")
  }
 
-Fst <- function(snps, group) {
-  .Call("Fst", snps, as.factor(group), PACKAGE="snpStats")
+Fst <- function(snps, group, pairwise=FALSE) {
+  .Call("Fst", snps, as.factor(group), pairwise, PACKAGE="snpStats")
 }
 
 plotUncertainty <- function(snp, nlevels = 10,
