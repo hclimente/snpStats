@@ -1,5 +1,6 @@
 useDynLib("snpStats")
 import(methods)
+import(zlibbioc)
 importFrom(graphics, abline, axis, barplot, legend, mtext, par, plot,
            points, polygon)
 importFrom(grDevices, heat.colors)
@@ -9,6 +10,7 @@ importFrom(survival, cluster, strata, untangle.specials)
 importFrom(utils, download.file, flush.console, head, read.table)
 importFrom(BiocGenerics, cbind)
 importFrom(BiocGenerics, rbind)
+importClassesFrom(Matrix, dsCMatrix, dgCMatrix)
 
 exportClasses(SnpMatrix, XSnpMatrix, ImputationRules,
               SingleSnpTests, SingleSnpTestsScore,

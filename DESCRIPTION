@@ -1,18 +1,18 @@
 Package: snpStats
 Title: SnpMatrix and XSnpMatrix classes and methods 
-Version: 1.15.0
-Date:2013-12-12
+Version: 1.15.1
+Date:2014-08-02
 Author: David Clayton <dc208@cam.ac.uk> 
-Description: Classes and statistical methods for large SNP association studies, extending the snpMatrix package (now removed)
+Description: Classes and statistical methods for large SNP association studies, extending the snpMatrix package
 Maintainer: David Clayton <dc208@cam.ac.uk>
 Depends: R(>= 2.10.0), survival, Matrix, methods
-Imports: graphics, grDevices, stats, utils, BiocGenerics 
+Imports: graphics, grDevices, stats, utils, BiocGenerics, zlibbioc
 Suggests: hexbin
 License: GPL-3
-Collate: ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R zzz.R
+Collate: ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R
 LazyLoad: yes
 biocViews: Microarray, SNP, GeneticVariability
-Packaged: 2013-12-12
+Packaged: 2014-08-02
 
 
 

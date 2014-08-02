@@ -77,7 +77,9 @@ SEXP Rpost2g(SEXP Pos, SEXP Trans) {
     double *pij = pos;
     for (int i=0; i<N; i++) {
       pij++;
-      res[i] = post2g(*(pij++), *(pij++));
+      double pAB = *(pij++);
+      double pBB = *(pij++);
+      res[i] = post2g(pAB, pBB);
     }
   }
   else {

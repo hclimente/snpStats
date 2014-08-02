@@ -40,23 +40,39 @@ the eigenvalues and eigenvectors of the correlation matrix. With $N$
 cases and $P$ variables, if we write $X$ for the $N\times P$ matrix
 which has been standardised so that columns have zero mean and unit
 standard deviation, we find the eigenvalues and eigenvectors of
-the $P\times P$ matrix $X\tr.X$, The first eigenvector gives the
+the $P\times P$ matrix $X\tr.X$ (which is $N$ or $(N-1)$ times the
+correlation matrix depending on which denominator was used when
+calculating standard deviations). The first eigenvector gives the
 loadings of each variable in the first principal component, the second
 eigenvector gives the loadings in the second component, and so
-on. Write the first $C$ component loadings as columns of the $P\times
-C$ matrix $B$. Then, to
-calculate the principal component scores for subjects, $S$, 
-we would simply apply
-the factor loadings to the original data, {\it i.e.\,}  $S = X.B$.
+on. Writing the first $C$ component loadings as columns of the $P\times
+C$ matrix $B$, the $N\times C$ matrix of subjects' principal component
+scores, $S$, is obtained by applying
+the factor loadings to the original data matrix, {\it i.e.\,}  $S = X.B$. The
+matrix $S\tr.S = D $ is diagonal with elements equal to the first $C$ 
+eigenvalues of the  $X\tr.X$ matrix, so that the variances of the
+principal components  can obtained by dividing the eigenvalues by 
+$N$ or $(N-1)$.
 
 This standard method is rarely feasible for genome-wide data since $P$
 is very large indeed and calculating the eigenvectors of $X\tr.X$
 becomes impossibly onerous. However, the calculations can also be
 carried out by calculating the eigenvalues and eigenvectors of the
-$N\times N$ matrix $X.X\tr$. Then the eigenvectors give the principal
-component scores, $S$, and the loadings are calculated by
-$B = X\tr.S.D^{-1/2}$, where $D$ is  a $C\times C$ diagonal matrix
-containing the first $C$ eigenvalues.  Using this method of
+$N\times N$ matrix $X.X\tr$. 
+The (non-zero) eigenvalues of this matrix are the same as those of
+$X\tr.X$, and its eigenvectors are proportional to
+the principal component scores defined above; writing the first $C$
+eigenvectors of $X.X\tr$ as 
+the columns of the $N\times C$ matrix, $U$, then $U =  S.D^{-1/2}$.
+Since for many purposes we are not too
+concerned about the scaling of the principal components, it will
+often be acceptable to use the eigenvectors, $U$, in place of the
+more conventionally scaled principal components. However some
+attention should be paid to the corresponding eigenvalues since, as
+noted above, these are proportional to the variances of the
+conventional principle components. 
+
+Using this method of
 calculation, it is only (!) necessary to find the eigenvalues and eigenvectors
 of an $N\times N$ matrix. Current microarray-based genotyping studies
 are such that $N$ is typically a few thousands and $P$ is a few tens of thousands.
@@ -128,6 +144,10 @@ pcs <- evv$vectors[,1:5]
 evals <- evv$values[1:5]
 evals
 @ 
+Here, {\tt pcs} refers to the scaled principal components ({\it i.e.\,}
+to the columns of the matrix $U$ in our mathematical introduction) and
+all have the same variance. The eigenvalues give an idea of the
+relative magnitude of these sources of variation.
 The first principal component has a markedly larger eigenvalue and we
 might hope that this reflects population structure. In fact these data
 were drawn from two very different populations, as indicated by the
