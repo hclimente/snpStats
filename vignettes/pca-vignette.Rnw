@@ -48,8 +48,9 @@ eigenvector gives the loadings in the second component, and so
 on. Writing the first $C$ component loadings as columns of the $P\times
 C$ matrix $B$, the $N\times C$ matrix of subjects' principal component
 scores, $S$, is obtained by applying
-the factor loadings to the original data matrix, {\it i.e.\,}  $S = X.B$. The
-matrix $S\tr.S = D $ is diagonal with elements equal to the first $C$ 
+the factor loadings to the original data matrix, {\it i.e.\,}  $S = X.B$. 
+The sum of squares and products matrix, $S\tr.S = D $, is diagonal
+with elements equal to the first $C$  
 eigenvalues of the  $X\tr.X$ matrix, so that the variances of the
 principal components  can obtained by dividing the eigenvalues by 
 $N$ or $(N-1)$.
@@ -70,12 +71,14 @@ often be acceptable to use the eigenvectors, $U$, in place of the
 more conventionally scaled principal components. However some
 attention should be paid to the corresponding eigenvalues since, as
 noted above, these are proportional to the variances of the
-conventional principle components. 
+conventional principle components. The factor loadings may be
+calculated by $B = X\tr.U.D^{-1/2}$.
 
 Using this method of
 calculation, it is only (!) necessary to find the eigenvalues and eigenvectors
 of an $N\times N$ matrix. Current microarray-based genotyping studies
-are such that $N$ is typically a few thousands and $P$ is a few tens of thousands.
+are such that $N$ is typically a few thousands while $P$ may be in
+excess of one million.
 
 \section*{An example}
 
@@ -199,6 +202,9 @@ The use of the first principal component as a covariate has been
 quite successful in reducing the serious over-dispersion due to
 population structure. Indeed it is just as successful as
 stratification by the observed {\tt stratum} variable.
+\subsection*{Acknowledgement}
+Thanks to David Poznik for pointing out an error in the earlier
+versions of this vignette.
 \end{document}
 
 

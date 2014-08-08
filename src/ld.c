@@ -332,7 +332,7 @@ void set_arrays(const double *hapfreqs, const double *margins, double LLR,
   double ad = hapfreqs[0]*hapfreqs[3];
   double bc = hapfreqs[1]*hapfreqs[2];
   double OR =  ad/bc;
-  if (arrays[1]) (arrays[1])[ij] = ad/bc;
+  if (arrays[1]) (arrays[1])[ij] = OR;
   /* Yules Q */
   if (arrays[2]) (arrays[2])[ij] = (ad-bc)/(ad+bc);
   /* Covariance */
