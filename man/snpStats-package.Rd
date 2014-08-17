@@ -11,8 +11,8 @@ Classes and statistical methods for large SNP association studies, extending the
 \details{
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.15.3\cr
-Date: \tab 2014-08-08\cr
+Version: \tab 1.15.4\cr
+Date: \tab 2014-08-17\cr
 Depends: \tab R(>= 2.10.0), survival, Matrix, methods\cr
 Imports: \tab graphics, grDevices, stats, utils, BiocGenerics, zlibbioc\cr
 Suggests: \tab hexbin\cr
@@ -20,8 +20,8 @@ License: \tab GPL-3\cr
 Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation.R indata.R long.R misc.R ld.R mvtests.R pedfile.R outdata.R plink.R qc.R qq-chisq.R single.R tdt-single.R structure.R xstuff.R\cr
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
-Packaged: \tab 2014-08-08\cr
-Built: \tab R 3.1.1; x86_64-pc-linux-gnu; 2014-08-08 14:38:46 UTC; unix\cr
+Packaged: \tab 2014-08-17\cr
+Built: \tab R 3.1.1; x86_64-pc-linux-gnu; 2014-08-17 12:28:22 UTC; unix\cr
 }
 
 Index:
