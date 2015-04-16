@@ -1,0 +1,4 @@
+families: genotypes pedData
+for.exercise: snp.support snps.10 subject.support
+ld.example: ceph.1mb support.ld yri.1mb
+testdata: Asnps Autosomes Xchromosome Xsnps subject.data
