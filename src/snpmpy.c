@@ -29,16 +29,16 @@
 SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	     const SEXP Uncertain) {
   
-  int *ifFemale = NULL;
+  int *ifdiploid = NULL;
   SEXP cl = GET_CLASS(Snps);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(Snps, mkString("Female"));
-    if (TYPEOF(Female)!=LGLSXP)
-      error("Argument error -  Female slot wrong type");
-    ifFemale = LOGICAL(Female);
+    SEXP diploid = R_do_slot(Snps, mkString("diploid"));
+    if (TYPEOF(diploid)!=LGLSXP)
+      error("Argument error -  diploid slot wrong type");
+    ifdiploid = LOGICAL(diploid);
   }
   else if (strcmp(CHAR(STRING_ELT(cl, 0)), "SnpMatrix")) {
     error("Argument error - Snps wrong type");
@@ -108,7 +108,7 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	unsigned char w = (int) snps[ki++];
 	if (w && ((w<4)|uncert)) {
 	  double gm = g2mean(w);
-	  if (ifFemale && !ifFemale[i]) {
+	  if (ifdiploid && !ifdiploid[i]) {
 	    s1++;
 	    s2 += gm/2.0;
 	  }
@@ -133,7 +133,7 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	int sik = (int) snps[ik];
 	if (sik && ((sik<4)|uncert)) {
 	  double xik = g2mean(sik) - mean;
-	  xik /= (ifFemale && !ifFemale[i])? sd1: sd2;
+	  xik /= (ifdiploid && !ifdiploid[i])? sd1: sd2;
 	  for (int j=0, jk=jks, ji=jis; j<P; j++, jk++, ji++) {
 	    result[jk] += xik*mat[ji];
 	  }
@@ -152,16 +152,16 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency, 
 	      const SEXP Uncertain) {
   
-  int *ifFemale = NULL;
+  int *ifdiploid = NULL;
   SEXP cl = GET_CLASS(Snps);
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    SEXP Female = R_do_slot(Snps, mkString("Female"));
-    if (TYPEOF(Female)!=LGLSXP)
-      error("Argument error -  Female slot wrong type");
-    ifFemale = LOGICAL(Female);
+    SEXP diploid = R_do_slot(Snps, mkString("diploid"));
+    if (TYPEOF(diploid)!=LGLSXP)
+      error("Argument error -  diploid slot wrong type");
+    ifdiploid = LOGICAL(diploid);
   }
   else if (strcmp(CHAR(STRING_ELT(cl, 0)), "SnpMatrix")) {
     error("Argument error - Snps wrong type");
@@ -231,7 +231,7 @@ SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	unsigned char w = (int) snps[ki++];
 	if (w && ((w<4)|uncert)) {
 	  double gm = g2mean(w);
-	  if (ifFemale && !ifFemale[i]) {
+	  if (ifdiploid && !ifdiploid[i]) {
 	    s1++;
 	    s2 += gm/2.0;
 	  }
@@ -256,7 +256,7 @@ SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	int sik = (int) snps[ik];
 	if (sik&&((sik<4)|uncert)) {
 	  double xik = g2mean(sik) - mean;
-	  xik /= (ifFemale && !ifFemale[i])? sd1: sd2;
+	  xik /= (ifdiploid && !ifdiploid[i])? sd1: sd2;
 	  for (int j=0, ij=i, kj=k; j<P; j++, ij+=N, kj+=M) {
 	    result[ij] += xik*mat[kj];
 	  }

@@ -6,12 +6,12 @@
 SnpMatrix and XSnpMatrix classes and methods
 }
 \description{
-Classes and statistical methods for large SNP association studies, extending the snpMatrix package
+Classes and statistical methods for large SNP association studies. This extends the earlier snpMatrix package, allowing for uncertainty in genotypes.
 }
 \details{
 \tabular{ll}{
 Package: \tab snpStats\cr
-Version: \tab 1.15.4\cr
+Version: \tab 1.19.1\cr
 Date: \tab 2014-08-17\cr
 Depends: \tab R(>= 2.10.0), survival, Matrix, methods\cr
 Imports: \tab graphics, grDevices, stats, utils, BiocGenerics, zlibbioc\cr
@@ -21,7 +21,7 @@ Collate: \tab ss.R contingency.table.R convert.R compare.R glm-test.R imputation
 LazyLoad: \tab yes\cr
 biocViews: \tab Microarray, SNP, GeneticVariability\cr
 Packaged: \tab 2014-08-17\cr
-Built: \tab R 3.1.1; x86_64-pc-linux-gnu; 2014-08-17 12:28:22 UTC; unix\cr
+Built: \tab R 3.1.2; x86_64-pc-linux-gnu; 2015-06-26 11:47:11 UTC; unix\cr
 }
 
 Index:
@@ -64,6 +64,7 @@ pool2                   Pool results of tests from two independent
 pp                      Unpack posterior probabilities from one-byte
                         codes
 qq.chisq                Quantile-quantile plot for chi-squared tests
+random.snps             Generate random SnpMatrix
 read.beagle             Read genotypes imputed by the BEAGLE program
 read.impute             Read genotypes imputed by the IMPUTE2 program
 read.long               Read SNP genotype data in long format

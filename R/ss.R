@@ -68,50 +68,63 @@ setMethod("[", signature(x="SnpMatrix",i="ANY",j="ANY",drop="ANY"),
           function(x, i, j, drop=FALSE) {
             if (drop!=FALSE)
               stop("dimensions cannot be dropped from a SnpMatrix object")
-            if (missing(i)) {
-              if (missing(j))
-                return(x)
-              else
-                x <-  x@.Data[,j,drop=FALSE]
+            
+            if (missing(i)) i <- integer(0)
+            else if (is.character(i)) {
+              i <- match(i, rownames(x))
+              if (any(is.na(i)))
+                stop("No match for one or more row selections")
             }
-            else {
-              if (missing(j))
-                x <- x@.Data[i,,drop=FALSE]
-              else 
-                x <- x@.Data[i,j,drop=FALSE]
+            else if (is.numeric(i)) {
+              if (any(i<0)) 
+                  i <- (1:nrow(x))[i]
+              if (min(i)<1 || max(i)>nrow(x)) 
+                stop("One or more row selections out of range")
             }
-            cl <- "SnpMatrix"
-            attr(cl, "package") <- "snpStats"
-            class(x) <- cl
-            # setting an S4 class doesn't not automatically
-            # set the object's internal tag; do it manually
-            x <- asS4(x)
-            x
+            else if (is.logical(i)) {
+              if (length(i)!=nrow(x))
+                stop("logical row selection vector is wrong length")
+              i <- (1:nrow(x))[i]
+            }
+            else
+              stop("Illegal type for row selection, i")
+            i <- as.integer(i)
+            if (any(is.na(i)))
+              stop("NAs in row selection vector")
+            
+            if (missing(j)) j <- integer(0)
+            else if (is.character(j)) {
+              j <- match(j, colnames(x))
+              if (any(is.na(j)))
+                stop("No match for one or more column selections")
+            }
+            else if (is.numeric(j)) {
+              if (any(j<0))
+                j <- (1:ncol(x))[j]
+              if (min(j)<1 || max(j)>ncol(x)) 
+                stop("One or more column selections out of range")
+            }
+            else if (is.logical(j)) {
+              if (length(j)!=ncol(x))
+                stop("logical column selection vector is wrong length")
+              j <- (1:ncol(x))[j]
+            }
+            else
+              stop("Illegal type for column selection, j")
+            j <- as.integer(j)
+            if (any(is.na(j)))
+              stop("NAs in column selection vector")
+            
+            .Call("subset", x, i, j, PACKAGE="snpStats")
           }
 )
 
 setMethod("[", signature(x="XSnpMatrix",i="ANY",j="ANY",drop="ANY"),
           function(x, i, j, drop=FALSE) {
             if (drop!=FALSE)
-              stop("dimensions cannot be dropped from an XSnpMatrix object")
-            diploid <- x@diploid
-            if (missing(i)) {
-              if (missing(j))
-                return(x)
-              else 
-                x <-  x@.Data[,j, drop=FALSE]
-            }
-            else {
-              if (is.character(i))
-                i <- match(i, rownames(x))
-              diploid <- diploid[i]
-              if (missing(j))
-                x <- x@.Data[i,,drop=FALSE]
-              else 
-                x <- x@.Data[i,j,drop=FALSE]
-            }
-            new("XSnpMatrix", x, diploid=diploid)
-          })
+              stop("dimensions cannot be dropped from an XSnpMatrix object")  
+            callNextMethod()
+           })
 
 # The sub-assignment methods
 

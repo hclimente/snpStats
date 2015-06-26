@@ -31,3 +31,7 @@ read.impute <- function(file, rownames=NULL, nsnp=NULL, snpcol=2) {
 read.beagle <- function(file, rownames=NULL, nsnp=NULL, header=TRUE) {
   .Call("read_impute", file, rownames, nsnp, 0, header, PACKAGE="snpStats")
 }
+
+random.snps <- function(nrows, ncols) {
+    .Call("snp_big", as.integer(nrows), as.integer(ncols), PACKAGE="snpStats")
+}

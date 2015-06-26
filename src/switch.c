@@ -16,10 +16,10 @@ SEXP test_switch(const SEXP Snps, const SEXP Snps2, const SEXP Split,
   if (TYPEOF(cl) != STRSXP) {
     cl = R_data_class(Snps, FALSE); /* S4 way of getting class attribute */
   }
-  SEXP Female = NULL;
+  SEXP diploid = NULL;
   if (!strcmp(CHAR(STRING_ELT(cl, 0)), "XSnpMatrix")) {
-    Female = R_do_slot(Snps, mkString("Female"));
-    female = LOGICAL(Female);
+    diploid = R_do_slot(Snps, mkString("diploid"));
+    female = LOGICAL(diploid);
   }
   unsigned char *snps = RAW(Snps); 
   int N1 = nrows(Snps);
@@ -34,8 +34,8 @@ SEXP test_switch(const SEXP Snps, const SEXP Snps2, const SEXP Split,
     N2 = nrows(Snps2);
     snps2 = RAW(Snps2);
     if (female) {
-      Female = R_do_slot(Snps2, mkString("Female"));
-      female2 = LOGICAL(Female);
+      diploid = R_do_slot(Snps2, mkString("diploid"));
+      female2 = LOGICAL(diploid);
     }
   }
     

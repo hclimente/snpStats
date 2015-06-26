@@ -184,7 +184,7 @@ SEXP readped(SEXP filename, SEXP snp_names, SEXP missing, SEXP X, SEXP sep) {
   /* R objects to hold SnpMatrix attributes etc. */
   
   int *female = NULL; 
-  SEXP Rnames, Acodes, Female = R_NilValue, FSlot = R_NilValue;
+  SEXP Rnames, Acodes, diploid = R_NilValue, FSlot = R_NilValue;
   PROTECT(Rnames = allocVector(STRSXP, nr));
   PROTECT(Acodes = allocMatrix(RAWSXP, nc, 2));
   unsigned char *acodes = RAW(Acodes);
@@ -192,11 +192,11 @@ SEXP readped(SEXP filename, SEXP snp_names, SEXP missing, SEXP X, SEXP sep) {
   for (i = 0 ; i < 2 * nc ; i++)
     acodes[i] = mval;
   if(ifX) {
-    PROTECT(Female = allocVector(LGLSXP, nr));
+    PROTECT(diploid = allocVector(LGLSXP, nr));
     PROTECT(FSlot  = allocVector(STRSXP, 1));
     protected += 2;
-    SET_STRING_ELT(FSlot, 0, mkChar("Female"));
-    female = LOGICAL(Female);
+    SET_STRING_ELT(FSlot, 0, mkChar("diploid"));
+    female = LOGICAL(diploid);
   }
 
   /* Array to indicate any errors */
@@ -321,7 +321,7 @@ SEXP readped(SEXP filename, SEXP snp_names, SEXP missing, SEXP X, SEXP sep) {
   PROTECT(SMClass = allocVector(STRSXP, 1));
   if (ifX) {
     SET_STRING_ELT(SMClass, 0, mkChar("XSnpMatrix"));
-    R_do_slot_assign(Smat, FSlot, Female); 
+    R_do_slot_assign(Smat, FSlot, diploid); 
   }
   else
     SET_STRING_ELT(SMClass, 0, mkChar("SnpMatrix"));
