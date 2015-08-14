@@ -34,12 +34,19 @@ are resident in memory, and limitations
 of the computer and of the R language impose limits on the maximum
 size of datasets that can be held at any one time. Each genotype
 reading uses only a single byte of memory so that large datasets can
-be read given the large memory capacity of modern computers. However
-R imposes a limit of  $2^{31}-1 \sim 2\times 10^9$ elements in a single
-array\footnote{This limit applies in both the 32-bit and 64-bit versions
-  of R; these versions differ only in the {\em total} memory that can
-  be used}. For example, this would correspond to one million loci for two
-thousand subjects and would occupy two gigabytes of machine memory.
+be read given the large memory capacity of modern
+computers. Originally, 
+R imposed a limit of  $2^{31}-1 \sim 2\times 10^9$ elements in a single
+array. This limit applied in both the 32-bit and 64-bit versions
+  of R, these versions differing only in the {\em total} memory that could
+  be used. For example, this would correspond to one million loci for two
+thousand subjects and would occupy two gigabytes of machine
+memory. However, version 3 of R removed the restriction on single
+arrays in the 64-bit version,  and this was implemented for
+{\tt SnpMatrix} and {\tt XSnpMatrix} objects in version
+1.19.2 of {\tt snpStats}. However, experience of this code is limited
+and some caution is advised.
+ 
 \section*{Reading pedfiles}
 A commonly encountered format for storing genotype data is the
 ``pedfile'' format, which originated some years ago  in the LINKAGE

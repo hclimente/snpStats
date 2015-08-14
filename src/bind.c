@@ -14,8 +14,7 @@ SEXP snp_rbind(SEXP args) {
   SEXP Cnames = R_NilValue;
   SEXP Class = R_NilValue; 
   int nr = 0, nc=0;
-  int i=0, j=0, k=0, nk=0, rows_done=0;
-  for (i=0; i<nb; i++) {
+  for (int i=0; i<nb; i++) {
     args = CDR(args);
     const SEXP This = CAR(args);
     Class = getAttrib(This, R_ClassSymbol);
@@ -52,7 +51,7 @@ SEXP snp_rbind(SEXP args) {
       if (cni != R_NilValue) {
 	if (Cnames == R_NilValue) 
 	  Cnames = cni;
-	else for (j=0; j<nc; j++) {
+	else for (int j=0; j<nc; j++) {
 	  const char *one = CHAR(STRING_ELT(Cnames, j));
 	  const char *other = CHAR(STRING_ELT(cni, j));
 	  if (strcmp(one, other) != 0)
@@ -87,7 +86,8 @@ SEXP snp_rbind(SEXP args) {
   args = argsin;
   int nri;
   index_db row_index = index_create(nr);
-  for (i=0, rows_done=0; i<nb; i++, rows_done += nri) {
+  int rows_done=0;
+  for (int i=0; i<nb; i++, rows_done += nri) {
     unsigned char *r = result + rows_done;
     args = CDR(args);
     const SEXP This = CAR(args);
@@ -95,9 +95,9 @@ SEXP snp_rbind(SEXP args) {
     /* Copy matrix body */
     unsigned char *this = RAW(This);
     unsigned char *rj = r;
-    for (j=0; j<nc; j++, rj+=nr) {
+    for (int j=0; j<nc; j++, rj+=nr) {
       unsigned char *rjk = rj;
-      for (k=0; k<nri; k++) 
+      for (int k=0; k<nri; k++) 
 	*(rjk++) = *(this++);
     }
     /* Copy row names */
@@ -105,7 +105,7 @@ SEXP snp_rbind(SEXP args) {
     if( dn != R_NilValue) {
       SEXP rni = VECTOR_ELT(dn, 0);
       if( rni != R_NilValue) {
-	for (k=0, nk=rows_done; k<nri; k++, nk++) {
+	for (int k=0, nk=rows_done; k<nri; k++, nk++) {
 	  SEXP rnik = STRING_ELT(rni, k);
 	  if (rnik != R_NilValue) {
 	    SET_STRING_ELT(Rnames, nk, rnik);
@@ -119,7 +119,7 @@ SEXP snp_rbind(SEXP args) {
     if (X) {
       SEXP Di = R_do_slot(This, mkString("diploid"));
       int *di = LOGICAL(Di);
-      for (k=0, nk=rows_done; k<nri; k++, nk++)
+      for (int k=0, nk=rows_done; k<nri; k++, nk++)
 	diploid[nk] = di[k];
     }
   }
@@ -143,8 +143,7 @@ SEXP snp_cbind(SEXP args) {
   int *diploid = NULL; 
   SEXP Rnames = R_NilValue, Class = R_NilValue;
   int nr = 0, nc=0;
-  int i=0, j=0, ij=0;
-  for (i=0; i<nb; i++) {
+  for (int i=0; i<nb; i++) {
     args = CDR(args);
     SEXP This = CAR(args);
     Class = getAttrib(This, R_ClassSymbol);
@@ -190,7 +189,7 @@ SEXP snp_cbind(SEXP args) {
 	error("incompatible argument classes");
       if (nri != nr)
 	error("unequal number of rows");
-      for (j=0; j<nr; j++) {
+      for (int j=0; j<nr; j++) {
 	const char *one = CHAR(STRING_ELT(Rnames, j));
 	const char *other = CHAR(STRING_ELT(rni, j));
 	if (strcmp(one, other) != 0)
@@ -221,21 +220,22 @@ SEXP snp_cbind(SEXP args) {
 
   args = argsin;
   index_db col_index = index_create(nc);
-  for (i=0, ij=0; i<nb; i++) {
+  R_xlen_t ij = 0;
+  for (int i=0; i<nb; i++) {
     args = CDR(args);
     SEXP This = CAR(args);
     /* Copy matrix body */
     unsigned char *this = RAW(This);
     int nci = ncols(This);
-    int len = length(This);
-    for (j=0; j<len; j++) 
+    R_xlen_t len = length(This);
+    for (R_xlen_t j=0; j<len; j++) 
       *(result++) = *(this++);
     /* Copy column names */
     SEXP dn = getAttrib(This, R_DimNamesSymbol);
     if(dn != R_NilValue) {
       SEXP cni = VECTOR_ELT(dn, 1);
       if(cni != R_NilValue) {
-	for (j=0; j<nci; j++, ij++) {
+	for (int j=0; j<nci; j++, ij++) {
 	  SEXP cnij = STRING_ELT(cni, j);
 	  if (cnij != R_NilValue) {
 	    SET_STRING_ELT(Cnames, ij, cnij);

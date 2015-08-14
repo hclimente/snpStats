@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/6/2015 */
+
 #include <R.h>
 #include <Rinternals.h>
 #include "Rmissing.h"
@@ -145,7 +147,8 @@ SEXP X_snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   /* Calculations */
 
   int *obs = (int *) Calloc(N, int);
-  int i, j, ij;
+  int i, j;
+  R_xlen_t ij;
   for (i=0; i<N; i++)
     obs[i] = 0;
 
@@ -409,7 +412,8 @@ SEXP snp_summary(const SEXP Snps, const SEXP Rules, const SEXP Uncertain) {
   /* Calculations */
 
   int *obs = (int *) Calloc(N, int);
-  int i, j, ij;
+  int i, j;
+  R_xlen_t ij;
   for (i=0; i<N; i++)
     obs[i] = 0;
   for (j=0, ij=0; j<ncol; j++) {
@@ -580,7 +584,8 @@ SEXP row_summary(const SEXP Snps) {
   setAttrib(Result, R_ClassSymbol, dfClass);
 
   /* Calculations */
-  int i, j, ij;
+  int i, j;
+  R_xlen_t ij;
   for (i=0; i<N; i++) {
     int ncall = 0, nhet=0, ncertain=0;
     for (j=0, ij=i; j<M; j++, ij+=N) {

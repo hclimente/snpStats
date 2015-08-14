@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/06/2015 */
+
 #include <stdio.h>
 #include <ctype.h>
 #include <R.h>
@@ -98,7 +100,8 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
   SEXP Result, Dimnames, Rnames=R_NilValue, Package, Class;
   PROTECT(Result = allocMatrix(RAWSXP, lines, ncol));
   unsigned char *result = RAW(Result);
-  memset(result, 0x00, lines*ncol);
+  R_xlen_t len = (R_xlen_t)lines * (R_xlen_t)ncol;
+  memset(result, 0x00, len);
   PROTECT(Dimnames = allocVector(VECSXP, 2));
   PROTECT(Rnames = allocVector(STRSXP, lines));
   SET_VECTOR_ELT(Dimnames, 0, Rnames);
@@ -139,7 +142,8 @@ SEXP read_mach(const SEXP Filename, const SEXP Colnames, const SEXP Nsubject) {
     gznext(infile, buffer, BUFFERSIZE);
     if ((strcmp(buffer, "ML_PROB")!=0) && (strcmp(buffer, "PROB")!=0))
       error("file does not appear to be an MLPROB file (field 2=%s)", buffer);
-    for (int j=0, ij=i; j<ncol; j++, ij+=lines) {
+    R_xlen_t ij = i;
+    for (int j=0; j<ncol; j++, ij+=lines) {
       double pAA, pAB;
       gznext(infile, buffer, BUFFERSIZE);
       if (sscanf(buffer, "%lf", &pAA)!=1)
@@ -236,7 +240,8 @@ SEXP read_impute(const SEXP Filename, const SEXP Rownames, const SEXP Nsnp,
   SEXP Result, Dimnames, Colnames, Package, Class, Rnames=R_NilValue;
   PROTECT(Result = allocMatrix(RAWSXP, N, nsnp));
   unsigned char *result = RAW(Result);
-  memset(result, 0x00, N*nsnp);
+  R_xlen_t len = (R_xlen_t)N * (R_xlen_t)nsnp;
+  memset(result, 0x00, len);
   PROTECT(Dimnames = allocVector(VECSXP, 2));
   PROTECT(Colnames = allocVector(STRSXP, nsnp));
   SET_VECTOR_ELT(Dimnames, 1, Colnames);
@@ -292,7 +297,8 @@ SEXP read_impute(const SEXP Filename, const SEXP Rownames, const SEXP Nsnp,
 
   /* Read in data */
 
-  for (int i=0, ij=0; i<nsnp; i++) {
+  R_xlen_t ij = 0;
+  for (int i=0; i<nsnp; i++) {
     for (int j=0; j<ncol_skip; j++) {
       gznext(infile, buffer, BUFFERSIZE);
       if (j==snpcol) {

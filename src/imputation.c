@@ -123,7 +123,7 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 
   int n_em_fail=0, n_one=0, n_sat=0, n_mod=0, maxpred=0;
   for (int i=0; i<ny; i++) {
-    unsigned char *yi = y + nsubject*(yord[i]-1);
+    unsigned char *yi = y + (R_xlen_t)nsubject*(R_xlen_t)(yord[i]-1);
     /* Minor allele frequency */
     int ng=0, na=0;
     for (int j=0; j<nsubject; j++) {
@@ -242,7 +242,8 @@ SEXP snp_impute(const SEXP X, const SEXP Y, const SEXP Xord, const SEXP Yord,
 	    tcell[j] = (int) yij;
 	  }
 	  for (int k=0, sh=2; k<nregr; k++, sh+=2) {
-	    unsigned char *xk = x + nsubject*(xord[start+sel[k]]-1);
+	    unsigned char *xk = x +
+	      (R_xlen_t)nsubject*(R_xlen_t)(xord[start+sel[k]]-1);
 	    for (int j=0; j<nsubject; j++) {
 	      unsigned int xkj = (unsigned int) xk[j];
 	      if (xkj>4)
@@ -657,7 +658,8 @@ void do_impute(const SEXP Obs_snps, const int nrow,
       int jj = index_lookup(snp_names, CHAR(STRING_ELT(Snps, j)));
       if (jj<0)
 	error("Couldn't match snp name: %s", CHAR(STRING_ELT(Snps, j)));
-      for (int r=0, ist=nrow*jj; r<nuse; r++) {
+      R_xlen_t ist = (R_xlen_t)nrow*(R_xlen_t)jj;
+      for (int r=0; r<nuse; r++) {
 	int i = rows? rows[r]-1: r;
 	int sij = (int)snps[ist+i];
 	gt[r] = gt[r] | (sij << sh);
@@ -761,7 +763,8 @@ SEXP impute_snps(const SEXP Rules, const SEXP Snps, const SEXP Subset,
   GTYPE **gt2ht = (GTYPE **)Calloc(pmax, GTYPE *); 
   for (int i=0; i<pmax; i++)
     gt2ht[i] = create_gtype_table(i+1);
-  for (int j=0, ji=0; j<M; j++) {
+  R_xlen_t ji=0;
+  for (int j=0; j<M; j++) {
     SEXP Rule = VECTOR_ELT(Rules, j);
     if (isNull(Rule)) {
       if (as_numeric) {

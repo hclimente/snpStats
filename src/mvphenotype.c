@@ -415,7 +415,7 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
 	  SET_STRING_ELT(Snames, j, Snp_namej);	  
 	else
 	  SET_STRING_ELT(Namelist, test, Snp_namej);
-	const unsigned char *gj = snps + N*stsj;
+	const unsigned char *gj = snps + (R_xlen_t)N*(R_xlen_t)stsj;
 	for (int i=0; i<N; i++, ij++) {
 	  unsigned char gij = gj[i];
 	  if (gij && (uncertain||(gij<4))) {

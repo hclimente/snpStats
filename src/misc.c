@@ -32,7 +32,8 @@ SEXP asnum(SEXP Snps) {
     UNPROTECT(1);
   }
   double *result = REAL(Result);
-  for (int j=0, ij=0; j<M; j++) {
+  R_xlen_t ij=0;
+  for (int j=0; j<M; j++) {
     for (int i=0; i<N; i++, ij++) {
       unsigned char g = snps[ij];
       if (g) {
@@ -79,7 +80,3 @@ SEXP pp(const SEXP X, const SEXP Transp) {
   UNPROTECT(1);
   return(Result);
 }
-
-      
-  
-  

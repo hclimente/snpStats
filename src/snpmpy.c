@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/6/2015 */
+
 /* 
   If A is a SnpMatrix these routines calculate the matrices B.M or M.B, 
   where M is a general matrix and B is derived from A by normalising 
@@ -94,7 +96,8 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 
   /* Update result matrix for each locus in turn */
 
-  for (int  k=0, ik=0, jks=0; k<M; k++, jks+=P) {
+  R_xlen_t  ik=0, jks=0;
+  for (int  k=0; k<M; k++, jks+=P) {
 
     /* Get allele frequency */
 
@@ -104,7 +107,8 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
     else {
       int s1=0;
       double s2=0.0;
-      for (int ki=ik, i=0; i<N; i++) {
+      R_xlen_t ki=ik;
+      for (int i=0; i<N; i++) {
 	unsigned char w = (int) snps[ki++];
 	if (w && ((w<4)|uncert)) {
 	  double gm = g2mean(w);
@@ -129,12 +133,14 @@ SEXP snp_pre(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
       double sd2 = sqrt(2.0*afk*(1.0-afk));
       double sd1 = 2.0*sqrt(afk*(1.0-afk));
 
-      for (int i=0, jis=0; i<N; i++, ik++, jis+=P) {
+      R_xlen_t jis=0;
+      for (int i=0; i<N; i++, ik++, jis+=P) {
 	int sik = (int) snps[ik];
 	if (sik && ((sik<4)|uncert)) {
 	  double xik = g2mean(sik) - mean;
 	  xik /= (ifdiploid && !ifdiploid[i])? sd1: sd2;
-	  for (int j=0, jk=jks, ji=jis; j<P; j++, jk++, ji++) {
+          R_xlen_t  jk=jks, ji=jis;
+	  for (int j=0; j<P; j++, jk++, ji++) {
 	    result[jk] += xik*mat[ji];
 	  }
 	}
@@ -217,7 +223,8 @@ SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 
   /* Update result matrix for each locus  in turn */
 
-  for (int  k=0, ik=0, jks=0; k<M; k++, jks+=P) {
+  R_xlen_t ik=0, jks=0;
+  for (int  k=0; k<M; k++, jks+=P) {
 
       /* Get allele frequency */
 
@@ -227,7 +234,8 @@ SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
     else {     
       int s1=0;
       double s2=0.0;
-      for (int ki=ik, i=0; i<N; i++) {
+      R_xlen_t ki=ik;
+      for (int i=0; i<N; i++) {
 	unsigned char w = (int) snps[ki++];
 	if (w && ((w<4)|uncert)) {
 	  double gm = g2mean(w);
@@ -257,7 +265,8 @@ SEXP snp_post(const SEXP Snps, const SEXP Mat, const SEXP Frequency,
 	if (sik&&((sik<4)|uncert)) {
 	  double xik = g2mean(sik) - mean;
 	  xik /= (ifdiploid && !ifdiploid[i])? sd1: sd2;
-	  for (int j=0, ij=i, kj=k; j<P; j++, ij+=N, kj+=M) {
+          R_xlen_t ij=i, kj=k;
+	  for (int j=0; j<P; j++, ij+=N, kj+=M) {
 	    result[ij] += xik*mat[kj];
 	  }
 	}

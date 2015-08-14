@@ -19,7 +19,8 @@ SEXP force_hom(const SEXP Xsnps, const SEXP Diploid) {
   unsigned char *result = RAW(Result);
   for (int i=0; i<N; i++) {
     int haploid = !diploid[i];
-    for (int j=0, ij=i; j<M; j++, ij+=N) {
+    R_xlen_t ij = i;
+    for (int j=0; j<M; j++, ij+=N) {
       unsigned char rij = result[ij];
       if (rij && haploid) {
 	if (rij>3) {

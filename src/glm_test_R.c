@@ -233,14 +233,12 @@ SEXP snp_lhs_score(const SEXP Y, const SEXP X, const SEXP Stratum,
       u = (double *) Calloc(P, double);
       v = (double *) Calloc((P*(P+1))/2, double);
     }
-
-    int j = snp_subset? snp_subset[t] - 1: t; 
-    const unsigned char *yj = y + N*j;
-    int mono = 1, yv = 0, nu = 0;
  
-
     /* Load SNP as Binomial y-variate, with prior weights */
 
+    int j = snp_subset? snp_subset[t] - 1: t; 
+    const unsigned char *yj = y + (R_xlen_t) N* (R_xlen_t)j;
+    int mono = 1, yv = 0, nu = 0;
     for (int i=0; i<N; i++) {
       int yij = (int) yj[i];
       if (yij && (uncert||yij<4)) {
@@ -710,7 +708,7 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 	  SET_STRING_ELT(TestNames, test, Snp_namej);
 	else
 	  SET_STRING_ELT(Snames, j, Snp_namej);
-	const unsigned char *zj = z + N*snpsj;
+	const unsigned char *zj = z + (R_xlen_t)N*(R_xlen_t)snpsj;
 	for (int i=0; i<N; i++, ij++) {
 	  unsigned char zij = zj[i];
 	  if (zij && (uncert||(zij<4))) {
@@ -1184,12 +1182,12 @@ SEXP snp_lhs_estimate(const SEXP Y, const SEXP X, const SEXP Stratum,
     else 
       SET_STRING_ELT(Rnames, t, STRING_ELT(Yname, 0));
 
-    const unsigned char *yj = y + N*j;
-    int mono = 1, yv = 0;
  
 
     /* Load SNP as Binomial y-variate, with prior weights */
 
+    const unsigned char *yj = y + (R_xlen_t)N*(R_xlen_t)j;
+    int mono = 1, yv = 0;
     for (int i=0; i<N; i++) {
       int yij = (int) yj[i];
       if (yij && (uncert||yij<4)) {
@@ -1577,7 +1575,7 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
       if (snpsj>0) {
 	snpsj--; 
 	srname = CHAR(STRING_ELT(Snp_names, snpsj));
-	const unsigned char *zj = z + N*snpsj;
+	const unsigned char *zj = z + (R_xlen_t)N*(R_xlen_t)snpsj;
 	for (int i=0; i<N; i++, ij++) {
 	  unsigned char zij = zj[i];
 	  if (zij && (uncert||(zij<4))) {

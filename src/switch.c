@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/6/2015 */
+
 #include <R.h>
 #include <Rmath.h>
 #include <Rdefines.h>
@@ -51,7 +53,8 @@ SEXP test_switch(const SEXP Snps, const SEXP Snps2, const SEXP Split,
     unsigned char *snpsg = snps;
     int *fg = female;
     while (1) {
-      for (int i=0, ij=N*j; i<N; i++, ij++) {
+      R_xlen_t ij = (R_xlen_t)N*(R_xlen_t)j;
+      for (int i=0; i<N; i++, ij++) {
 	const int s = (int) snpsg[ij];
 	if (s) {
 	  if (split) 

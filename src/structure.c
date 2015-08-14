@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/6/2015 */
+
 /* 
   If A is a SnpMatrix this routine calculates the matrix B.B-transpose, 
   where B is derived from A by normalising columns to have zero mean and 
@@ -117,7 +119,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
     memset(Ti, 0x00, N*sizeof(int));
     Tk = Calloc(M, int);
     memset(Tk, 0x00, M*sizeof(int));
-    for (int k=0, ik=0; k<M; k++) {
+    R_xlen_t ik = 0;
+    for (int k=0; k<M; k++) {
       for (int i=0; i<N; i++) {
 	int sik = (int) snps[ik++];
 	if (!sik){
@@ -152,7 +155,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 
   const double rt2 = sqrt(2.0);
 
-  for (int ik=0, k=0; k<M; k++) {
+  R_xlen_t ik=0;
+  for (int k=0; k<M; k++) {
 
     /* Calculate allele frequency */
 
@@ -160,7 +164,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
     if (strata) {
       memset(count, 0x00, nstrata*sizeof(int));
       memset(acount, 0x00, nstrata*sizeof(double));
-      for (int ki=ik, i=0; i<N; i++) {
+      R_xlen_t ki = ik;
+      for (int i=0; i<N; i++) {
 	unsigned char w = snps[ki++];
 	if (w&&((w<4)|uncert)) {
 	  int si = strata[i]-1;
@@ -189,7 +194,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
       }
     }
     else {
-      for (int ki=ik, i=0; i<N; i++) {
+      R_xlen_t ki = ik;
+      for (int i=0; i<N; i++) {
 	unsigned char w =  snps[ki++];
 	if (w&&((w<4)|uncert)) {
 	  double gm = g2mean(w);
@@ -222,7 +228,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
     
       /* Update X.X-transpose matrix */
 
-      for (int i=0, ij=0; i<N; i++, ik++) {
+      R_xlen_t ij = 0;
+      for (int i=0; i<N; i++, ik++) {
 	if (strata) {
 	  int si = strata[i]-1;
 	  mean = mu[si];
@@ -236,7 +243,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
 	    ipw = 1.0/(1.0 - tk*(double)Ti[i]); /* IPW for diagonal */
 	  }
 	  ij += i;
-	  for (int jk=ik, j=i; j<N; j++, ij++) {
+          R_xlen_t jk = ik;
+	  for (int j=i; j<N; j++, ij++) {
 	    if (strata) {
 	      int sj = strata[j]-1;
 	      mean = mu[sj];
@@ -268,7 +276,8 @@ SEXP xxt(const SEXP Snps, const SEXP Strata, const SEXP Correct_for_missing,
   if (!lower) {
     for (int i=0, ij=0; i<N; i++) {
       ij += (i+1);
-      for (int j=i+1, ji=ij-1+N; j<N; j++, ij++, ji+=N) {
+      R_xlen_t ji=ij-1+N;
+      for (int j=i+1; j<N; j++, ij++, ji+=N) {
 	result[ji] = result[ij];
       }
     }
@@ -328,11 +337,14 @@ SEXP corsm(const SEXP Snps, const SEXP X, const SEXP Uncertain) {
   PROTECT(Result = allocMatrix(REALSXP, M, P));
   double *result = REAL(Result);
 
-  for (int j=0, ij=0, jks=0; j<P; j++, jks+=N) {
-    for (int i=0, ik=0; i<M; i++, ij++) {
+  R_xlen_t ij=0, jks=0;
+  for (int j=0; j<P; j++, jks+=N) {
+    R_xlen_t ik=0;
+    for (int i=0; i<M; i++, ij++) {
       double sg=0.0, sgg=0, sx=0.0, sxx=0.0, sgx=0.0;
       int s=0;
-      for (int k=0, jk=jks; k<N; k++) {
+      R_xlen_t jk = jks;
+      for (int k=0; k<N; k++) {
 	unsigned char g = snps[ik++];
 	double xk = x[jk++];
 	if (g && ((g<4)|uncert) && !ISNA(xk)) {
@@ -442,12 +454,14 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
 
   /* Update result matrix for each locus in turn */
 
-  for (int ik=0, k=0; k<M; k++) {
+  R_xlen_t ik=0;
+  for (int k=0; k<M; k++) {
 
     /* Update IBS matrix */
 
     int N1 = N+1;
-    for (int i=0, ii=0; i<N; i++, ii+=N1) {
+    R_xlen_t ii=0;
+    for (int i=0; i<N; i++, ii+=N1) {
       int base_div;
       if (ifDiploid && !ifDiploid[i])
 	base_div = 2;
@@ -458,8 +472,8 @@ SEXP ibs_count(const SEXP Snps, const SEXP Uncertain) {
 	result[ii]++;
 	double pi[3];
 	g2post(sik, pi, pi+1, pi+2);
-	for (int j=i+1, jk=ik, ji=ii+1, ij=ii+N; 
-	     j<N; j++, ji++, ij+=N) {
+        R_xlen_t jk=ik, ji=ii+1, ij=ii+N;
+	for (int j=i+1; j<N; j++, ji++, ij+=N) {
 	  int div = base_div ;
 	  if (ifDiploid && !ifDiploid[j])
 	    div *= 2;
@@ -517,7 +531,7 @@ SEXP ibs_dist(const SEXP Ibsc) {
 
   /* Result matrix */
 
-  R_len_t Nout = (N*(N-1))/2;
+  R_xlen_t Nout = ((R_xlen_t)N*(R_xlen_t)(N-1))/2;
   SEXP Result, Size, Class;
   PROTECT(Result = allocVector(REALSXP, Nout));
   PROTECT(Size = allocVector(INTSXP, 1));
@@ -529,8 +543,10 @@ SEXP ibs_dist(const SEXP Ibsc) {
   classgets(Result, Class);
   double *result = REAL(Result);
   memset(result, 0x00, Nout*sizeof(double));
-  for (int i=1, ii=0, k=0; i<N; i++, ii+=(N+1)) {
-    for (int j=i, ji=ii+1, ij=ii+N; j<N; j++, ji++, ij+=N){
+  R_xlen_t ii=0;
+  for (int i=1, k=0; i<N; i++, ii+=(N+1)) {
+    R_xlen_t ji=ii+1, ij=ii+N;
+    for (int j=i; j<N; j++, ji++, ij+=N){
       result[k++] = (ibsc[ji]-ibsc[ij])/ibsc[ji];
     }
   }

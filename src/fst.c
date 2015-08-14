@@ -101,56 +101,7 @@ SEXP Fst(SEXP Snps, SEXP Group, SEXP HapMap) {
 
 
   /* Calculate Fst for each SNP, plus its weight in the overall estimate  */
-    
-  for (int j=0, ij=0; j<nsnp; j++) {
-    memset(na, 0x00, ngrp*sizeof(int));
-    memset(na2, 0x00, ngrp*sizeof(int));
-    for (int i=0; i<N; i++, ij++) {
-      int gi = group[i];
-      int sij = (int) snps[ij];
-      /* Uncertain genotypes treated as missing */
-      if (gi != NA_INTEGER && sij && (sij<4)) {
-	gi--;
-	if (ifX) {
-	  int fi = diploid[i];
-	  na[gi] += fi? 2: 1;
-	  na2[gi] += fi? (sij-1): (sij==3);
-	}
-	else {
-	  na[gi] += 2;
-	  na2[gi] += (sij-1);
-	}
-      }
-    }
-    int nt = 0, nt2 = 0;
-    double pq = 0.0;
-    for (int g=0; g<ngrp; g++) {
-      int nag = na[g];
-      if (nag>1) {
-	int na2g = na2[g];
-	double pg = (double)na2g/ (double)nag;
-	nt += nag;
-	nt2 += na2g;
-	pq += gwts[g]*pg*(1.0-pg)*(double)nag/(double)(nag-1);
-      }
-    }
-    if (nt>1) {
-      double p = (double)nt2 / (double)nt;
-      double pqm = p*(1.0-p)*(double)nt/(double)(nt-1);
-      fst[j] = 1.0-pq/pqm;
-      weight[j] = pqm;
-    }
-    else {
-      fst[j] = NA_REAL;
-      weight[j] = NA_REAL;
-    }
-  }
 
-  /* Tidy up and return */
-
-  Free(na);
-  Free(na2);
-  Free(gwts);
 
   SEXP Result, Names;
   PROTECT(Result = allocVector(VECSXP, 2));

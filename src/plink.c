@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/06/2015 */
+
 /* 
    Read a plink .bed file as a SnpMatrix
  
@@ -60,7 +62,7 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
   SET_S4_OBJECT(Result);
   
   unsigned char *result = RAW(Result); 
-  int ncell = nrow*ncol;
+  R_xlen_t ncell = (R_xlen_t)nrow*(R_xlen_t)ncol;
   memset(result, 0x00, ncell);
 
   /* Read in first few bytes */
@@ -87,7 +89,8 @@ SEXP readbed(SEXP Bed, SEXP Id, SEXP Snps, SEXP Rsel, SEXP Csel) {
 
   if (seek) 
     skip(in, seek[0]-1, nbyte);
-  int part=0, ij=0, i=0, j=0;
+  int part=0, i=0, j=0;
+  R_xlen_t ij = 0;
   unsigned char byte = 0x00;
   while (1) {
     if (!part) {
@@ -148,7 +151,8 @@ SEXP writebed(const SEXP Snps, const SEXP File, const SEXP SnpMajor) {
   unsigned char byte = 0x00;
   if (snpmaj) {
     fputc(0x01, out);
-    for (int j=0, ij=0; j<M; j++) {
+    R_xlen_t ij = 0;
+    for (int j=0; j<M; j++) {
       for (int i=0; i<N; i++, ij++) {
 	unsigned char s = snps[ij];
 	if (s>3)
@@ -168,7 +172,8 @@ SEXP writebed(const SEXP Snps, const SEXP File, const SEXP SnpMajor) {
     fputc(0x00, out);
     for (int i=0; i<N; i++) {
       int part;
-      for (int j=0, ij=i; j<M; j++, ij+=N) {
+      R_xlen_t ij = i;
+      for (int j=0; j<M; j++, ij+=N) {
 	unsigned char s = snps[ij];
 	if (s>3)
 	  error("Uncertain genotype [%d,%d]: cannot be dealt with by this version", i, j);
@@ -186,5 +191,5 @@ SEXP writebed(const SEXP Snps, const SEXP File, const SEXP SnpMajor) {
   fclose(out);
   return R_NilValue;
 }
-  
+
  

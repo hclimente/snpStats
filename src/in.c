@@ -14,6 +14,9 @@ gtypes      Array of char's, length nchip*nsnp, to hold genotype data
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <R.h>
+#include <Rinternals.h>
+
 
 #define MAX_ID 128
 #define MAX_GT 16
@@ -43,7 +46,7 @@ void insnp(char *filename, char *tmpdir,
   double thr_in;
   if (fscanf(infile, " %s %s %s %lf", chip_in, snp_in, gt_in, &thr_in)!=4)
     goto read_error;
-  int ij=0;
+  R_xlen_t ij=0;
   for (j=0; j<(*nsnps); j++) {
     char *snp_target = snp_id[j];
     int jcmp;

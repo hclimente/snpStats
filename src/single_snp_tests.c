@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 27/6/2015 */
+
 /* 
    Single SNP tests - 1df and 2df, controlling for a stratification 
    
@@ -225,7 +227,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
       else {
 	if (i >= nsnp)
 	  error("snp_subset out of range");
-	snpsi = snps + n*i;
+	snpsi = snps + (R_xlen_t)n*(R_xlen_t)i;
       }
       /* Initialise score and score variance array */
       for (int j=0; j<nstrata; j++) {
@@ -329,7 +331,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
       else {
 	if (i >= nsnp)
 	  error("snp_subset out of range");
-	snpsi = snps + n*i;
+	snpsi = snps + (R_xlen_t)n*(R_xlen_t)i;
       }
       /* Initialise score and score variance arrays */
       for (int j=0; j<nstrata; j++) {

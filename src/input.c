@@ -1,5 +1,7 @@
 /* Read genotype data in long format */
 
+/* Modified with R_xlen_t 26/6/2015 */
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -352,7 +354,8 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
   
   /* slowest varying 0 = don't know, 1 = sample, 2 = snp */
 
-  int slowest = file_is, last=Nsample*Nsnp-1;
+  int slowest = file_is;
+  R_xlen_t last=(R_xlen_t)Nsample*(R_xlen_t)Nsnp-1;
   int advance = 0, finished=0;
 
   for (int f=0; f<Nfile; f++) {
@@ -557,7 +560,7 @@ SEXP insnp_new(const SEXP Filenames, const SEXP Sample_id, const SEXP Snp_id,
 	/* Next target read found in file(s) */
 
 	found_in_file++;
-	int ij_this = j_this*Nsample + i_this;
+	R_xlen_t ij_this = (R_xlen_t)j_this*(R_xlen_t)Nsample + i_this;
 	finished = (ij_this==last);
 	
 	/* Check confidence score */

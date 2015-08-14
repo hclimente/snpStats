@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 27/6/2015 */
+
 #include <R.h>
 #include <Rmath.h>
 #include <Rinternals.h>
@@ -191,7 +193,7 @@ SEXP ld(SEXP X, SEXP Y, SEXP Depth, SEXP Stats, SEXP Symmetric) {
     unsigned char *xj = x+N;
     for (int j=1, ij=0; j<MX; j++, xj+=N) {
       int ifr = j<depth? 0: j - depth;
-      unsigned char *xi = x+N*ifr; 
+      unsigned char *xi = x+(R_xlen_t)N*(R_xlen_t)ifr; 
       for (int i=ifr; i<j; i++, xi+=N, ij++) {
 	int pr = phase(N, xi, xj, diploid, hapfreqs, margins, &LLR);
 	if (pr) {

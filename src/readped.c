@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/6/2015 */
+
 #include <R.h>
 #include <Rinternals.h>
 #include <stdio.h>
@@ -6,7 +8,6 @@
 #define MAX_ID 128    /* Max space to store an id */
 
 #define SET_TO_NA_IF_ZERO(x) if (!(x)) { (x) = NA_INTEGER ; }
-
 #define GTYPE_N 0x00
 #define GTYPE_A 0x01
 #define GTYPE_H 0x02

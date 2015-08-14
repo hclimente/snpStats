@@ -1,3 +1,5 @@
+/* Modified for R_xlen_t 26/06/2015 */
+
 /* 
    Single trio-based SNP tests - 1df and 2df
    
@@ -210,7 +212,7 @@ SEXP score_tdt(const SEXP Proband, const SEXP Father, const SEXP Mother,
     else {
       if (i >= nsnp)
 	error("snp_subset out of range");
-      snpsi = snps + nsubj*i;
+      snpsi = snps + (R_xlen_t)nsubj*(R_xlen_t)i;
     }
 
     /* Initialise score and score variance array */

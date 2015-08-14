@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <R.h>
+#include <Rinternals.h>
 
 void put_name(FILE *file, char *name, int quote) {
   if (quote) {
@@ -18,7 +20,8 @@ void write_as_matrix(char **file, char *x, int *N, int *M,
   int nrow = *N;
   int ncol = *M;
   FILE *  outfile;
-  int i=0, j=0, ij=0;
+  int i=0, j=0;
+  R_xlen_t ij=0;
   if (*append)
     outfile = fopen(*file, "a");
   else
