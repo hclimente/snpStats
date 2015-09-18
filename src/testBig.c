@@ -36,8 +36,8 @@ SEXP snp_big(SEXP nrow, SEXP ncol) {
     sprintf(name, "Snp%d", i+1);
     SET_STRING_ELT(Cnames, i, mkChar(name));
   }
-  char *Ri = RAW(Result);
-  for (R_xlen_t i; i<size; i++) {
+  Rbyte *Ri = RAW(Result);
+  for (R_xlen_t i=0; i<size; i++) {
     int x = 1+rand()%2+rand()%2;
     Ri[i] = x;
   }

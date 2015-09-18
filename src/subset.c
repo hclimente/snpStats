@@ -42,14 +42,14 @@ SEXP subset(SEXP X, SEXP Rows, SEXP Cols) {
     return X;
   }
 
-  const char *x = RAW(X);
+  const Rbyte *x = RAW(X);
 
   /* Result */
 
   int nprotect = 5;
   SEXP Result, Rdim, Rdimnames, Rrownames, Rcolnames, Rdiploid, Rclass, Package;
   PROTECT(Result = allocMatrix(RAWSXP, nrows, ncols));
-  char *r = RAW(Result);
+  Rbyte *r = RAW(Result);
   PROTECT(Rclass = allocVector(STRSXP, 1));
   if (diploid)
     SET_STRING_ELT(Rclass, 0, mkChar("XSnpMatrix"));
