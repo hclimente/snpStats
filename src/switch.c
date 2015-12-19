@@ -51,7 +51,7 @@ SEXP test_switch(const SEXP Snps, const SEXP Snps2, const SEXP Split,
   for (int j=0; j<M; j++) {
     int n0=0, n1=0, np0=0, np1=0, g=1, N=N1;
     unsigned char *snpsg = snps;
-    int *fg = female;
+    /* int *fg = female; Isn't used */
     while (1) {
       R_xlen_t ij = (R_xlen_t)N*(R_xlen_t)j;
       for (int i=0; i<N; i++, ij++) {
@@ -87,8 +87,10 @@ SEXP test_switch(const SEXP Snps, const SEXP Snps2, const SEXP Split,
 	break;
       else {
 	snpsg = snps2;
+	/* Isn't used:
 	if (female) 
 	  fg = female2;
+	*/
 	N = N2;
 	g = 2;
       }

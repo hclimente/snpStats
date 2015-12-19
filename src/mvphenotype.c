@@ -191,12 +191,13 @@ SEXP mvphen(const SEXP Pheno, const SEXP Snps, const SEXP Rules,
   int *female=NULL;
   if (!strcmp(classSnps, "SnpMatrix"))
     ifX = 0;
-  else if (!strcmp(classSnps, "XSnpMatrix")) {
+  else if (!strcmp(classSnps, "XSnpMatrix")) 
     ifX = 1;
-    error("tests for XSnpMatrix not yet implemented");
-  } 
   else 
     error("Argument error - class(Snps): %s", classSnps);
+  if (ifX)
+    error("tests for XSnpMatrix not yet implemented");
+
   if (nrows(Snps) != N)
     error("unequal numbers of rows in phenotype and snp matrices");
   int nsnp = ncols(Snps);

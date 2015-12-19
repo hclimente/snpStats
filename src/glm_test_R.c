@@ -365,9 +365,11 @@ SEXP snp_rhs_score(SEXP Y, SEXP family, SEXP link,
 		   SEXP Uncertain, 
 		   SEXP Control, SEXP MissAllow, SEXP If_score) {
 
-  char testname[MAX_NAME_LENGTH];
   int max_name_length =  MAX_NAME_LENGTH -1;
-  testname[max_name_length] = (char) 0; /* Make sure its null terminated */
+  /* Don't seem to be used now
+  char testname[MAX_NAME_LENGTH];
+  testname[max_name_length] = (char) 0; 
+  */
 
   /* Y and its dimensions */
 
@@ -1515,10 +1517,12 @@ SEXP snp_rhs_estimate(SEXP Y, SEXP family, SEXP link,
   double *beta =  (double *) R_alloc(M_max, sizeof(double));
   int *which = (int *) R_alloc(M_max, sizeof(int));
   double *tri = (double *) R_alloc((M_max*(M_max+1))/2, sizeof(double));
-  double *Uc;
 
+  /* Doesn't seem to be used:
+  double *Uc;
   if (C>1) 
     Uc = (double *) R_alloc(C*M_max, sizeof(double));
+  */
 
   /* Copy base model */
 

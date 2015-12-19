@@ -65,7 +65,8 @@ int glm_fit(int family, int link, int N, int M, int P, int S,
 	    int  *P_est, int *which, double *betaQ, double *tri) {
   double eta = 1.0 - r2max;       /* Singularity threshold */
   int Mskip=M-P; /* Number of parameters NOT estimated */
-  int Nu, dfr, irls;
+  int Nu, irls;
+  int dfr = 0;
   int empty = 0;
   *scale = 1.0; /* Default scale factor */
   if ((P>0) && !(P_est && which && betaQ && tri))

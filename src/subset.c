@@ -22,21 +22,17 @@ SEXP subset(SEXP X, SEXP Rows, SEXP Cols) {
   SEXP Rownames = VECTOR_ELT(Dimnames, 0);
   SEXP Colnames = VECTOR_ELT(Dimnames, 1);
   int nrows = LENGTH(Rows);
-  int *rows;
-  if (nrows) 
+  int *rows = NULL;
+  if (nrows)
     rows = INTEGER(Rows);
-  else {
-    nrows = dim[0];
-    rows = NULL;
-  }
+  else
+    nrows = N;
   int ncols = LENGTH(Cols);
-  int *cols;
+  int *cols = NULL;
   if (ncols)
     cols = INTEGER(Cols);
-  else {
-    ncols = dim[1];
-    cols = NULL;
-  }
+  else 
+    ncols = M;
   if (!cols && !rows) {
     warning("No selection made");
     return X;

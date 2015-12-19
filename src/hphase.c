@@ -258,12 +258,13 @@ int emhap(const int nsnp, const int *gtable, const int *htable,
 
     /* New estimates of haplotype frequencies */
 
-    int ipfault = 0;
+    /* int ipfault = 0; */
     if (nllm) { /* Log-linear smoothing model */
       for (int i=0; i<nht; i++) {
 	sum[i] /= total;
 	/* do ipfsteps of IPF algorithm */
-	ipfault = ipf(nsnp, sum, nllm, llm, hprob, ipfsteps, ipfeps);
+	/* ipfault = ipf(nsnp, sum, nllm, llm, hprob, ipfsteps, ipfeps); */
+	ipf(nsnp, sum, nllm, llm, hprob, ipfsteps, ipfeps); 
       }
     }
     else { /* Saturated model */

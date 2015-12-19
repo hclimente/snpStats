@@ -87,7 +87,6 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
   if (N!=n)
     error("Dimension error - Snps");
   SEXP snp_names = VECTOR_ELT(getAttrib(Snps, R_DimNamesSymbol), 1);
-  index_db name_index = create_name_index(snp_names);
 
   /* Subset */
 
@@ -106,6 +105,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
   /* Rules */
 
   int nrules = 0;
+  index_db name_index;
   if (!isNull(Rules)) {
     const char *classR = NULL;
     if (TYPEOF(R_data_class(Rules, FALSE)) == STRSXP) {
@@ -116,6 +116,7 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
     if (strcmp(classR, "ImputationRules")!=0) 
       error("Argument error - Rules");
     nrules = LENGTH(Rules);
+    name_index = create_name_index(snp_names);
   }
 
   /* SNP subset */
@@ -435,8 +436,8 @@ SEXP score_single(const SEXP Phenotype, const SEXP Stratum, const SEXP Snps,
 
   /* Tidy up */
 
-  index_destroy(name_index);
   if (nrules) {
+    index_destroy(name_index);
     Free(xadd);
     Free(xdom);
     for (int i=0; i<pmax; i++) 
